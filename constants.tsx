@@ -3,6 +3,23 @@ import { CaseStudy, Testimonial, FAQItem } from './types';
 
 export const CASE_STUDIES: CaseStudy[] = [
   {
+    id: 'pathways-badge-quest',
+    title: 'Pathways Badge Quest',
+    category: 'Gamified Learning · Experience Design',
+    description: 'A physical board game designed for Iowa State University’s College of Agriculture and Life Sciences to turn micro-credentials into a felt journey of progression.',
+    tags: ['Experience Design', 'Gamification', 'Instructional Tool'],
+    images: [
+      'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1553481187-be93c21490a9?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=800'
+    ],
+    color: 'bg-[#5a8c69]',
+    role: 'UX Designer',
+    platform: 'Physical Board Game + Mobile UI',
+    duration: 'Summer 2025 · 3 months',
+    tools: 'Figma, Adobe Illustrator'
+  },
+  {
     id: 'my-campus',
     title: 'My Campus',
     category: 'Product Design · Education',

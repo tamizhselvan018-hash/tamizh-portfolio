@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap } from 'lucide-react';
+import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { CaseStudy } from '../types';
 import { Button } from './Button';
@@ -17,8 +17,18 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
   const isMyCampus = project.id === 'my-campus';
   const isWalkForPlastic = project.id === 'walk-for-plastic';
+  const isPathwaysBadgeQuest = project.id === 'pathways-badge-quest';
 
   const [activeIndex, setActiveIndex] = React.useState(0);
+
+  // Pathways Badge Quest Interactive Demo States
+  const [pathwaysDirection, setPathwaysDirection] = React.useState<'mobile' | 'board'>('board');
+  const [flippedCards, setFlippedCards] = React.useState<Record<string, boolean>>({});
+  const [stepThreeSlots, setStepThreeSlots] = React.useState<boolean[]>([false, false, false]);
+  const [simulatedDice, setSimulatedDice] = React.useState<number[]>([3, 5]);
+  const [earnedBadges, setEarnedBadges] = React.useState<string[]>([]);
+  const [gameMessage, setGameMessage] = React.useState<string>('Your orientation start-board is ready. Roll the dice to trace paths!');
+  const [diceRolling, setDiceRolling] = React.useState(false);
 
   const features = [
     { 
@@ -152,11 +162,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[#0a3161]/10 to-transparent"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            {isMyCampus || isWalkForPlastic ? (
+            {isMyCampus || isWalkForPlastic || isPathwaysBadgeQuest ? (
               <motion.img 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                src={isMyCampus ? "https://i.imgur.com/c0I7bGQ.png" : "https://i.imgur.com/CzQIxXs.png"} 
+                src={isMyCampus ? "https://i.imgur.com/c0I7bGQ.png" : isWalkForPlastic ? "https://i.imgur.com/CzQIxXs.png" : "https://i.imgur.com/GEbH2tS.png"} 
                 alt={`${project.title} Hero`} 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -176,18 +186,36 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
         </motion.div>
 
         {/* Meta Grid */}
-        <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-y border-zinc-100 bg-white">
+        <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 py-4 bg-white">
           {[
             { label: 'Role', value: project.role || 'UX / UI Lead Designer' },
             { label: 'Platform', value: project.platform || 'Mobile (iOS/Android)' },
             { label: 'Duration', value: project.duration || '3 Months' },
-            { label: 'Tools', value: project.tools || 'Figma, Prototyping' }
-          ].map((item, i) => (
-            <div key={i} className="space-y-1">
-              <h4 className="text-zinc-400 text-[8px] font-bold uppercase tracking-[0.3em]">{item.label}</h4>
-              <p className="text-sm font-bold">{item.value}</p>
-            </div>
-          ))}
+            { 
+              label: isPathwaysBadgeQuest ? 'Impact' : 'Tools', 
+              value: isPathwaysBadgeQuest ? 'Orientation Pilot' : (project.tools || 'Figma, Prototyping') 
+            }
+          ].map((item, i) => {
+            const isImpact = item.label === 'Impact';
+            const bgClass = isImpact 
+              ? "bg-[#5a8c69]/5 border-[#5a8c69]/20" 
+              : "bg-[#fafafa] border-zinc-100";
+            const textLabelClass = isImpact 
+              ? "text-[#5a8c69]" 
+              : "text-zinc-400";
+            const textValueClass = isImpact 
+              ? "text-[#5a8c69]" 
+              : "text-zinc-800";
+            return (
+              <div 
+                key={i} 
+                className={`${bgClass} p-5 rounded-2xl border flex flex-col justify-between min-h-[90px] shadow-sm`}
+              >
+                <h4 className={`${textLabelClass} text-[10px] font-bold uppercase tracking-[0.2em]`}>{item.label}</h4>
+                <p className={`${textValueClass} text-sm font-bold mt-2`}>{item.value}</p>
+              </div>
+            );
+          })}
         </div>
       </header>
 
@@ -231,11 +259,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03. Problem Statement</span>
               </div>
-              <div className="bg-green-600 text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
+              <div className="bg-[#5a8c69] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full"></div>
                 <div className="relative z-10 space-y-4">
                   <div className="space-y-2">
-                    <svg className="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM5.01697 21L5.01697 18C5.01697 16.8954 5.91241 16 7.01697 16H10.017C11.1215 16 12.017 16.8954 12.017 18V21C12.017 22.1046 11.1215 23 10.017 23H7.01697C5.91241 23 5.01697 22.1046 5.01697 21ZM14.017 11L14.017 8C14.017 6.89543 14.9124 6 16.017 6H19.017C20.1216 6 21.017 6.89543 21.017 8V11C21.017 12.1046 20.1216 13 19.017 13H16.017C14.9124 13 14.017 12.1046 14.017 11ZM5.01697 11L5.01697 8C5.01697 6.89543 5.91241 6 7.01697 6H10.017C11.1215 16 12.017 6.89543 12.017 8V11C12.017 12.1046 11.1215 13 10.017 13H7.01697C5.91241 13 5.01697 12.1046 5.01697 11Z" />
                     </svg>
                   </div>
@@ -602,7 +630,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         className="space-y-8"
                       >
                         <div className="flex items-center gap-6">
-                          <span className="text-6xl font-black text-[#0a3161]/5 tracking-tighter tabular-nums">{features[activeIndex].num}</span>
+                          <span className="text-6xl font-black text-[#0a3161] tracking-tighter tabular-nums">{features[activeIndex].num}</span>
                           <div className="h-[1px] w-24 bg-zinc-100"></div>
                         </div>
                         <div className="space-y-4">
@@ -784,13 +812,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               className="space-y-6"
             >
                <div className="space-y-2">
-                 <span className="text-[#b31942] font-bold text-xs tracking-widest uppercase">03. The Core Problem</span>
+                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03. The Core Problem</span>
                </div>
-               <div className="bg-green-600 text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
+               <div className="bg-[#b31942] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
                   <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 blur-[100px] rounded-full"></div>
                   <div className="relative z-10 space-y-4">
                     <div className="space-y-2">
-                      <svg className="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM5.01697 21L5.01697 18C5.01697 16.8954 5.91241 16 7.01697 16H10.017C11.1215 16 12.017 16.8954 12.017 18V21C12.017 22.1046 11.1215 23 10.017 23H7.01697C5.91241 23 5.01697 22.1046 5.01697 21ZM14.017 11L14.017 8C14.017 6.89543 14.9124 6 16.017 6H19.017C20.1216 6 21.017 6.89543 21.017 8V11C21.017 12.1046 20.1216 13 19.017 13H16.017C14.9124 13 14.017 12.1046 14.017 11ZM5.01697 11L5.01697 8C5.01697 6.89543 5.91241 6 7.01697 6H10.017C11.1215 16 12.017 6.89543 12.017 8V11C12.017 12.1046 11.1215 13 10.017 13H7.01697C5.91241 13 5.01697 12.1046 5.01697 11Z" />
                       </svg>
                     </div>
@@ -1076,7 +1104,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </p>
                     <div className="flex flex-wrap gap-2 mt-4 items-start">
                       <div className="bg-[#0a3161]/5 p-4 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm w-fit">"Did it go through?"</div>
-                      <div className="bg-[#0a3161]/5 p-4 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm whitespace-nowrap">"One participant instinctively tapped the button a second time."</div>
+                      <div className="bg-[#0a3161]/5 p-4 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm whitespace-normal md:whitespace-nowrap">"One participant instinctively tapped the button a second time."</div>
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This revealed a gap in immediate system feedback — the booking completed, but the interface gave no visible signal that it had.</p>
                   </div>
@@ -1095,6 +1123,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           alt="1. Profile" 
                           className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
                           referrerPolicy="no-referrer"
+                          onError={(e) => handleImageError(e, "1. Profile")}
                         />
                       </div>
                     </div>
@@ -1108,6 +1137,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           alt="2. Selection" 
                           className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
                           referrerPolicy="no-referrer"
+                          onError={(e) => handleImageError(e, "2. Selection")}
                         />
                       </div>
                     </div>
@@ -1121,6 +1151,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           alt="3. Confirmation" 
                           className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
                           referrerPolicy="no-referrer"
+                          onError={(e) => handleImageError(e, "3. Confirmation")}
                         />
                       </div>
                     </div>
@@ -1146,7 +1177,9 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <p className="text-zinc-600 font-medium text-xs">A small piece of feedback eliminated a significant source of confusion.</p>
                 </div>
               </motion.div>
-            </section>            <section className="space-y-8 py-5">
+            </section>
+
+            <section className="space-y-8 py-5">
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">06. The Outcome</span>
                 <h2 className="text-3xl font-bold tracking-tight">Impact & Result</h2>
@@ -1211,7 +1244,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                    { t: "Social Discovery", d: "Allowing students to form groups within academic events directly." }
                  ].map((step, i) => (
                    <div key={i} className="p-5 border border-zinc-100 rounded-xl flex items-start gap-3 hover:border-[#0a3161]/20 transition-colors">
-                      <span className="w-7 h-7 rounded-full bg-zinc-50 flex items-center justify-center font-bold text-[#0a3161] shrink-0 text-xs">{i+1}</span>
+                      <span className="w-7 h-7 rounded-full bg-[#0a3161] flex items-center justify-center font-bold text-white shrink-0 text-xs">{i+1}</span>
                       <div className="space-y-1">
                          <h5 className="font-bold text-sm">{step.t}</h5>
                          <p className="text-[10px] text-zinc-500 leading-relaxed font-light">{step.d}</p>
@@ -1223,7 +1256,1070 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
           </>
         )}
 
-        {!isMyCampus && !isWalkForPlastic && (
+        {isPathwaysBadgeQuest && (
+          <>
+            {/* The Story Arc Summary */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="space-y-6 pt-4"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">The Story Arc</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 border border-zinc-100 rounded-[32px] overflow-hidden bg-[#fafafa]">
+                {[
+                  { label: 'HERO', val: 'The student, lost mid-journey', icon: User, clr: 'text-[#0a3161] bg-[#0a3161]/5' },
+                  { label: 'PROBLEM', val: 'No clarity, no momentum', icon: AlertTriangle, clr: 'text-[#b31942] bg-[#b31942]/5' },
+                  { label: 'TOOL', val: 'A game that makes it real', icon: Gamepad2, clr: 'text-[#5a8c69] bg-[#5a8c69]/5' },
+                  { label: 'RESOLUTION', val: 'Progress feels earned', icon: Trophy, clr: 'text-amber-600 bg-amber-50/5' }
+                ].map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={i} className="p-6 md:p-8 flex flex-col items-center text-center space-y-3 border-r border-b md:border-b-0 last:border-r-0 border-zinc-100">
+                      <div className={`p-3 rounded-2xl ${item.clr}`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase">{item.label}</span>
+                        <p className="text-xs md:text-sm font-medium text-zinc-800 leading-tight">{item.val}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.section>
+
+               {/* My Role Section */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">Design Ownership</span>
+              </div>
+              <h3 className="text-2xl font-extrabold text-zinc-900">
+                My Contribution & Ownership
+              </h3>
+              <p className="text-base text-zinc-600 leading-relaxed font-light">
+                This was a collaborative team project. Working alongside teammates and a faculty advisor, I was responsible for the game board layout, card component system, badge visual design, and the complete Figma execution. I also designed the mobile-first direction we explored before committing to the game, contributed to gameplay mechanics, participated in usability reviews, and presented the final designs to faculty stakeholders.
+              </p>
+            </motion.section>
+
+            {/* 01. Opening */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">01 — THE STARTING POINT</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                A student who started, but never finished
+              </h3>
+              <div className="space-y-4 text-base text-zinc-600 leading-relaxed font-light">
+                <p>
+                  Every semester, students at Iowa State's College of Agriculture and Life Sciences enrolled in the Pathways to Innovation and Leadership program — a micro-credential track designed to build real career skills alongside their degree.
+                </p>
+                <p>
+                  They showed up. They started. And then, quietly, <span className="text-[#b31942] font-semibold">most of them stopped</span>.
+                </p>
+                <p>
+                  Not because the program was bad. Not because they stopped caring about their careers. But because somewhere between enrolling and finishing, the path disappeared. No clear next step. No sense of how far they'd come. No feeling that it was worth pushing through to the end.
+                </p>
+                <p>
+                  Our team was brought in to answer one question: why were students starting the Pathways program but not completing it — and what would it take to change that?
+                </p>
+              </div>
+
+              {/* Quote Block */}
+              <div className="p-8 border-l-4 border-[#b31942] bg-[#b31942]/5 rounded-r-[28px] my-6">
+                <p className="text-lg italic font-medium text-zinc-805 leading-relaxed">
+                  "I felt like the requirements for how to earn the badges were slightly confusing. I wasn't always sure what I needed to do outside of the workshop."
+                </p>
+                <cite className="block mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 not-italic">
+                  — CALS Pathways student
+                </cite>
+              </div>
+
+              <div className="text-base text-zinc-600 leading-relaxed font-light">
+                <p>
+                  That one quote said everything. The student was willing — they just couldn't see where to go next.
+                </p>
+              </div>
+            </motion.section>
+
+            {/* 02. Understanding the Challenge */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">02 — UNDERSTANDING THE CHALLENGE</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                The experience felt like paperwork, not progress
+              </h3>
+              <p className="text-base text-zinc-600 leading-relaxed font-light">
+                Before designing anything, we needed to understand what dropping off actually felt like. Working with faculty who knew the program deeply, two core pain points surfaced clearly:
+              </p>
+
+              {/* Grid Cards for Pains */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div className="bg-red-50/20 p-8 rounded-[32px] border border-red-100 flex flex-col space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-red-100/60 font-mono text-[10px] uppercase font-bold text-[#b31942]">PAIN 1 — NO VISIBLE PATH FORWARD</span>
+                  </div>
+                  <p className="text-sm font-light text-zinc-600 leading-relaxed">
+                    Students couldn't see what they had completed or what came next. The credential system existed, but it wasn't visible in a way that created momentum. Progress was happening invisibly — and invisible progress feels like no progress at all.
+                  </p>
+                </div>
+
+                <div className="bg-red-50/20 p-8 rounded-[32px] border border-red-100 flex flex-col space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-red-100/60 font-mono text-[10px] uppercase font-bold text-[#b31942]">PAIN 2 — DISCONNECTED ACTIVITIES</span>
+                  </div>
+                  <p className="text-sm font-light text-zinc-600 leading-relaxed">
+                    Completing a workshop didn't feel like it led anywhere meaningful. Each activity existed in isolation. There was no felt sense of how individual steps connected to a larger career outcome or a final goal worth working toward.
+                  </p>
+                </div>
+              </div>
+
+            </motion.section>
+
+            {/* 03. Exploring Engagement Models */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">03 — EXPLORING ENGAGEMENT MODELS</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                Two directions, one real decision
+              </h3>
+              <p className="text-base text-zinc-600 leading-relaxed font-light">
+                The team didn't start with a game. We started with a question: what does it actually take to make progress feel real? I explored two distinct directions before committing to a final solution.
+              </p>
+
+              {/* Side-by-Side Direction Showcase for Immediate Contrast */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 my-8">
+                {/* DIRECTION A CARD */}
+                <div className="flex flex-col bg-[#fafafa] p-6 md:p-8 rounded-[36px] border border-zinc-150/60 justify-between group hover:border-[#0a3161]/30 hover:shadow-[0_24px_48px_-15px_rgba(10,49,97,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                  <div className="space-y-4">
+                    <span className="inline-block px-3.5 py-1.5 rounded-full bg-zinc-200/60 font-mono text-[11px] md:text-xs uppercase font-bold text-zinc-700 tracking-wider">DIRECTION A · MOBILE CREDENTIAL TRACKER</span>
+                    <p className="text-sm font-light text-zinc-650 leading-relaxed">
+                      My initial concept focused on a mobile-first experience where students could track completed activities, monitor credential progress, and view earned badges in one place. The concept emphasized accessibility and visibility — giving students a way to understand their progress and revisit the program beyond orientation.
+                    </p>
+                  </div>
+
+                  {/* IMAGE 1 OF 9: Figma Mobile Tracker Design */}
+                  <div className="mt-6 relative rounded-[28px] overflow-hidden border border-zinc-150 bg-white p-2.5">
+                    <div className="rounded-[18px] overflow-hidden bg-zinc-50 relative aspect-[4/3] flex items-center justify-center">
+                      <img 
+                        src="https://i.imgur.com/pFE5eWI.png" 
+                        alt="Direction A — Mobile Credential Tracker Figma design" 
+                        className="w-full h-full object-cover block group-hover:scale-[1.015] transition-transform duration-[1200ms]"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-4 text-white pt-12">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[8px] font-mono tracking-widest uppercase text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/20">Figma Design</span>
+                            <h4 className="text-[10px] font-bold tracking-tight mt-1 text-white">Direction A — Mobile Tracker</h4>
+                          </div>
+                          <span className="text-[8px] bg-zinc-900/90 px-2 py-0.5 rounded font-mono text-zinc-350">IMAGE 1 OF 9</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DIRECTION B CARD */}
+                <div className="flex flex-col bg-[#fafafa] p-6 md:p-8 rounded-[36px] border border-zinc-150/60 justify-between group hover:border-[#5a8c69]/30 hover:shadow-[0_24px_48px_-15px_rgba(90,140,105,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                  <div className="space-y-4">
+                    <span className="inline-block px-3.5 py-1.5 rounded-full bg-[#5a8c69]/10 font-mono text-[11px] md:text-xs uppercase font-bold text-[#5a8c69] tracking-wider">DIRECTION B · PHYSICAL BOARD GAME</span>
+                    <p className="text-sm font-light text-zinc-650 leading-relaxed">
+                      At the same time, the team explored a physical game experience designed specifically for orientation sessions. Unlike a mobile experience, the board game encouraged discussion, collaboration, and active participation among students. My role focused on translating the concept into an interactive system through the initial board layout, card structure, progression flow, and visual design.
+                    </p>
+                  </div>
+
+                  {/* IMAGE 2 OF 9: Figma Board Overview Image */}
+                  <div className="mt-6 relative rounded-[28px] overflow-hidden border border-zinc-150 bg-white p-2.5">
+                    <div className="rounded-[18px] overflow-hidden bg-zinc-50 relative aspect-[4/3] flex items-center justify-center">
+                      <img 
+                        src="https://i.imgur.com/hqyTV4t.png" 
+                        alt="Direction B — Physical Board Game Figma layout design" 
+                        className="w-full h-full object-cover block group-hover:scale-[1.015] transition-transform duration-[1200ms]"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-4 text-white pt-12">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[8px] font-mono tracking-widest uppercase text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded border border-yellow-400/20">Figma Design</span>
+                            <h4 className="text-[10px] font-bold tracking-tight mt-1 text-white">Direction B — Physical Board</h4>
+                          </div>
+                          <span className="text-[8px] bg-zinc-900/90 px-2 py-0.5 rounded font-mono text-zinc-350">IMAGE 2 OF 9</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Choosing the Right Experience Rationale Text */}
+              <div className="space-y-4 text-base text-zinc-600 leading-relaxed font-light pt-4 border-t border-zinc-100">
+                <h4 className="text-lg font-bold text-zinc-900">Choosing the Right Experience</h4>
+                <p>
+                  After reviewing both directions with faculty stakeholders, the team chose the physical game. Orientation is fundamentally a social environment — the game encouraged participation and shared learning in ways a digital solution could not.
+                </p>
+                <p>
+                  The mobile direction wasn't wasted work — it's what made the decision rigorous. Stakeholders chose the game because they compared it to a real alternative, not because it was the only idea on the table.
+                </p>
+              </div>
+            </motion.section>
+
+            {/* 04. Designing the Game */}
+            <motion.section 
+              initial={{ opacity: 0, scale: 0.98, y: 15 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">04 — DESIGNING THE GAME</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                What we built
+              </h3>
+              
+              <div className="space-y-4 text-base text-zinc-600 leading-relaxed font-light">
+                <p className="text-sm font-semibold text-zinc-800">
+                  Designing for the constraints of a rapid-paced orientation room meant every physical card, token slot, and pathway had to be incredibly clear and comprehensible in under 3 minutes.
+                </p>
+                <p>
+                  <strong>What the game is:</strong> Pathways Badge Quest is a physical board game for 1–4 players. Students race to complete real micro-credential activities, earn badges across five career categories, and work toward a final completion badge. Players take turns placing cards and drafting dice — each round different from the last. The game mirrors the actual Pathways program structure, making the credential journey feel like a challenge worth finishing. It plays in 20–45 minutes.
+                </p>
+              </div>
+
+              {/* IMAGE 3 OF 9 / IMAGE 9 OF 9 Physical Gameplay Image Replaces Interactive Simulation */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="my-10"
+              >
+                <div className="relative group rounded-[40px] overflow-hidden border border-zinc-200/80 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] bg-white p-3">
+                  <div className="rounded-[32px] overflow-hidden bg-zinc-50 aspect-[4/3] relative">
+                    <img 
+                      src="https://i.imgur.com/GEbH2tS.png" 
+                      alt="Pathways Badge Quest physical board game layout being played on standard red round table" 
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1200ms]"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent p-6 md:p-8 text-white">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] font-mono tracking-widest uppercase text-yellow-400 font-bold bg-yellow-400/10 px-2.5 py-0.5 rounded border border-yellow-400/20">Deployed Photo</span>
+                        <span className="text-xs text-zinc-300 font-mono">Summer 2025 · Iowa State University CALS</span>
+                      </div>
+                      <h4 className="text-xl md:text-2xl font-black tracking-tight">A Physical Game Board</h4>
+                      <p className="text-sm text-zinc-200 mt-2 font-light max-w-3xl leading-relaxed">
+                        An active engagement model that mirrors reality. Two identical player maps sit side-by-side with custom career tracks, printed category cards, custom dice, and tokens.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-400 italic text-center mt-3">
+                  "Pathways Badge Quest deployed at Iowa State University CALS orientation. Red-table active gameplay layouts, custom tokens, and progress cards in perfect alignment."
+                </p>
+              </motion.div>
+
+              {/* Complete Visual System Component */}
+              <div className="pt-8 space-y-4">
+                <h4 className="text-xl font-bold text-zinc-900">The Complete Visual System</h4>
+                <p className="text-base text-zinc-600 leading-relaxed font-light">
+                  Five credential categories, one cohesive visual system. Each category has its own color, badge illustration, and card identity — designed to be instantly recognizable during active gameplay without reading a label.
+                </p>
+
+                {/* Visual System Mockup Cards (Image 4 of 9) */}
+                <div className="relative group rounded-[40px] overflow-hidden border border-zinc-200/80 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] bg-white p-3">
+                  <div className="rounded-[32px] overflow-hidden bg-zinc-50 relative">
+                    <img 
+                      src="https://i.imgur.com/VW0rqMm.png" 
+                      alt="The Complete Visual System - Component details, player cards, pathways, and badge frames" 
+                      className="w-full h-auto block group-hover:scale-[1.01] transition-transform duration-[1200ms]"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-6 md:p-8 text-white pt-20">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono tracking-widest uppercase text-yellow-400 font-bold bg-yellow-400/10 px-2.5 py-0.5 rounded border border-yellow-400/20">Figma Component System</span>
+                          <h4 className="text-lg md:text-xl font-bold tracking-tight mt-2">The Deployed Card Components System</h4>
+                        </div>
+                        <span className="text-xs bg-zinc-800/80 px-2.5 py-1 rounded-full font-mono text-zinc-300">IMAGE 4 OF 9</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Visual System Caption explicitly defined */}
+                <p className="text-xs text-zinc-400 italic text-center mt-2 max-w-2xl mx-auto leading-relaxed">
+                  "Five credential categories, one cohesive visual system. Each category has its own color, badge illustration, and card identity — designed to be instantly recognizable during active gameplay without reading a label."
+                </p>
+              </div>
+            </motion.section>
+
+            {/* 05. How the Design Evolved */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">05 — HOW THE DESIGN EVOLVED</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                From sketch to deployed design
+              </h3>
+              <p className="text-base text-zinc-600 leading-relaxed font-light">
+                Good design rarely arrives fully formed. Here is the card evolution from first sketch to final deployed version — and the thinking behind each change.
+              </p>
+
+              {/* Four Evolution Steps Visualizer */}
+              <div className="space-y-12 pt-6">
+                
+                {/* Step 1 */}
+                <div className="border border-zinc-100 rounded-[32px] p-8 md:p-10 bg-[#fafafa] space-y-6">
+                  <div className="flex justify-between items-center border-b border-zinc-200/60 pb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-zinc-800 text-white font-mono text-xs flex items-center justify-center font-bold">1</span>
+                      <h4 className="text-sm font-bold text-zinc-800">Step 1 — Thinking on Paper</h4>
+                    </div>
+                    <span className="text-[9px] bg-zinc-200/80 text-zinc-650 font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">Sketches Stage</span>
+                  </div>
+                  
+                  <div className="space-y-8">
+                    <div className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full max-w-4xl mx-auto">
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        whileHover={{ y: -8, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
+                        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                        className="relative rounded-[28px] overflow-hidden border border-zinc-200/80 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.08)] bg-white p-3 cursor-pointer w-full sm:w-[48%] max-w-[380px]"
+                      >
+                        <div className="rounded-[20px] overflow-hidden bg-zinc-50 relative">
+                          <img 
+                            src="https://i.imgur.com/dpG2gxm.png" 
+                            alt="Step 1 — Thinking on Paper sketches layout 1" 
+                            className="w-full h-auto block object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="mt-2 text-center text-[10px] text-zinc-400 font-mono">Sketch Sheet A</div>
+                      </motion.div>
+
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        whileHover={{ y: -8, scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
+                        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                        className="relative rounded-[28px] overflow-hidden border border-zinc-200/80 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.08)] bg-white p-3 cursor-pointer w-full sm:w-[48%] max-w-[380px]"
+                      >
+                        <div className="rounded-[20px] overflow-hidden bg-zinc-50 relative">
+                          <img 
+                            src="https://i.imgur.com/atT5NTf.png" 
+                            alt="Step 1 — Thinking on Paper sketches layout 2" 
+                            className="w-full h-auto block object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="mt-2 text-center text-[10px] text-zinc-400 font-mono">Sketch Sheet B</div>
+                      </motion.div>
+                    </div>
+                    
+                    <div className="max-w-3xl mx-auto space-y-4 text-sm text-zinc-650 font-light leading-relaxed border-t border-zinc-200/50 pt-6">
+                      <p>
+                        The sketches show both card states in one drawing — the front with the shield badge and reflection question, and the back (playing side) with three dice icons and task rows.
+                      </p>
+                      <p>
+                        The core structure was established here. What changed from sketch to final was not the concept — it was the execution, the sizing, and one important mechanical problem discovered through testing.
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-4 font-mono">
+                        Hand-drawn sketches — card front and playing mat layout, before opening Figma.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="border border-zinc-100 rounded-[32px] p-8 md:p-10 bg-[#fafafa] space-y-6">
+                  <div className="flex justify-between items-center border-b border-zinc-200/60 pb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-zinc-800 text-white font-mono text-xs flex items-center justify-center font-bold">2</span>
+                      <h4 className="text-sm font-bold text-zinc-800">Step 2 — First Figma Version</h4>
+                    </div>
+                    <span className="text-[9px] bg-zinc-200/80 text-zinc-650 font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">Figma V1</span>
+                  </div>
+
+                  <div className="space-y-8">
+                    <div className="flex justify-center w-full max-w-2xl mx-auto">
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        whileHover={{ y: -8, scale: 1.025, boxShadow: "0 30px 60px -15px rgba(0,0,0,0.18)" }}
+                        transition={{ type: "spring", stiffness: 280, damping: 20 }}
+                        className="relative rounded-[32px] overflow-hidden border border-zinc-200/80 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] bg-white p-3 cursor-pointer w-full"
+                      >
+                        <div className="rounded-[24px] overflow-hidden bg-zinc-50 relative">
+                          <img 
+                            src="https://i.imgur.com/VWkSdIs.png" 
+                            alt="Step 2 — First Figma Version" 
+                            className="w-full h-auto block object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="absolute top-5 right-5 bg-zinc-900/90 text-white text-[8px] font-mono tracking-widest px-2.5 py-1 rounded border border-zinc-700/50">DRAFT OUTLINE</div>
+                      </motion.div>
+                    </div>
+
+                    <div className="max-w-3xl mx-auto space-y-4 text-sm text-zinc-650 font-light leading-relaxed border-t border-zinc-200/50 pt-6">
+                      <p>
+                        The first Figma version translated the sketch into a digital structure. The dice icons were large and dominant, the header was a flat colored bar, and the card carried a lot of text.
+                      </p>
+                      <p>
+                        When we tested this version, players were looking down at the card too long — reading it instead of playing. That pause broke the flow of the game.
+                      </p>
+                      <p>
+                        The redesign was about reducing cognitive load. A player shouldn't have to study a card during their turn. They should glance at it and know exactly what to do.
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-4 font-mono">
+                        First Figma version — large dice icons, placeholder text, flat header bar. Players read this too slowly during testing.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="border border-zinc-100 rounded-[32px] p-8 md:p-10 bg-[#fafafa] space-y-6">
+                  <div className="flex justify-between items-center border-b border-zinc-200/60 pb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-zinc-800 text-white font-mono text-xs flex items-center justify-center font-bold">3</span>
+                      <h4 className="text-sm font-bold text-zinc-800">Step 3 — Mid Iteration (The Token Breakthrough)</h4>
+                    </div>
+                    <span className="text-[9px] bg-amber-100 text-amber-800 font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">Discovery Stage</span>
+                  </div>
+
+                  <div className="space-y-8">
+                    <div className="max-w-3xl mx-auto space-y-4 text-sm text-zinc-650 font-light leading-relaxed pt-2">
+                      <p>
+                        This is where the token solution appeared. During usability testing with teammates, we hit a problem nobody had seen from looking at a screen alone: placing dice directly onto cards to mark completed activities caused a dice shortage.
+                      </p>
+                      <p>
+                        Once a die was locked on a card, it was unavailable for the next round. By round three, players were waiting — not because they had nothing to do, but because the dice pool had run dry.
+                      </p>
+                      <p>
+                        I suggested replacing the placed dice with star-shaped activity completion tokens. The dice would be drafted, used to confirm which activity they fulfilled, and then returned to the central pile. The token stayed on the card as the marker.
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-4 font-mono">
+                        Mid-iteration — star tokens replacing dice as activity markers. The token solution kept the dice pool live.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 4 */}
+                <div className="border border-zinc-100 rounded-[32px] p-8 md:p-10 bg-[#fafafa] space-y-6">
+                  <div className="flex justify-between items-center border-b border-zinc-200/60 pb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-zinc-850 text-white font-mono text-xs flex items-center justify-center font-bold">4</span>
+                      <h4 className="text-sm font-bold text-zinc-900">Step 4 — Final Deployed Version</h4>
+                    </div>
+                    <span className="text-[9px] bg-[#5a8c69]/10 text-[#5a8c69] font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">FINAL VERSION</span>
+                  </div>
+
+                  <div className="space-y-8">
+                    
+                    <div className="flex flex-col sm:flex-row gap-6 justify-center items-stretch w-full max-w-4xl mx-auto">
+                      {/* Front Card */}
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        whileHover={{ y: -6, scale: 1.015, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
+                        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                        className="relative rounded-[28px] overflow-hidden border border-zinc-200/80 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.08)] bg-white p-3 w-full sm:w-[48%] max-w-[380px]"
+                      >
+                        <div className="rounded-[20px] overflow-hidden bg-zinc-50 relative">
+                          <img 
+                            src="https://i.imgur.com/DnnPkD6.png" 
+                            alt="Step 4 — Final Deployed Version Front" 
+                            className="w-full h-auto block object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      </motion.div>
+
+                      {/* Back Card */}
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        whileHover={{ y: -6, scale: 1.015, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
+                        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                        className="relative rounded-[28px] overflow-hidden border border-zinc-200/80 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.08)] bg-white p-3 w-full sm:w-[48%] max-w-[380px]"
+                      >
+                        <div className="rounded-[20px] overflow-hidden bg-zinc-50 relative">
+                          <img 
+                            src="https://i.imgur.com/hqyTV4t.png" 
+                            alt="Step 4 — Final Deployed Version Back" 
+                            className="w-full h-auto block object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      </motion.div>
+                    </div>
+
+                    <div className="max-w-3xl mx-auto space-y-4 text-sm text-zinc-650 font-light leading-relaxed border-t border-zinc-200/50 pt-6">
+                      <p>
+                        The final card resolved everything: compact dice icons for fast scanning, a wave header replacing the flat bar, a simplified shield badge on the back without the university wordmark, and a reflection question that turns the flip moment into a conversation — not just a reward.
+                      </p>
+                      <p className="text-xs text-zinc-400 mt-4 font-mono">
+                        Final card and Player mat
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* 06. Design Decisions, Examined */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">06 — DESIGN DECISIONS, EXAMINED</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                Three decisions that shaped the game
+              </h3>
+              
+              {/* Detailed Decision Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                {/* Decision 01 */}
+                <div className="group relative bg-[#ffffff] border border-zinc-200/80 rounded-[32px] p-6 lg:p-8 space-y-6 flex flex-col justify-between min-h-[580px] hover:border-amber-350 hover:shadow-[0_24px_48px_-15px_rgba(217,119,6,0.1)] hover:-translate-y-1 transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-amber-600 text-[10px] font-bold tracking-wider bg-amber-50 px-2.5 py-1 rounded-full uppercase">Decision 01</span>
+                      <span className="text-[9px] text-zinc-400 font-mono tracking-widest">TACTILE REVEAL</span>
+                    </div>
+                    
+                    <h4 className="text-xl font-bold text-zinc-900 tracking-tight">The card flip mechanic</h4>
+                    
+                    <ul className="text-sm font-light leading-relaxed text-zinc-650 space-y-4 pl-1">
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Hidden Reveal:</strong> The badge remains hidden on the back until every activity is fully complete.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Completion Mirror:</strong> Flipping the card physically mirrors the program's real-life completion moment.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Tangible Reward:</strong> The visual and tactile act of revealing makes earning feel real, far surpassing a digital checkmark.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* High fidelity interactive flip widget */}
+                  <div className="relative pt-6 border-t border-zinc-100 flex flex-col items-center justify-center">
+                    <span className="text-[9px] font-mono font-bold text-zinc-400 mb-3.5 uppercase tracking-widest flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> Hover card to flip physically
+                    </span>
+                    <div className="w-full max-w-[210px] h-[140px] [perspective:1000px]">
+                      <div className="relative w-full h-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                        {/* Front (Activities & Dice) */}
+                        <div className="absolute inset-0 bg-[#fbfdfb] border border-zinc-200 rounded-2xl p-3 flex flex-col justify-between shadow-sm [backface-visibility:hidden]">
+                          <div className="flex items-center justify-between border-b pb-1.5">
+                            <span className="text-[9px] font-mono font-bold tracking-wider text-zinc-500">PLAYING STATE</span>
+                            <div className="flex gap-1">
+                              <span className="w-2 h-2 bg-amber-500 rounded-full animate-ping absolute" />
+                              <span className="w-2 h-2 bg-amber-500 rounded-full relative" />
+                              <span className="w-2 h-2 bg-zinc-200 rounded-full" />
+                            </div>
+                          </div>
+                          <div className="space-y-1.5 my-auto">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-3.5 h-3.5 bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center text-[8px] font-mono">🎲</span>
+                              <div className="h-1.5 w-24 bg-zinc-200 rounded-full" />
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-3.5 h-3.5 bg-zinc-100 rounded border border-zinc-200 flex items-center justify-center text-[8px] font-mono">🎲</span>
+                              <div className="h-1.5 w-16 bg-zinc-200 rounded-full" />
+                            </div>
+                          </div>
+                          <div className="text-[8px] font-mono text-center text-zinc-400 font-semibold border-t pt-1">
+                            TASKS SIDE (BACK)
+                          </div>
+                        </div>
+                        {/* Back (Shield reveal) */}
+                        <div className="absolute inset-0 bg-zinc-900 text-white rounded-2xl p-3 flex flex-col justify-between shadow-lg [transform:rotateY(180deg)] [backface-visibility:hidden]">
+                          <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5">
+                            <span className="text-[9px] font-mono tracking-wider text-amber-400 font-bold">REVEALED BADGE</span>
+                            <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                          </div>
+                          <div className="flex flex-col items-center justify-center space-y-1.5 my-auto">
+                            <div className="w-7 h-7 bg-amber-500/25 border border-amber-500/50 rounded-full flex items-center justify-center">
+                              <Award className="w-4 h-4 text-amber-400" />
+                            </div>
+                            <span className="text-[8px] font-bold text-amber-100 font-mono tracking-widest">PATHWAYS EARNED</span>
+                          </div>
+                          <div className="text-[8px] font-mono text-center text-zinc-500 border-t border-zinc-800 pt-1">
+                            COMPLETION STATE (FRONT)
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decision 02 */}
+                <div className="group relative bg-[#ffffff] border border-zinc-200/80 rounded-[32px] p-6 lg:p-8 space-y-6 flex flex-col justify-between min-h-[580px] hover:border-teal-350 hover:shadow-[0_24px_48px_-15px_rgba(20,184,166,0.1)] hover:-translate-y-1 transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-teal-600 text-[10px] font-bold tracking-wider bg-teal-50 px-2.5 py-1 rounded-full uppercase">Decision 02</span>
+                      <span className="text-[9px] text-zinc-400 font-mono tracking-widest">WAYFINDING</span>
+                    </div>
+                    
+                    <h4 className="text-xl font-bold text-zinc-900 tracking-tight">Color-coded categories</h4>
+                    
+                    <ul className="text-sm font-light leading-relaxed text-zinc-650 space-y-4 pl-1">
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Instant Recognition:</strong> Five distinct color-coded categories allow fast recognition across the board without reading labels.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Wayfinding Focus:</strong> Enables students to focus on competing and participating during fast-paced, high-volume sessions.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Proven Speed:</strong> Playtesting confirmed players could accurately identify their target category in under a second.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* High fidelity spectrum layout */}
+                  <div className="space-y-3 pt-6 border-t border-zinc-100">
+                    <span className="text-[9px] font-mono font-bold text-zinc-400 block uppercase tracking-widest text-center">
+                      Wayfinding Color Spectrum Palette
+                    </span>
+                    <div className="grid grid-cols-5 gap-2">
+                      {[
+                        { color: "bg-[#8c1d40]", name: "Mock" },
+                        { color: "bg-[#00a3b1]", name: "Innov." },
+                        { color: "bg-[#5c4d9e]", name: "Leader." },
+                        { color: "bg-[#ffb500]", name: "Plan." },
+                        { color: "bg-[#5a8c69]", name: "Hands" }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex flex-col items-center gap-1.5 group-hover:scale-105 transition-transform duration-300">
+                          <div className={`w-full h-11 ${item.color} rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.06)] border border-white/20 flex items-center justify-center p-1`}>
+                            <Award className="w-4 h-4 text-white/9 priced-model-glow" />
+                          </div>
+                          <span className="text-[8px] font-mono text-zinc-500 tracking-wider font-bold uppercase truncate max-w-full">
+                            {item.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decision 03 */}
+                <div className="group relative bg-[#ffffff] border border-zinc-200/80 rounded-[32px] p-6 lg:p-8 space-y-6 flex flex-col justify-between min-h-[580px] hover:border-indigo-350 hover:shadow-[0_24px_48px_-15px_rgba(79,70,229,0.1)] hover:-translate-y-1 transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-indigo-600 text-[10px] font-bold tracking-wider bg-indigo-50 px-2.5 py-1 rounded-full uppercase">Decision 03</span>
+                      <span className="text-[9px] text-zinc-400 font-mono tracking-widest">TOKEN SYSTEM</span>
+                    </div>
+                    
+                    <h4 className="text-xl font-bold text-zinc-900 tracking-tight">Tokens instead of dice as markers</h4>
+                    
+                    <ul className="text-sm font-light leading-relaxed text-zinc-650 space-y-4 pl-1">
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Paper vs. Practice:</strong> Utilizing dice both to draft and mark felt simple theoretically but caused severe table shortages.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Decoupled Mechanics:</strong> Separating activity completion from rolling decoupled game mechanics to keep the dice pool alive.
+                        </span>
+                      </li>
+                      <li className="flex gap-2.5 items-start">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                        <span className="text-zinc-600">
+                          <strong className="text-zinc-900 font-bold font-mono text-[13px] block">Testing-Driven:</strong> Reached this solution only by physically playtesting and observing player hand-movements at the table.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* High fidelity comparison widget */}
+                  <div className="pt-6 border-t border-zinc-100 flex flex-col gap-3">
+                    <span className="text-[9px] font-mono font-bold text-zinc-400 block uppercase tracking-widest text-center">
+                      Mechanics Decoupling Architecture
+                    </span>
+                    <div className="flex items-center justify-between gap-3 bg-zinc-50 rounded-2xl p-3 border border-zinc-150/60 font-mono text-[9px] text-zinc-500">
+                      <div className="text-center flex-1 py-2.5 bg-white border border-rose-100 rounded-xl shadow-2xs group-hover:scale-[1.02] transition-transform duration-300">
+                        <div className="text-lg mb-1">🎲</div>
+                        <span className="text-rose-600 font-bold block">1. ROLL &amp; DRAFT</span>
+                        <span className="text-[7.5px] text-zinc-400 block scale-[0.95] mt-0.5">Pool-Constrained</span>
+                      </div>
+                      <div className="text-zinc-300 font-black text-xs animate-pulse">➔</div>
+                      <div className="text-center flex-1 py-2.5 bg-white border border-emerald-100 rounded-xl shadow-2xs group-hover:scale-[1.02] transition-transform duration-300">
+                        <div className="text-base mb-1">🪙</div>
+                        <span className="text-emerald-700 font-bold block">2. MARK &amp; WORK</span>
+                        <span className="text-[7.5px] text-zinc-400 block scale-[0.95] mt-0.5">Unlimited Tokens</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* 07. What Was Mine, What Was Ours */}
+            <motion.section 
+              initial={{ opacity: 0, scale: 0.98, y: 15 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">07 — RESPONSIBILITY MAPPING</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                What was mine, what was ours
+              </h3>
+              
+              {/* Modern Grid-Based Responsibility Mapping Dashboard */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                {/* Column: I Owned Independently */}
+                <div className="bg-gradient-to-b from-[#f9fafb] to-white border border-zinc-200/80 rounded-[36px] p-6 md:p-8 space-y-6 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.06)] hover:border-emerald-200 transition-all duration-300">
+                  <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-emerald-50 rounded-2xl border border-emerald-150/50 flex items-center justify-center">
+                        <User className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <span className="font-mono text-emerald-600 text-[10px] font-black tracking-wider uppercase bg-emerald-50 px-2 py-0.5 rounded-md">INDEPENDENT</span>
+                        <h4 className="text-lg font-bold text-zinc-900 mt-0.5">What I owned independently</h4>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider">6 ITEMS</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {[
+                      {
+                        title: "Game board layout",
+                        text: "Initial paper sketching and absolute vector layout execution in Figma.",
+                        icon: Gamepad2,
+                        col: "text-emerald-500 bg-emerald-50 border-emerald-100/50"
+                      },
+                      {
+                        title: "Card component system",
+                        text: "Designed both front & back states, fine-tuned text leading and implemented wave headers.",
+                        icon: Layers,
+                        col: "text-blue-500 bg-blue-50 border-blue-100/50"
+                      },
+                      {
+                        title: "Badge design tracks",
+                        text: "Visual styling and iconography for all 5 micro-credential paths.",
+                        icon: Award,
+                        col: "text-amber-500 bg-amber-50 border-amber-100/50"
+                      },
+                      {
+                        title: "Mobile Tracker direction",
+                        text: "Researched user needs, mapped progress levels, and designed high-fidelity Figma user interfaces.",
+                        icon: Smartphone,
+                        col: "text-teal-500 bg-teal-50 border-teal-100/50"
+                      },
+                      {
+                        title: "The Token marker breakthrough",
+                        text: "Pinpointed the critical dice shortage bug during group testing and initiated star markers as its resolution.",
+                        icon: Sparkles,
+                        col: "text-indigo-500 bg-indigo-50 border-indigo-100/50"
+                      },
+                      {
+                        title: "Figma Design System",
+                        text: "Organized the shared workspace's typography hierarchy, components, and variables guidelines.",
+                        icon: FileText,
+                        col: "text-purple-500 bg-purple-50 border-purple-100/50"
+                      }
+                    ].map((item, idx) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <div key={idx} className="group/item flex gap-4 p-4 rounded-2xl bg-white border border-zinc-150/60 hover:border-zinc-300 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.03)] hover:-translate-x-0.5 transition-all duration-200 font-sans">
+                          <div className={`p-2.5 rounded-xl border shrink-0 h-10 w-10 flex items-center justify-center ${item.col}`}>
+                            <IconComponent className="w-5 h-5" />
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs font-bold text-zinc-900 group-hover/item:text-emerald-600 transition-colors duration-150 block">{item.title}</span>
+                            <p className="text-xs font-light text-zinc-500 leading-relaxed">{item.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Column: What We Did Together */}
+                <div className="bg-gradient-to-b from-[#f9fafb] to-white border border-zinc-200/80 rounded-[36px] p-6 md:p-8 space-y-6 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.06)] hover:border-indigo-200 transition-all duration-300">
+                  <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-indigo-50 rounded-2xl border border-indigo-150/50 flex items-center justify-center">
+                        <Users className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <span className="font-mono text-indigo-600 text-[10px] font-black tracking-wider uppercase bg-indigo-50 px-2 py-0.5 rounded-md">JOINT SYSTEM</span>
+                        <h4 className="text-lg font-bold text-zinc-900 mt-0.5">What we did together</h4>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider">3 ITEMS</span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {[
+                      {
+                        title: "Game format concept",
+                        text: "Defined initial play parameters, presentation goals and roadmap direction with the College of Agriculture and Life Sciences advisor.",
+                        icon: Lightbulb,
+                        col: "text-indigo-500 bg-indigo-50 border-indigo-100/50"
+                      },
+                      {
+                        title: "Dice-drafting mechanics",
+                        text: "Formulated dice distribution mapping rules, drafting variability, and table mechanics during joint active sessions.",
+                        icon: TrendingUp,
+                        col: "text-rose-500 bg-rose-50 border-rose-100/50"
+                      },
+                      {
+                        title: "Usability testing & feedback",
+                        text: "Ran co-active testing groups, gathered students' mental reaction states, and calibrated rule thresholds.",
+                        icon: CheckCircle,
+                        col: "text-sky-500 bg-sky-50 border-sky-100/50"
+                      }
+                    ].map((item, idx) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <div key={idx} className="group/item flex gap-4 p-4 rounded-2xl bg-white border border-zinc-150/60 hover:border-zinc-300 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.03)] hover:-translate-x-0.5 transition-all duration-200 font-sans">
+                          <div className={`p-2.5 rounded-xl border shrink-0 h-10 w-10 flex items-center justify-center ${item.col}`}>
+                            <IconComponent className="w-5 h-5" />
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs font-bold text-zinc-900 group-hover/item:text-indigo-600 transition-colors duration-150 block">{item.title}</span>
+                            <p className="text-xs font-light text-zinc-500 leading-relaxed">{item.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* 08. The Resolution */}
+            <motion.section 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">08 — RESOLUTION</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                The Student Who Finished
+              </h3>
+              
+              <div className="space-y-6 text-base text-zinc-600 leading-relaxed font-light">
+                <p>
+                  Pathways Badge Quest was playtested with teammates, refined based on what confused players mid-game, and presented to CALS faculty stakeholders. It was approved, printed, and deployed for Iowa State's in-person orientation sessions in Summer 2025 — reaching 70–80 students.
+                </p>
+
+                {/* Highly Polished Statistics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 border border-zinc-150/80 rounded-[32px] overflow-hidden bg-[#fafafa] my-8 shadow-xs">
+                  {[
+                    { val: "60%", label: "Increase in enrollment and completion, 2025–26", clr: "text-[#5a8c69]" },
+                    { val: "70–80", label: "Students reached at orientation", clr: "text-zinc-800" },
+                    { val: "3 months", label: "Brief to deployed", clr: "text-amber-600" }
+                  ].map((stat, i) => (
+                    <div key={i} className="p-6 md:p-8 flex flex-col justify-center text-center md:text-left space-y-2 border-b md:border-b-0 md:border-r last:border-b-0 last:border-r-0 border-zinc-150 hover:bg-white transition-all duration-300">
+                      <span className={`text-4xl md:text-5xl font-black tracking-tight ${stat.clr} font-sans`}>
+                        {stat.val}
+                      </span>
+                      <span className="text-xs font-semibold text-zinc-600 leading-snug">
+                        {stat.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <p>
+                  The CALS Pathways Department reported a 60% increase in student enrollment and program completion in the 2025–2026 academic year — the first full year following the introduction of Pathways Badge Quest at orientation. Correlation is not causation. The game was one of several program changes made that year. But the numbers point in the right direction: when students experience the credential journey as something worth finishing before they begin it, more of them finish it.
+                </p>
+                <p>
+                  The game didn't just explain the Pathways program — it gave students a felt sense of what completing it would be like. The student who once said "I wasn't sure what I needed to do" now had a physical map, a visible destination, and a satisfying moment of completion baked into every round.
+                </p>
+              </div>
+
+              <div className="bg-[#5a8c69] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl mt-8">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full"></div>
+                <div className="relative z-10 space-y-4">
+                  <div className="space-y-2">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="text-xl md:text-2xl font-medium leading-tight max-w-4xl">
+                    The hero — the student — didn't need more information. They needed a <span className="font-bold">designed experience that made the journey feel worth finishing.</span> That's what the game gave them.
+                  </p>
+                </div>
+              </div>
+
+              {/* IMAGE 9 OF 9 Repeat Caption explicitly specified */}
+              <div className="pt-4 text-center">
+                <span className="text-xs text-zinc-400 italic">
+                  IMAGE 9 OF 9 · (Reusing Deployed Game Photo) · "Pathways Badge Quest deployed at Iowa State University CALS orientation, Summer 2025."
+                </span>
+              </div>
+            </motion.section>
+
+            {/* 09. What I Learned */}
+            <motion.section 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">09 — KEY TAKEAWAYS</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-900">
+                What I Learned
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-[#5a8c69]">
+                    <CheckCircle className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 1</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">Simplicity is a performance requirement, not a preference</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    Designing for a game mid-play gives you none of that. When a student is in the middle of their turn, with dice on the table and other players watching, the design has about two seconds to communicate. That constraint changed how I think about hierarchy, icon sizing, and information density in ways that working on digital interfaces alone hadn't.
+                  </p>
+                  <p className="text-xs font-semibold text-[#5a8c69] pt-2">
+                    "Simplicity isn't about removing things because they're ugly. It's about removing anything that forces someone to think when they should be acting."
+                  </p>
+                </div>
+
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-[#5a8c69]">
+                    <CheckCircle className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 2</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">Physical constraints are better teachers than screen constraints</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    The dice shortage problem couldn't have been found in Figma. It only existed when the game was physical, the dice were real, and multiple people were playing simultaneously. A prototype that looks right is not the same as a prototype that works right. The only way to know the difference is to put it in front of people and watch what breaks.
+                  </p>
+                </div>
+
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-[#5a8c69]">
+                    <CheckCircle className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 3</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">Designing for a group is a different problem than designing for a person</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    Most UX work imagines one user with one screen. This project had four players around a table, each making decisions that affected the others, all reading the same components simultaneously. The design had to work from multiple angles, in multiple hands, at multiple points in the same round. That taught me to think about context of use — not just usability — as a design requirement from the very start.
+                  </p>
+                </div>
+
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-[#5a8c69]">
+                    <CheckCircle className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 4</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">What I would do differently</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    If I started this project again, I would push for playtesting earlier — before the visual system was finalized, not after. The token solution came late in the process. Had we caught the dice shortage two weeks earlier, I would have had more time to explore whether tokens were truly the best solution, or whether the mechanic itself needed rethinking. Testing revealed the right answer. Getting there sooner would have given us more options.
+                  </p>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Back Button */}
+            <section className="py-20 text-center">
+              <div className="flex justify-center">
+                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {!isMyCampus && !isWalkForPlastic && !isPathwaysBadgeQuest && (
           <section className="py-32 text-center">
             <div className="flex justify-center">
               <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
