@@ -295,9 +295,6 @@ const App: React.FC = () => {
                 <div className="text-zinc-400 text-xs tracking-widest uppercase font-medium">Product Designer</div>
               </div>
               <div className="text-zinc-400 text-sm">© 2025 Tamizh. All rights reserved.</div>
-              <div className="flex gap-8">
-                <a href="https://www.linkedin.com/in/tamizh-selvan-ux/" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-red-500 transition-colors text-sm font-medium">LinkedIn</a>
-              </div>
             </footer>
           </motion.div>
         )}
