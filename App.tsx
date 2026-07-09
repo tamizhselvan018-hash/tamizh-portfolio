@@ -63,7 +63,7 @@ const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProje
               top: `${100 + (index * 20)}px`,
               zIndex: index + 10
             }}
-            className="cursor-pointer"
+            className={study.isComingSoon ? "cursor-default" : "cursor-pointer"}
           >
             <CaseStudyCard study={study} />
           </motion.div>
@@ -190,7 +190,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-[#FAF9F6]">
       <AnimatePresence mode="wait">
         {selectedProject ? (
           <CaseStudyDetail 
@@ -284,6 +284,37 @@ const App: React.FC = () => {
                       >
                         “Ready to bring your vision to life? Let's build something beautiful.”
                       </motion.h2>
+
+                      <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        whileInView={{ y: 0, opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.7 }}
+                        className="flex flex-wrap justify-center gap-4 pt-6"
+                      >
+                        <a 
+                          href="mailto:tamizhselvan018@gmail.com" 
+                          className="bg-white text-[#0a3161] font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-zinc-100 transition-all shadow-xl active:scale-95"
+                        >
+                          <span>Get in touch via Email</span>
+                        </a>
+                        <a 
+                          href="https://www.linkedin.com/in/tamizhselvan-u" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
+                        >
+                          <span>Connect on LinkedIn</span>
+                        </a>
+                        <a 
+                          href="https://github.com/tamizhselvan018" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
+                        >
+                          <span>View GitHub</span>
+                        </a>
+                      </motion.div>
                    </div>
                 </motion.div>
               </section>
@@ -294,6 +325,13 @@ const App: React.FC = () => {
                 <div className="text-xl font-black tracking-tighter">Tamizh</div>
                 <div className="text-zinc-400 text-xs tracking-widest uppercase font-medium">Product Designer</div>
               </div>
+
+              <div className="flex gap-8 text-sm font-medium">
+                <a href="https://www.linkedin.com/in/tamizhselvan-u" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">LinkedIn</a>
+                <a href="https://github.com/tamizhselvan018" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">GitHub</a>
+                <a href="mailto:tamizhselvan018@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors">Email</a>
+              </div>
+
               <div className="text-zinc-400 text-sm">© 2025 Tamizh. All rights reserved.</div>
             </footer>
           </motion.div>

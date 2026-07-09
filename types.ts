@@ -13,6 +13,7 @@ export interface CaseStudy {
   duration?: string;
   tools?: string;
   isComingSoon?: boolean;
+  liveUrl?: string;
 }
 
 export interface Testimonial {

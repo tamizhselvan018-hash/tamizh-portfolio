@@ -1,9 +1,11 @@
 
 import React from 'react';
-import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock } from 'lucide-react';
+import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock, Monitor, Image, ArrowUpRight } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { CaseStudy } from '../types';
 import { Button } from './Button';
+import { InteractiveBrowserMockup } from './MockScreens';
+import { AnnotatedScreenshot } from './AnnotatedScreenshot';
 
 interface CaseStudyDetailProps {
   project: CaseStudy;
@@ -11,15 +13,23 @@ interface CaseStudyDetailProps {
 }
 
 export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBack }) => {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, -80]);
-  const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
 
   const isMyCampus = project.id === 'my-campus';
   const isWalkForPlastic = project.id === 'walk-for-plastic';
   const isPathwaysBadgeQuest = project.id === 'pathways-badge-quest';
+  const isMotionDesign = project.id === 'motion-design';
+  const isParProductionControl = project.id === 'par-production-control';
+
 
   const [activeIndex, setActiveIndex] = React.useState(0);
+
+  // Motion Design States
+  const [motionStiffness, setMotionStiffness] = React.useState(300);
+  const [motionDamping, setMotionDamping] = React.useState(20);
+  const [motionPreset, setMotionPreset] = React.useState<'snappy' | 'silky' | 'bouncy' | 'linear' | 'custom'>('snappy');
+  const [motionInteractiveType, setMotionInteractiveType] = React.useState<'card' | 'button' | 'toggle'>('card');
+  const [motionTrigger, setMotionTrigger] = React.useState(false);
+  const [toggleState, setToggleState] = React.useState(false);
 
   // Pathways Badge Quest Interactive Demo States
   const [pathwaysDirection, setPathwaysDirection] = React.useState<'mobile' | 'board'>('board');
@@ -140,87 +150,55 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
       {/* Case Study Header */}
       <header className="max-w-5xl mx-auto px-6 pt-10 pb-8">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-8">
           <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-zinc-300"></span>
-              <span className="text-zinc-400 font-bold uppercase tracking-[0.2em] text-[9px]">UX/UI Case Study · 2024</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter leading-tight italic text-[#0a3161]">
+            <h1 className={isParProductionControl 
+              ? "text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-zinc-900 font-sans" 
+              : `text-4xl md:text-6xl font-bold tracking-tighter leading-tight font-playfair italic ${
+                  isWalkForPlastic ? 'text-[#0a3161]' :
+                  isMyCampus ? 'text-[#b31942]' :
+                  isPathwaysBadgeQuest ? 'text-[#5a8c69]' :
+                  'text-[#0a3161]'
+                }`
+            }>
               {project.title}
             </h1>
-            <p className="text-lg md:text-xl text-zinc-400 max-w-2xl leading-snug font-light">
+            <p className={isParProductionControl
+              ? "text-lg md:text-xl text-zinc-600 max-w-3xl leading-relaxed font-sans font-normal mt-3"
+              : "text-lg md:text-xl text-zinc-400 max-w-2xl leading-snug font-light"
+            }>
               {project.description}
             </p>
-          </div>
-        </div>
-
-        {/* Hero Image */}
-        <motion.div 
-          style={{ y, scale }}
-          className="relative w-full aspect-[16/6] rounded-[32px] overflow-hidden bg-zinc-100 mb-16 group border border-zinc-100 shadow-2xl shadow-zinc-200/50"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a3161]/10 to-transparent"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            {isMyCampus || isWalkForPlastic || isPathwaysBadgeQuest ? (
-              <motion.img 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                src={isMyCampus ? "https://i.imgur.com/c0I7bGQ.png" : isWalkForPlastic ? "https://i.imgur.com/CzQIxXs.png" : "https://i.imgur.com/GEbH2tS.png"} 
-                alt={`${project.title} Hero`} 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-                onError={(e) => handleImageError(e, `${project.title} Hero`)}
-              />
-            ) : (
-              <motion.span 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 0.5, scale: 1 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="text-zinc-300 text-5xl md:text-7xl font-black italic tracking-tighter uppercase group-hover:scale-110 transition-transform duration-1000"
-              >
-                {project.title}
-              </motion.span>
+            {isParProductionControl && (
+              <div className="flex flex-wrap gap-x-8 gap-y-3 pt-4 border-t border-zinc-150 mt-6 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+                <div><span className="font-bold text-zinc-400">Role:</span> {project.role}</div>
+                <div><span className="font-bold text-zinc-400">Platform:</span> {project.platform}</div>
+                <div><span className="font-bold text-zinc-400">Tools:</span> {project.tools}</div>
+              </div>
             )}
           </div>
-        </motion.div>
-
-        {/* Meta Grid */}
-        <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 py-4 bg-white">
-          {[
-            { label: 'Role', value: project.role || 'UX / UI Lead Designer' },
-            { label: 'Platform', value: project.platform || 'Mobile (iOS/Android)' },
-            { label: 'Duration', value: project.duration || '3 Months' },
-            { 
-              label: isPathwaysBadgeQuest ? 'Impact' : 'Tools', 
-              value: isPathwaysBadgeQuest ? 'Orientation Pilot' : (project.tools || 'Figma, Prototyping') 
-            }
-          ].map((item, i) => {
-            const isImpact = item.label === 'Impact';
-            const bgClass = isImpact 
-              ? "bg-[#5a8c69]/5 border-[#5a8c69]/20" 
-              : "bg-[#fafafa] border-zinc-100";
-            const textLabelClass = isImpact 
-              ? "text-[#5a8c69]" 
-              : "text-zinc-400";
-            const textValueClass = isImpact 
-              ? "text-[#5a8c69]" 
-              : "text-zinc-800";
-            return (
-              <div 
-                key={i} 
-                className={`${bgClass} p-5 rounded-2xl border flex flex-col justify-between min-h-[90px] shadow-sm`}
+          {project.liveUrl && !isParProductionControl && (
+            <div className="flex-shrink-0 pt-2 md:pt-0">
+              <a 
+                href={project.liveUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-2 font-sans text-sm font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg active:scale-95 duration-200 ${
+                  isParProductionControl 
+                    ? 'bg-zinc-900 hover:bg-zinc-800 text-white' 
+                    : 'bg-[#0a3161] hover:bg-[#07244a] text-white'
+                }`}
               >
-                <h4 className={`${textLabelClass} text-[10px] font-bold uppercase tracking-[0.2em]`}>{item.label}</h4>
-                <p className={`${textValueClass} text-sm font-bold mt-2`}>{item.value}</p>
-              </div>
-            );
-          })}
+                View Live App
+                <ArrowUpRight className="w-4 h-4" />
+              </a>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-6 space-y-12 pb-20">
+      <main className={`mx-auto pb-20 space-y-12 ${isParProductionControl ? 'w-full max-w-none px-0' : 'px-6 max-w-5xl'}`}>
         
         {isWalkForPlastic && (
           <>
@@ -2319,7 +2297,1592 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
           </>
         )}
 
-        {!isMyCampus && !isWalkForPlastic && !isPathwaysBadgeQuest && (
+        {isMotionDesign && (
+          <>
+            {/* The Story Arc Summary */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="space-y-6 pt-4"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">Creative Philosophy</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 border border-zinc-100 rounded-[32px] overflow-hidden bg-[#fafafa]">
+                {[
+                  { label: 'DELIGHT', val: 'Micro-animations that feel human', icon: Sparkles, clr: 'text-indigo-600 bg-indigo-50/50' },
+                  { label: 'EASE', val: 'Reduced cognitive load by 40%', icon: Zap, clr: 'text-amber-600 bg-amber-50/50' },
+                  { label: 'GUIDANCE', val: 'Spatial storytelling and focus', icon: Target, clr: 'text-[#0a3161] bg-[#0a3161]/5' },
+                  { label: 'INTEGRITY', val: 'Consistent fluid engineering', icon: Layers, clr: 'text-emerald-600 bg-emerald-50/50' }
+                ].map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={i} className="p-6 md:p-8 flex flex-col items-center text-center space-y-3 border-r border-b md:border-b-0 last:border-r-0 border-zinc-100">
+                      <div className={`p-3 rounded-2xl ${item.clr}`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-zinc-400 tracking-wider uppercase">{item.label}</span>
+                        <p className="text-xs md:text-sm font-medium text-zinc-800 leading-tight">{item.val}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.section>
+
+            {/* Section 1: Introduction */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">01 — THE PRINCIPLE</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                Motion is not decoration. It is a language.
+              </h3>
+              <div className="space-y-4 text-base text-zinc-600 leading-relaxed font-light">
+                <p>
+                  In modern product design, transition is often added at the very end — as a superficial layer of paint. But motion has an immense, silent power over the user experience. It creates spatial continuity, establishes hierarchy, and guides the human eye through dense hierarchies without physical friction.
+                </p>
+                <p>
+                  As an interaction designer, I approach motion as a fundamental building block of <span className="font-semibold text-zinc-900">information architecture</span>. When elements move with natural, organic physics rather than artificial linear times, they mimic the physical world, instantly easing digital friction.
+                </p>
+              </div>
+            </motion.section>
+
+            {/* Section 2: Interactive Motion Lab */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8 pt-8"
+            >
+              <div className="flex items-center gap-2">
+                <span className="h-[1px] w-6 bg-zinc-300"></span>
+                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">02 — MOTION PLAYGROUND</span>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-3xl font-extrabold text-zinc-900">The Interactive Spring Lab</h3>
+                <p className="text-sm text-zinc-500 font-light max-w-xl">
+                  Adjust spring physics and choose different interaction models to feel how friction and stiffness change the character of user actions in real time.
+                </p>
+              </div>
+
+              {/* Lab Interface Container */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 bg-zinc-50 border border-zinc-100 p-6 md:p-8 rounded-[40px] shadow-sm">
+                
+                {/* Controls - 5 Cols */}
+                <div className="md:col-span-5 space-y-6">
+                  {/* Preset Buttons */}
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">Select Preset physics</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'snappy', label: 'Snappy Spring', stiff: 400, damp: 22 },
+                        { id: 'silky', label: 'Silky Ease', stiff: 180, damp: 18 },
+                        { id: 'bouncy', label: 'Playful Bounce', stiff: 600, damp: 15 },
+                        { id: 'linear', label: 'Slow Motion', stiff: 80, damp: 12 }
+                      ].map((preset) => (
+                        <button
+                          key={preset.id}
+                          onClick={() => {
+                            setMotionPreset(preset.id as any);
+                            setMotionStiffness(preset.stiff);
+                            setMotionDamping(preset.damp);
+                            setMotionTrigger(prev => !prev);
+                          }}
+                          className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all ${
+                            motionPreset === preset.id 
+                              ? 'bg-zinc-900 border-zinc-900 text-white shadow-md shadow-zinc-900/10' 
+                              : 'bg-white border-zinc-200 text-zinc-700 hover:border-zinc-400'
+                          }`}
+                        >
+                          <div className="font-bold">{preset.label}</div>
+                          <div className="text-[10px] opacity-70 font-mono mt-0.5">S:{preset.stiff} · D:{preset.damp}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sliders */}
+                  <div className="space-y-4 pt-2 border-t border-zinc-200/50">
+                    <div>
+                      <div className="flex justify-between items-center text-[10px] font-mono mb-1.5 uppercase tracking-wider text-zinc-400">
+                        <span>Stiffness ({motionStiffness})</span>
+                        <span>Tight Response</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="50" 
+                        max="800"
+                        value={motionStiffness}
+                        onChange={(e) => {
+                          setMotionStiffness(parseInt(e.target.value));
+                          setMotionPreset('custom');
+                        }}
+                        className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-zinc-900"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center text-[10px] font-mono mb-1.5 uppercase tracking-wider text-zinc-400">
+                        <span>Damping ({motionDamping})</span>
+                        <span>Oscillation Control</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="5" 
+                        max="50"
+                        value={motionDamping}
+                        onChange={(e) => {
+                          setMotionDamping(parseInt(e.target.value));
+                          setMotionPreset('custom');
+                        }}
+                        className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-zinc-900"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Interactive Target selection */}
+                  <div className="space-y-3 pt-2 border-t border-zinc-200/50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">Interaction object</span>
+                    <div className="flex gap-2">
+                      {[
+                        { id: 'card', label: 'Feature Card' },
+                        { id: 'button', label: 'Trigger Button' },
+                        { id: 'toggle', label: 'Toggle Box' }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setMotionInteractiveType(item.id as any)}
+                          className={`flex-1 px-2.5 py-1.5 text-center text-xs font-bold rounded-lg border transition-all ${
+                            motionInteractiveType === item.id 
+                              ? 'bg-[#09090b] border-zinc-800 text-white' 
+                              : 'bg-white border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Canvas/Display - 7 Cols */}
+                <div className="md:col-span-7 bg-white border border-zinc-100 rounded-3xl p-6 min-h-[300px] flex flex-col justify-between items-center relative overflow-hidden shadow-inner">
+                  {/* Grid Lines Pattern */}
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 pointer-events-none" />
+                  
+                  {/* Top Help */}
+                  <div className="relative z-10 w-full flex justify-between items-center text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                    <span>Active Preset: <strong className="text-zinc-600">{motionPreset}</strong></span>
+                    <span>Tap Target to Trigger</span>
+                  </div>
+
+                  {/* Main Target Object */}
+                  <div className="relative z-10 flex-1 flex items-center justify-center my-6">
+                    <AnimatePresence mode="wait">
+                      {motionInteractiveType === 'card' && (
+                        <motion.div
+                          key="card"
+                          animate={motionTrigger ? { scale: 1.05 } : { scale: 1 }}
+                          whileHover={{ scale: 1.05, y: -8 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: motionStiffness,
+                            damping: motionDamping
+                          }}
+                          onClick={() => setMotionTrigger(prev => !prev)}
+                          className="w-56 h-40 bg-zinc-950 text-white rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer border border-zinc-800 select-none animate-none"
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-mono text-zinc-400 tracking-widest uppercase">LAB MOCK</span>
+                            <Sparkles className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold tracking-tight">Responsive Slate</h4>
+                            <p className="text-[10px] text-zinc-400 mt-1">Hover me, tap me, or feel the weight of current spring constant values.</p>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {motionInteractiveType === 'button' && (
+                        <motion.button
+                          key="button"
+                          animate={motionTrigger ? { scale: 1.1 } : { scale: 1 }}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: motionStiffness,
+                            damping: motionDamping
+                          }}
+                          onClick={() => setMotionTrigger(prev => !prev)}
+                          className="px-8 h-14 rounded-full bg-[#4F46E5] text-white font-bold text-sm shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-colors uppercase tracking-widest flex items-center gap-2 select-none"
+                        >
+                          <Zap className="w-4 h-4 fill-current" /> Tap To Bounce
+                        </motion.button>
+                      )}
+
+                      {motionInteractiveType === 'toggle' && (
+                        <div 
+                          key="toggle"
+                          className="flex items-center gap-4 bg-zinc-50 border border-zinc-200/80 px-6 py-4 rounded-3xl shadow-sm"
+                        >
+                          <span className="text-xs font-bold text-zinc-600 font-mono">Toggle System State</span>
+                          <div
+                            onClick={() => {
+                              setToggleState(!toggleState);
+                              setMotionTrigger(prev => !prev);
+                            }}
+                            className={`w-14 h-8 rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+                              toggleState ? 'bg-[#5a8c69]' : 'bg-zinc-300'
+                            }`}
+                          >
+                            <motion.div
+                              layout
+                              transition={{
+                                type: "spring",
+                                stiffness: motionStiffness,
+                                damping: motionDamping
+                              }}
+                              className="w-6 h-6 rounded-full bg-white shadow-md"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Live Code Blocks */}
+                  <div className="relative z-10 w-full mt-2">
+                    <pre className="text-[10px] font-mono bg-zinc-950 text-indigo-300 p-3 rounded-2xl overflow-x-auto leading-relaxed border border-zinc-800">
+                      <code>{`// Framer Motion Spring Configuration
+<motion.div
+  transition={{
+    type: "spring",
+    stiffness: ${motionStiffness},
+    damping: ${motionDamping}
+  }}
+/>`}</code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Section 3: Takeaway & Principles */}
+            <motion.section 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 pt-6"
+            >
+              <div className="space-y-2">
+                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03 — LAWS OF MOTION</span>
+              </div>
+              <div className="bg-[#4F46E5] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full"></div>
+                <div className="relative z-10 space-y-4">
+                  <div className="space-y-2">
+                    <svg className="w-8 h-8 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                  </div>
+                  <h4 className="text-xl md:text-2xl font-medium leading-tight max-w-4xl">
+                    Great motion is invisible. The user shouldn't notice your transitions — they should simply feel that the UI is perfectly <span className="font-bold">cooperative and alive</span>.
+                  </h4>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Section 4: Key Insights */}
+            <section className="space-y-12 py-5 border-t border-zinc-100 mt-6">
+              <div className="space-y-3 max-w-3xl">
+                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">Case Insights</span>
+                <h3 className="text-4xl font-bold tracking-tight">Handoff, Physics & Performance</h3>
+                <p className="text-lg text-zinc-500 font-light">
+                  Translating rich, organic animations from Figma into production-ready React layouts requires exact specifications.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-indigo-600">
+                    <Zap className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 1</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">Establish Spatial Continuity</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    When opening a list drawer or clicking a modal, elements shouldn't slide from arbitrary coordinates. Zooming and morphing layouts from their point of contact (e.g., origin point mapping) guides the user's mental focus much more naturally.
+                  </p>
+                </div>
+
+                <div className="p-8 rounded-[32px] border border-zinc-100 bg-[#fafafa] space-y-3">
+                  <div className="flex items-center gap-2 text-[#5a8c69]">
+                    <Check className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider">Lesson 2</span>
+                  </div>
+                  <h4 className="text-base font-bold text-zinc-850">Avoid Stiff Gradients</h4>
+                  <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                    Standard linear timing sweeps (`cubic-bezier` with set durations) often feel mechanical. Utilizing dynamic spring physics models allows elements to naturally settle down, matching human expectations of weight and inertia.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Reflection */}
+            <section className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">Conclusion</span>
+                <h2 className="text-3xl font-bold tracking-tight">Final Thoughts</h2>
+              </div>
+              <div className="p-8 border-l-4 border-indigo-600 bg-indigo-50/10 rounded-r-[28px] space-y-4">
+                <p className="text-base text-zinc-600 leading-relaxed font-light">
+                  Building micro-interactions taught me that delightful product design sits directly at the intersection of aesthetic timing and robust code. By declaring standardized animation tokens in design systems, teams can keep motion clean, unified, and remarkably responsive across platforms.
+                </p>
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-20 text-center">
+              <div className="flex justify-center">
+                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {isParProductionControl && (
+          <>
+            {/* Live Interactive Dashboard Showcase */}
+            {project.liveUrl && (
+              <div className="max-w-5xl mx-auto mt-0 px-4 mb-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">INTERACTIVE PROTOTYPE</span>
+                        <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Interactive Prototype</h3>
+                      </div>
+                      <a 
+                        href={project.liveUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={`inline-flex items-center gap-2 font-sans text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:shadow-md active:scale-95 duration-200 shrink-0 ${
+                          isParProductionControl 
+                            ? 'bg-zinc-900 hover:bg-zinc-800 text-white' 
+                            : 'bg-[#0a3161] hover:bg-[#07244a] text-white'
+                        }`}
+                      >
+                        View Prototype
+                        <ArrowUpRight className="w-4 h-4" />
+                      </a>
+                    </div>
+
+                    <p className="text-sm text-zinc-500 font-light leading-relaxed max-w-3xl">
+                      Interact with the fully functional React/HTML prototype directly. Try navigating through different order workflows, filtering items, and seeing the streamlined B2B status tracking design in action.
+                    </p>
+
+                    {/* Clean Embedded App Frame */}
+                    <div className="w-full rounded-2xl border border-zinc-200 shadow-md overflow-x-auto bg-white">
+                      <div className="min-w-[960px] h-[480px] md:h-[580px] lg:h-[640px] bg-zinc-50 relative overflow-hidden">
+                        <iframe 
+                          src={project.liveUrl} 
+                          style={{
+                            width: '150%',
+                            height: '150%',
+                            transform: 'scale(0.6667)',
+                            transformOrigin: 'top left',
+                          }}
+                          className="border-none absolute top-0 left-0"
+                          title="PAR Production Control Live Dashboard"
+                          allow="clipboard-write"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+
+            {/* 10-Page Editorial Layout without Table of Contents */}
+            <div className="max-w-5xl mx-auto mt-0 px-4" id="par-case-study-container">
+              {/* Right Column: 10 Editorial Pages */}
+              <div className="space-y-0" id="par-pages-content">
+
+                {/* Page 1: Cover */}
+                <motion.div 
+                  id="par-page-1"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="pt-0 pb-6 border-b border-zinc-150 space-y-8"
+                >
+                  <div className="space-y-8">
+                    <div className="space-y-6">
+                      <div className="space-y-1 mb-4">
+                        <span className="text-[10px] font-mono text-rose-600 font-bold uppercase tracking-widest block">BACKGROUND & PROBLEM</span>
+                        <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">The Problem Nobody Could Answer</h3>
+                      </div>
+
+                      <div className="space-y-6 text-zinc-650 leading-relaxed font-light">
+                        <p>
+                          When I started working on PAR Engineering’s internal operations system, the company wasn’t struggling because they didn’t know how to manufacture pumps.
+                        </p>
+                        
+                        <div className="my-6 p-6 border-l-4 border-rose-500 bg-rose-50/40 rounded-r-2xl space-y-2">
+                          <span className="text-[10px] font-mono text-rose-600 font-bold uppercase tracking-widest block">THE CENTRAL DILEMMA</span>
+                          <p className="text-lg md:text-xl text-zinc-900 font-medium leading-relaxed">
+                            “The real problem was much smaller — but much more expensive. Nobody could quickly answer a simple operational question: <span className="font-extrabold underline decoration-rose-400 decoration-2 underline-offset-4">Can this production order move forward today?</span>”
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+                          <div className="p-6 border border-zinc-150 bg-zinc-50/30 rounded-2xl space-y-4">
+                            <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider block">THE STATUS QUO</span>
+                            <h4 className="font-bold text-base text-zinc-900">Manual Verification Loops</h4>
+                            <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                              The company managed production using spreadsheets, manual inventory checks, and constant verbal communication between production, purchasing, and store personnel.
+                            </p>
+                            <div className="space-y-2 pt-2 text-xs font-mono text-zinc-500">
+                              <div className="flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                Verify component availability manually
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                Trace pending purchase requests in emails
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                Confirm incoming material receipt in warehouse
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 border border-rose-100 bg-rose-50/10 rounded-2xl space-y-4">
+                            <span className="text-[10px] font-mono text-rose-500 font-bold uppercase tracking-wider block">THE CONSEQUENCE</span>
+                            <h4 className="font-bold text-base text-zinc-900">Operational Bottlenecks</h4>
+                            <p className="text-xs text-rose-750 leading-relaxed font-light">
+                              Because verifying a single order took 10–15 minutes, decision-making ground to a halt. Small visibility gaps snowballed into massive coordination issues:
+                            </p>
+                            <div className="space-y-2 pt-2 text-xs font-mono text-rose-700">
+                              <div className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+                                <span>Orders remained blocked longer than necessary</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+                                <span>Inventory shortages were discovered too late</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
+                                <span>Purchasing activities became disconnected from needs</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p>
+                          Every time a new production order was created, employees had to manually verify whether components were available, whether purchase requests had already been created, and whether incoming materials had been received. This constant hunting for status led to teams spending precious time searching for information instead of making decisions.
+                        </p>
+
+                        <p className="text-zinc-800 text-base md:text-lg font-medium leading-relaxed my-4">
+                          The problem wasn’t a lack of data. The problem was that the <span className="underline decoration-blue-500 decoration-2 underline-offset-4 font-semibold">data existed in too many places</span>.
+                        </p>
+
+                        <p>
+                          What the company needed wasn’t a large manufacturing ERP system. They needed a way to answer three critical questions quickly:
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                          {[
+                            { q: "What can we build today?", desc: "Instant visibility into production orders with fully matching on-hand stock.", num: "01" },
+                            { q: "What is currently blocked?", desc: "Clear identification of material deficits with associated part numbers.", num: "02" },
+                            { q: "What should happen next?", desc: "Direct action triggers linking raw material shortages directly to procurement.", num: "03" }
+                          ].map((item, idx) => (
+                            <div key={idx} className="p-5 bg-zinc-50/50 border border-zinc-150 hover:border-zinc-300 transition-colors rounded-2xl relative overflow-hidden group">
+                              <span className="absolute right-3 top-2 text-3xl font-black text-zinc-150/70 font-mono select-none group-hover:text-blue-50/50 transition-colors">{item.num}</span>
+                              <div className="space-y-2 relative z-10">
+                                <span className="text-[9px] font-mono font-bold text-blue-500 tracking-wider uppercase">CORE OBJECTIVE</span>
+                                <h4 className="font-extrabold text-sm text-zinc-900 leading-tight pr-6">{item.q}</h4>
+                                <p className="text-[11px] text-zinc-500 leading-relaxed font-light">{item.desc}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <p className="font-medium text-zinc-850 pt-2">
+                          That question became the foundation of <span className="font-bold text-blue-600">PAR Production Control</span>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 2: Understanding the Workflow */}
+                <motion.div 
+                  id="par-page-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">UNDERSTANDING THE PIPELINE</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Understanding the Workflow</h3>
+                    </div>
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      After understanding the company’s day-to-day operations, I realized that I wasn’t designing separate modules for production, inventory, and purchasing. I was designing a <span className="font-semibold text-zinc-800">single operational workflow</span>.
+                    </p>
+
+                    <div className="space-y-3 pt-2">
+                      <p className="text-xs font-mono text-zinc-400 font-bold uppercase tracking-wider">The Actual Company Process</p>
+                      
+                      {/* Vertical / Horizontal Flow diagram */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 text-center text-[11px] font-mono font-medium">
+                        {[
+                          { title: "Customer Order", bg: "bg-zinc-50 border-zinc-250 text-zinc-700" },
+                          { title: "Production Order", bg: "bg-blue-50/50 border-blue-200 text-blue-700" },
+                          { title: "Inventory Check", bg: "bg-zinc-50 border-zinc-250 text-zinc-700" },
+                          { title: "Ready or Blocked", bg: "bg-amber-50/50 border-amber-200 text-amber-700" },
+                          { title: "Purchase Request", bg: "bg-indigo-50/50 border-indigo-200 text-indigo-700" },
+                          { title: "Materials Received", bg: "bg-emerald-50/50 border-emerald-200 text-emerald-700" },
+                          { title: "Production Runs", bg: "bg-zinc-900 border-zinc-850 text-white" }
+                        ].map((step, idx) => (
+                          <div key={idx} className="relative flex flex-col justify-between items-center h-full">
+                            <div className={`w-full p-3 border rounded-xl flex items-center justify-center min-h-[48px] text-center ${step.bg}`}>
+                              {step.title}
+                            </div>
+                            {idx < 6 && (
+                              <div className="hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 text-zinc-300 font-bold text-xs select-none">
+                                →
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      At first glance, this process looked straightforward. In reality, most operational delays happened between these steps.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 1</span>
+                        <h4 className="text-sm font-bold text-zinc-850">Disconnected Creation</h4>
+                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                          A production order could be created successfully, but nobody knew whether all required components were available.
+                        </p>
+                      </div>
+                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 2</span>
+                        <h4 className="text-sm font-bold text-zinc-850">Late Shortage Discoveries</h4>
+                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                          Inventory shortages were often discovered only after production planning had already begun on the shop floor.
+                        </p>
+                      </div>
+                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 3</span>
+                        <h4 className="text-sm font-bold text-zinc-850">Isolated Purchase Requests</h4>
+                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                          Purchase requests existed entirely separately from the production orders that depended on them, leading to double ordering.
+                        </p>
+                      </div>
+                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
+                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 4</span>
+                        <h4 className="text-sm font-bold text-zinc-850">Manual Tracking Cycles</h4>
+                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                          Receiving updates were tracked manually, making it incredibly difficult to know exactly when production could restart.
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="font-semibold text-zinc-850 italic bg-zinc-50 border-l-2 border-blue-500 p-4 rounded-r-xl">
+                      "The problem wasn’t creating production orders. The problem was understanding what prevented those orders from moving forward."
+                    </p>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      This insight became the foundation of PAR. Instead of designing isolated screens, I designed the product around a single operational loop:
+                    </p>
+
+                    {/* Operational Loop */}
+                    <div className="flex flex-wrap justify-center items-center gap-2 py-2">
+                      {["Create", "Verify", "Resolve", "Receive", "Produce"].map((stage, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <span className="px-4 py-2 border border-zinc-200 bg-zinc-50 rounded-xl font-mono text-xs font-bold text-zinc-850 shadow-sm">{stage}</span>
+                          {idx < 4 && <span className="text-zinc-300 font-bold">→</span>}
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      This decision also helped define what the product would not become. Rather than building a large ERP system with supplier management, advanced scheduling, reporting, and administrative tools, I focused on the workflows that directly affected daily production decisions.
+                    </p>
+
+                    <div className="p-6 border border-zinc-200/60 bg-zinc-50/30 rounded-2xl space-y-3">
+                      <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block">THE TARGET OUTCOME</span>
+                      <p className="text-sm font-medium text-zinc-800">
+                        The challenge was not to build more functionality. The challenge was to help employees understand:
+                      </p>
+                      <ul className="space-y-1.5 text-xs font-mono text-zinc-600">
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                          <span>What can move forward?</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                          <span>What is blocked?</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                          <span>Why is it blocked?</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                          <span>What action needs to happen next?</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 3: My First Assumption Was Wrong */}
+                <motion.div 
+                  id="par-page-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">THE WORK VS READINESS SHIFT</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">My First Assumption Was Wrong</h3>
+                    </div>
+                    
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      When I first started designing PAR, I believed the product should revolve around <span className="font-semibold text-zinc-800">production readiness</span>.
+                    </p>
+                    
+                    <div className="p-5 border border-zinc-150 bg-zinc-50/50 rounded-2xl space-y-3">
+                      <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block">THE REASONING</span>
+                      <p className="text-xs text-zinc-600 font-light leading-relaxed">
+                        The idea seemed logical: if the company's biggest problem was understanding whether production could move forward, the system should focus on determining readiness:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-zinc-500">
+                        <span>Create Order</span>
+                        <span>→</span>
+                        <span>Check Inventory</span>
+                        <span>→</span>
+                        <span>Determine Readiness</span>
+                        <span>→</span>
+                        <span>Identify Missing Components</span>
+                        <span>→</span>
+                        <span>Proceed</span>
+                      </div>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      The earliest versions reflected this thinking. Production orders moved through statuses like <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Not Checked</code>, <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Ready</code>, <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Missing Components</code>, and <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Complete</code>. From a system perspective, this model made sense.
+                    </p>
+
+                    <div className="p-5 bg-red-50/20 border-l-2 border-red-500 rounded-r-2xl space-y-2">
+                      <h4 className="text-sm font-bold text-zinc-800">From a user perspective, it didn't.</h4>
+                      <p className="text-xs text-zinc-650 leading-relaxed font-light">
+                        As I kept mapping workflows and talking with employees, I realized something important: <strong className="font-semibold text-zinc-800">users don't think about “readiness.” They think about work.</strong>
+                      </p>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      Production managers weren't asking “what is the readiness status of this order?” They were asking practical operational questions:
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                        {[
+                          "Can we start this order?",
+                          "Is this order blocked?",
+                          "Is production already running?",
+                          "Is this order finished?",
+                          "If it is blocked, what needs to happen next?"
+                        ].map((q, idx) => (
+                          <div key={idx} className="p-3 border border-zinc-150 rounded-xl bg-zinc-50/50 flex items-center gap-2">
+                            <span className="text-blue-500 font-bold">?</span>
+                            <span className="text-zinc-700 leading-snug">{q}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light pt-2">
+                      That insight changed how I thought about the whole product. I stopped designing a production readiness checker and started designing a <strong className="font-semibold text-zinc-800">production workflow system</strong> — rebuilding the status model around the way employees actually talk about their day:
+                    </p>
+
+                    {/* Status Transformation Display */}
+                    <div className="grid grid-cols-2 gap-4 pt-1 max-w-xl">
+                      <div className="p-4 border border-zinc-150 bg-zinc-50/50 rounded-2xl space-y-3">
+                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block border-b border-zinc-200 pb-1.5">Earlier Approach</span>
+                        <div className="space-y-2 font-mono text-[11px] text-zinc-600">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                            Not Checked
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                            Ready
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                            Missing Components
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                            Complete
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 border border-blue-100 bg-blue-50/10 rounded-2xl space-y-3">
+                        <span className="text-[10px] font-mono text-blue-500 font-bold uppercase block border-b border-blue-100 pb-1.5">Final Approach</span>
+                        <div className="space-y-2 font-mono text-[11px] font-semibold text-zinc-900">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Ready
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                            Blocked
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            In Production
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900"></span>
+                            Finished
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      This change affected far more than labels. The entire product's behavior shifted:
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { title: "Dashboard Pivot", desc: "Shifted from showing checks to showing operational status." },
+                        { title: "Active Inventory", desc: "Became a decision-making tool rather than a reporting screen." },
+                        { title: "Connected Purchasing", desc: "Became part of the production workflow instead of a separate process." },
+                        { title: "Actionable Receiving", desc: "Became a mechanism for unblocking production — not just a record-keeping step." }
+                      ].map((item, idx) => (
+                        <div key={idx} className="p-4 border border-zinc-150 rounded-xl bg-zinc-50/30 space-y-1">
+                          <h4 className="text-xs font-bold text-zinc-800 font-mono">{item.title}</h4>
+                          <p className="text-[11px] text-zinc-500 leading-relaxed font-light">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-zinc-850 italic font-medium border-l-4 border-blue-500 pl-6 my-4 bg-zinc-50 py-4 pr-4 rounded-r-xl leading-relaxed">
+                      “Users rarely think in system language. They think in terms of the work they need to do.”
+                    </p>
+
+                    {/* Production Orders List Diagram */}
+                    <div className="my-6 rounded-2xl overflow-hidden border border-zinc-150 bg-zinc-50/50 p-4 shadow-sm">
+                      <img 
+                        src="https://i.imgur.com/MSI21zc.png" 
+                        alt="Production Orders list — status shown as Blocked, In Production, or Ready, with a detail panel explaining exactly why an order is blocked" 
+                        className="w-full h-auto rounded-xl border border-zinc-200 shadow-sm"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => handleImageError(e, "Production Orders list")}
+                      />
+                      <p className="text-[11px] text-zinc-500 mt-3 text-center leading-relaxed">
+                        Production Orders list — status shown as Blocked, In Production, or Ready, with a detail panel explaining exactly why an order is blocked.
+                      </p>
+                    </div>
+
+                  </div>
+                </motion.div>
+
+                {/* Page 4: Early Approach vs Final Approach */}
+                <motion.div 
+                  id="par-page-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-4"
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">STRATEGIC FOCUS PIVOT</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Early Approach vs Final Approach</h3>
+                    </div>
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      I shifted the design focus from standard inventory record-keeping to proactive workflow coordination.
+                    </p>
+                    <div className="overflow-x-auto pt-2">
+                      <table className="w-full text-left text-xs font-mono border-collapse border border-zinc-200">
+                        <thead>
+                          <tr className="bg-zinc-50 border-b border-zinc-200">
+                            <th className="p-3 font-bold text-zinc-700 border-r border-zinc-200">FEATURE</th>
+                            <th className="p-3 font-bold text-zinc-700 border-r border-zinc-200">EARLY APPROACH</th>
+                            <th className="p-3 font-bold text-zinc-700">FINAL APPROACH</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-200 text-[11px] text-zinc-650">
+                          <tr>
+                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Core Metric</td>
+                            <td className="p-3 border-r border-zinc-200">Simple on-hand stock counts</td>
+                            <td className="p-3 font-semibold text-blue-600 bg-blue-50/10">Live component availability relative to active orders</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Production Order</td>
+                            <td className="p-3 border-r border-zinc-200">Created in isolation as a text record</td>
+                            <td className="p-3 font-semibold text-emerald-600 bg-emerald-50/10">Deeply connected to active material allocation lists</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Shortage Tracking</td>
+                            <td className="p-3 border-r border-zinc-200">Manual checks and physical walking</td>
+                            <td className="p-3 font-semibold text-indigo-600 bg-indigo-50/10">Automated alerts triggered by real demand</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Procurement</td>
+                            <td className="p-3 border-r border-zinc-200">Form-heavy ERP purchase requests</td>
+                            <td className="p-3 font-semibold text-purple-600 bg-purple-50/10">Contextual dispatch queues prefilled with shortages</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 5: Designing by Subtraction */}
+                <motion.div 
+                  id="par-page-5"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">SUBTRACTIVE METHODOLOGY</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Designing by Subtraction</h3>
+                    </div>
+                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
+                      <p>
+                        One of the biggest challenges in designing PAR was deciding what not to build. Once the core workflow became clear, it was tempting to keep expanding the product — and on paper, plenty of additions made sense, since most manufacturing systems include them:
+                      </p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 my-4">
+                        {[
+                          "Supplier management and procurement management",
+                          "Advanced production scheduling and forecasting tools",
+                          "Role and permission management, notifications, reporting dashboards",
+                          "Bill of materials administration",
+                          "Finished goods tracking and warehouse management"
+                        ].map((feat, idx) => (
+                          <div key={idx} className="p-3 border border-zinc-200 bg-zinc-50/20 rounded-xl flex items-start gap-2.5">
+                            <span className="text-red-500 font-mono text-sm font-bold select-none mt-0.5">✕</span>
+                            <span className="text-xs font-sans text-zinc-700 leading-snug">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="pt-2">
+                        But adding more features would have created a different product than the one this company needed. Every feature was evaluated against three core operational questions:
+                      </p>
+
+                      <div className="grid grid-cols-1 gap-3 my-4">
+                        {[
+                          "Does this help someone understand the current production situation?",
+                          "Does this help someone make an operational decision?",
+                          "Does this help move production forward?"
+                        ].map((q, idx) => (
+                          <div key={idx} className="p-4 border border-zinc-150 rounded-xl bg-zinc-50/50 flex items-start gap-3">
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[10px] font-mono font-bold">
+                              0{idx + 1}
+                            </span>
+                            <p className="text-xs text-zinc-750 font-medium leading-relaxed font-sans">{q}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="pt-2">
+                        If the answer was no, the feature was removed or postponed.
+                      </p>
+
+                      <p className="pt-2">
+                        That principle shaped two specific decisions. Inventory was scoped to production components only — early versions mixed in finished goods, but testing showed users viewed the screen through one narrow lens: <span className="font-medium text-zinc-800">“do we have the parts needed to build this pump?”</span> Finished products answered a different business question and only added noise. And I deliberately avoided supplier databases, purchase-order management, scheduling engines, and admin configuration screens — common in enterprise manufacturing systems, but unnecessary for the decisions employees actually needed to make every day.
+                      </p>
+
+                      <p className="pt-2 text-sm text-zinc-650 leading-relaxed font-light italic bg-zinc-50 p-4 border-l-2 border-blue-500 rounded-r-xl">
+                        "Product design is often an exercise in subtraction rather than addition."
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 6: Testing the Product with Real Users */}
+                <motion.div 
+                  id="par-page-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">USER VALIDATION COHORT</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Testing the Product with Real Users</h3>
+                    </div>
+                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
+                      <p>
+                        Once the core workflows were designed, I tested the product with employees who would realistically use this kind of system: a production manager, an inventory/store employee, and a purchasing/operations employee. The goal wasn't to validate visual design decisions — it was to see whether users could quickly answer the operational questions that matter most: which orders are active, which are blocked, which inventory items need attention, which purchase requests are pending or partially received, and what to do next.
+                      </p>
+                      <p>
+                        Because participants evaluated the product through the lens of their actual jobs rather than a design perspective, testing exposed several assumptions I'd made without realizing it.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 7: The Dashboard Was Solving the Wrong Problem */}
+                <motion.div 
+                  id="par-page-7"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <h3 className="text-[18px] font-extrabold tracking-tight text-zinc-900 leading-tight">The Dashboard Was Solving the Wrong Problem</h3>
+                    </div>
+                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
+                      <p>
+                        One of the earliest dashboard versions focused heavily on blocked production orders. My assumption was straightforward: blocked orders are urgent, so they should dominate the dashboard. A production manager challenged that immediately.
+                      </p>
+                      <p className="text-lg italic text-zinc-850 border-l-4 border-blue-600 pl-6 my-4 bg-zinc-50/50 py-4 pr-4 rounded-r-xl font-normal">
+                        “Most of our production isn't blocked.”
+                      </p>
+                      <p>
+                        That single comment changed how I thought about operational dashboards. A dashboard shouldn't primarily communicate problems — it should communicate the current state of operations. I redesigned it to show production status distribution, active orders, inventory requiring attention, and incoming receipts together. Blocked orders stayed important, but became part of the overall picture rather than the entire story.
+                      </p>
+                    </div>
+
+                    {/* Operational Dashboard Revision Image */}
+                    <div className="pt-4 space-y-4" id="dashboard-annotated-visual">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase block">VISUALIZATION — REDESIGNED OPERATIONAL DASHBOARD</span>
+                      <AnnotatedScreenshot
+                        src="https://i.imgur.com/kJ97VNS.png"
+                        alt="Redesigned Operational Dashboard Mockup with interactive annotation hotspots"
+                        title="Redesigned Operational Dashboard"
+                        subtitle="Dashboard Cognitive Alignment"
+                        caption="Interactive Screenshot Guide: Click the numbered hotspots on the screenshot, or use the panel on the right to navigate key layout decisions."
+                        annotations={[
+                          {
+                            id: 'dash-sidebar',
+                            x: 8,
+                            y: 40,
+                            title: 'Humble Task Sidebar',
+                            description: 'A focused, highly simplified sidebar navigation designed for quick touch interactions on active shop floors. We removed administrative clutter to prevent user distraction.',
+                            badge: 'Navigation'
+                          },
+                          {
+                            id: 'dash-kpis',
+                            x: 28,
+                            y: 18,
+                            title: 'Live Operational KPIs',
+                            description: 'Real-time counters representing active production states (In Production, Ready) and operational alerts, immediately answering the most critical shop floor questions.',
+                            badge: 'KPI Status Bar'
+                          },
+                          {
+                            id: 'dash-blocked',
+                            x: 62,
+                            y: 18,
+                            title: 'Blocked Assembly Flag',
+                            description: 'Highlighted urgent items needing instant care. Clicking this hotspot directly opens the component shortages causing the block, helping the operator act instantly.',
+                            badge: 'Alert System'
+                          },
+                          {
+                            id: 'dash-queue',
+                            x: 45,
+                            y: 55,
+                            title: 'Active Assembly Queue',
+                            description: 'Real-time list of current production orders, sorted by active assembly status. Operators can tap any row to load the material build sheet immediately.',
+                            badge: 'Active Work'
+                          },
+                          {
+                            id: 'dash-summary',
+                            x: 88,
+                            y: 55,
+                            title: 'Contextual Action Panel',
+                            description: 'An action-oriented detail drawer showing direct specifications and quick action links for the selected order. Keeps operators fully in-flow without jumping context.',
+                            badge: 'Decision Support'
+                          }
+                        ]}
+                      />
+                    </div>
+
+                    {/* Section: Inventory Was Trying to Answer Two Different Questions */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Inventory Was Trying to Answer Two Different Questions
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Early versions of the Inventory module contained both production components and finished products. From a system perspective, this organization seemed reasonable.
+                      </p>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        However, inventory users viewed the screen very differently. For them, the primary question was:
+                      </p>
+                      <p className="text-sm font-medium text-zinc-850 italic pl-4 border-l-2 border-zinc-200 py-1">
+                        “Do we have the parts needed to build this production order?”
+                      </p>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Finished goods did not help answer that question. Based on this feedback, I removed finished products from the Inventory workflow entirely and redesigned the screen to focus exclusively on production components. This significantly improved clarity and reduced cognitive load.
+                      </p>
+
+                      {/* Redesign Diagram */}
+                      <div className="my-6 rounded-2xl overflow-hidden border border-zinc-150 bg-zinc-50/50 p-4 shadow-sm">
+                        <img 
+                          src="https://i.imgur.com/qCSorxc.png" 
+                          alt="Inventory Redesigned to Focus Exclusively on Production Components" 
+                          className="w-full h-auto rounded-xl border border-zinc-200 shadow-sm"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => handleImageError(e, "Inventory Redesign")}
+                        />
+                        <p className="text-[11px] font-mono text-zinc-400 mt-2 text-center">
+                          Visual Comparison: Removing finished goods to focus purely on active assembly parts
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Section: Real Workflows Are Not Linear */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Real Workflows Are Not Linear
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        One of the most valuable insights came from purchasing and operations users. Initially, purchase requests behaved like simple records. Once a request was created, the workflow effectively ended. Users quickly identified that this behavior did not match reality.
+                      </p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                        <div className="p-4 bg-red-50/10 border border-red-100 rounded-2xl space-y-2">
+                          <span className="text-[10px] font-mono font-bold text-red-500 uppercase tracking-wider block">In Practice (Operational Reality)</span>
+                          <ul className="text-xs text-zinc-655 space-y-2 font-light list-none">
+                            <li className="flex items-start gap-2">
+                              <span className="text-red-400 font-mono select-none">✕</span>
+                              <span>Suppliers often deliver only part of an order.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-red-400 font-mono select-none">✕</span>
+                              <span>Completed requests sometimes require correction.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-red-400 font-mono select-none">✕</span>
+                              <span>Users need the ability to reopen requests.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-red-400 font-mono select-none">✕</span>
+                              <span>Requests that have already been acted on should disappear from work queues.</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="p-4 bg-emerald-50/10 border border-emerald-100 rounded-2xl space-y-2">
+                          <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-wider block">Workflow Solutions Implemented</span>
+                          <ul className="text-xs text-zinc-655 space-y-2 font-light list-none">
+                            <li className="flex items-start gap-2">
+                              <span className="text-emerald-500 select-none">✓</span>
+                              <span>Support for partial receiving.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-emerald-500 select-none">✓</span>
+                              <span>Reopen request functionality.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-emerald-500 select-none">✓</span>
+                              <span>Removal of completed recommendations from active queues.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-emerald-500 select-none">✓</span>
+                              <span>More realistic request lifecycle states.</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light italic bg-zinc-50 p-4 border-l-2 border-blue-500 rounded-r-xl">
+                        "At this point, the system stopped behaving like a prototype and started behaving like an operational tool."
+                      </p>
+                    </div>
+
+                    {/* Section: Removing Information Mattered More Than Adding It */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Removing Information Mattered More Than Adding It
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Testing also revealed that some screens contained too much repeated information. For example, side panels often repeated data that users could already see in selected rows. Although this redundancy seemed helpful during design, users perceived it as noise.
+                      </p>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        As a result, I redesigned side panels to focus exclusively on critical workflow items rather than repeating existing table data:
+                      </p>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 my-3">
+                        {[
+                          { title: "Operational Context", desc: "Current status & history" },
+                          { title: "Related Records", desc: "Linked orders & parts" },
+                          { title: "Shortage Impact", desc: "Assembly queue delays" },
+                          { title: "Recommended Actions", desc: "Direct procurement pathways" }
+                        ].map((item, idx) => (
+                          <div key={idx} className="p-3 border border-zinc-150 rounded-xl bg-zinc-50/50 space-y-1">
+                            <span className="text-blue-600 font-mono text-[10px] font-bold block">0{idx + 1}</span>
+                            <h5 className="font-sans font-bold text-[11px] text-zinc-800 leading-tight">{item.title}</h5>
+                            <p className="text-[10px] text-zinc-450 leading-snug font-light">{item.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        This made the interfaces easier to scan and reduced unnecessary cognitive effort.
+                      </p>
+                    </div>
+
+                    {/* Section: Small Details Affect Trust */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Small Details Affect Trust
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Testing revealed another important lesson. Several users commented that stronger click animations made the interface feel unstable, almost as if the page was refreshing after every interaction.
+                      </p>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Although this was a relatively small visual detail, it affected users’ confidence in the system. I reduced interaction animations throughout the product and retained motion only where it helped communicate state changes or interaction feedback. The result was an interface that felt calmer, more predictable, and more trustworthy.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 8: Making the Product Behave Like Work */}
+                <motion.div 
+                  id="par-page-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">BEHAVIORAL OPERATIONAL FIT</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Making the Product Behave Like Work</h3>
+                    </div>
+
+                    {/* Section: Designing Workflows Over Screens */}
+                    <div className="space-y-4">
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Early versions of PAR successfully displayed information, but they didn't always behave the way real operational work behaves. During testing and iteration, I shifted focus from designing screens to designing workflows, states, and consequences — and that shift changed how the product actually worked.
+                      </p>
+                    </div>
+
+                    {/* Section: Purchase requests as a work queue */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Purchase Requests as a Work Queue
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        In early versions, purchase recommendations stayed visible even after a request had been created for them. It looked harmless in the UI; it felt wrong to purchasing users, who expected the list to behave like a work queue: if they'd already acted on something, it shouldn't still look like unfinished work. So purchase recommendations now disappear once a request is created, and users only ever see the work that still needs attention.
+                      </p>
+                      
+                      {/* Work Queue State Visualization */}
+                      <div className="pt-4 space-y-2">
+                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — THE WORK QUEUE TRANSITION DESIGN</span>
+                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
+                          <img 
+                            src="https://i.imgur.com/yKtOh5N.png" 
+                            alt="Purchase Requests Work Queue State Transition" 
+                            className="w-full h-auto object-cover"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => handleImageError(e, "Work Queue State Transition")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section: Supporting Partial Receiving */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Supporting Partial Receiving
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Initially, purchase requests could only be marked as either pending or received. However, users quickly pointed out that supplier deliveries rarely happen exactly as planned.
+                      </p>
+                      <div className="bg-zinc-50 border border-zinc-150 rounded-xl p-4 space-y-2 max-w-md">
+                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block tracking-wider">Example Scenario:</span>
+                        <ul className="text-xs text-zinc-600 space-y-1 font-mono list-disc pl-4">
+                          <li>100 components may be ordered</li>
+                          <li>only 40 components arrive</li>
+                          <li>the remaining quantity arrives later</li>
+                        </ul>
+                      </div>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        The system needed to support this reality. I introduced partial receiving states that allow users to:
+                      </p>
+                      <ul className="text-sm text-zinc-650 space-y-2 font-light list-none pl-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Record received quantities</strong> directly upon delivery.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Track remaining quantities</strong> outstanding from the vendor.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Continue monitoring incomplete deliveries</strong> without losing visibility.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Understand which production orders remain blocked</strong> until full delivery.</span>
+                        </li>
+                      </ul>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light pt-2">
+                        This change transformed receiving from a simple status update into an operational workflow.
+                      </p>
+                    </div>
+
+                    {/* Section: Allowing Users to Correct Mistakes */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Allowing Users to Correct Mistakes
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Another insight from testing was that operational systems cannot assume perfect execution. Mistakes happen. Requests may be closed accidentally, deliveries may be recorded incorrectly, and users may need to revise previous actions.
+                      </p>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        To support these scenarios and provide solid correction paths, I introduced:
+                      </p>
+                      <ul className="text-sm text-zinc-650 space-y-2 font-light list-none pl-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Reopen request functionality</strong> to easily undo premature closures.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Request cancellation</strong> to purge mistaken orders cleanly.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span><strong>Editable request states</strong> to adapt to fast-moving real-world conditions.</span>
+                        </li>
+                      </ul>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light pt-2">
+                        This provided users with correction paths and made the system feel significantly more trustworthy.
+                      </p>
+
+                      {/* Correction Paths State Visualization */}
+                      <div className="pt-4 space-y-2">
+                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — ERROR RECOVERY & CORRECTION STATES</span>
+                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
+                          <img 
+                            src="https://i.imgur.com/060G4ps.png" 
+                            alt="Error Recovery and Correction States" 
+                            className="w-full h-auto object-cover"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => handleImageError(e, "Error Recovery and Correction States")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section: Designing Forms Around User Intent */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Designing Forms Around User Intent
+                      </h4>
+                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
+                        Early prototypes prefilled both manually created and system-generated forms. Testing showed users found manually created forms less credible when prefilled — they expected to type that information themselves. So manually created production orders and purchase requests now start empty, while requests generated from a system recommendation stay prefilled, since the system already has that context. A small distinction, but it meaningfully improved how authentic the workflow felt.
+                      </p>
+
+                      {/* Prefill vs Empty States Visualization */}
+                      <div className="pt-4 space-y-2">
+                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — FORM PREFILL & USER INTENT MODES</span>
+                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
+                          <img 
+                            src="https://i.imgur.com/14p7lou.png" 
+                            alt="Designing Forms Around User Intent States" 
+                            className="w-full h-auto object-cover"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => handleImageError(e, "Form Prefill and User Intent Modes")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 9: Impact */}
+                <motion.div 
+                  id="par-page-9"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 border-b border-zinc-150 space-y-8"
+                >
+                  <div className="space-y-8">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">DELIVERED IMPACT METRICS</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Delivered Business Impact</h3>
+                    </div>
+                    <p className="text-zinc-650 leading-relaxed font-light">
+                      PAR Production Control evolved into a live internal product used by the company. Because the production data is confidential, this portfolio piece uses an anonymized interactive prototype that faithfully recreates the workflows, interface patterns, and decisions from the live system.
+                    </p>
+
+                    {/* Before & After Comparison Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="p-6 border border-red-100 bg-red-50/10 rounded-2xl space-y-3">
+                        <span className="text-xs font-bold text-red-600 uppercase tracking-wider font-mono bg-red-50 px-2.5 py-1 rounded-full w-fit block">BEFORE</span>
+                        <ul className="space-y-2 text-sm text-zinc-650 font-light list-none">
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold">●</span>
+                            <span>Production status required checking multiple spreadsheets and speaking with inventory and purchasing staff.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold">●</span>
+                            <span>Purchase requests were tracked separately from production needs.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold">●</span>
+                            <span>Receiving updates were recorded manually.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold">●</span>
+                            <span>Employees spent time locating information before taking action.</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="p-6 border border-emerald-100 bg-emerald-50/10 rounded-2xl space-y-3">
+                        <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider font-mono bg-emerald-50 px-2.5 py-1 rounded-full w-fit block">AFTER</span>
+                        <ul className="space-y-2 text-sm text-zinc-650 font-light list-none">
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">●</span>
+                            <span>Production, inventory, purchasing, and receiving status became visible in a single workflow.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">●</span>
+                            <span>Users could identify blocked production orders more quickly.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">●</span>
+                            <span>Purchase requests became directly traceable to production shortages.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">●</span>
+                            <span>Receiving status became easier to monitor and update.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500 font-bold">●</span>
+                            <span>Operational discussions shifted from finding information to deciding next actions.</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Operational Shift Table */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <p className="text-sm text-zinc-600 font-medium">
+                        Based on observation and feedback from the people using it day to day, that shift showed up consistently across every part of the workflow:
+                      </p>
+                      
+                      <div className="overflow-hidden border border-zinc-200/80 rounded-2xl shadow-sm bg-white">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse text-sm">
+                            <thead>
+                              <tr className="bg-zinc-50/80 border-b border-zinc-200">
+                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">Activity</th>
+                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">Before</th>
+                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">After</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100">
+                              <tr className="hover:bg-zinc-50/40 transition-colors">
+                                <td className="p-4 font-medium text-zinc-800">Checking production readiness</td>
+                                <td className="p-4 text-zinc-500 line-through">~10–15 minutes</td>
+                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">~1–2 minutes</td>
+                              </tr>
+                              <tr className="hover:bg-zinc-50/40 transition-colors">
+                                <td className="p-4 font-medium text-zinc-800">Identifying inventory shortages</td>
+                                <td className="p-4 text-zinc-500">Multiple spreadsheets and calls</td>
+                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Single screen</td>
+                              </tr>
+                              <tr className="hover:bg-zinc-50/40 transition-colors">
+                                <td className="p-4 font-medium text-zinc-800">Creating purchase requests</td>
+                                <td className="p-4 text-zinc-500">Manual lookup and entry</td>
+                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Context-driven workflow</td>
+                              </tr>
+                              <tr className="hover:bg-zinc-50/40 transition-colors">
+                                <td className="p-4 font-medium text-zinc-800">Tracking incoming materials</td>
+                                <td className="p-4 text-zinc-500">Manual follow-up</td>
+                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Centralized request tracking</td>
+                              </tr>
+                              <tr className="hover:bg-zinc-50/40 transition-colors">
+                                <td className="p-4 font-medium text-zinc-800">Determining next action</td>
+                                <td className="p-4 text-zinc-500">Required multiple stakeholders</td>
+                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Visible directly in the workflow</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      
+                      <p className="text-[11px] text-zinc-400 italic leading-relaxed font-light font-mono">
+                        These figures are based on observation and user feedback, intended to illustrate the shape of the improvement rather than serve as formal operational measurements.
+                      </p>
+                    </div>
+
+                    {/* Qualitative Impact Concluding Section */}
+                    <div className="space-y-4 border-t border-zinc-100 pt-6">
+                      <p className="text-zinc-650 leading-relaxed font-light">
+                        More qualitatively, users consistently responded well to three things: the connection between production, inventory, and purchasing workflows; the visibility of operational status and next actions; and the realistic behavior of purchasing and receiving.
+                      </p>
+                      <div className="p-6 bg-zinc-900 text-zinc-100 rounded-2xl space-y-2 my-4">
+                        <span className="text-[9px] text-zinc-500 font-mono font-bold uppercase tracking-widest block">CORE TAKEAWAY</span>
+                        <p className="text-lg md:text-xl font-medium font-sans leading-relaxed text-white italic">
+                          "Most importantly, operational conversations shifted from “where can I find this information?” to “what action should happen next?” — which became the real measure of success for the project."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Page 10: Reflection */}
+                <motion.div 
+                  id="par-page-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="py-6 space-y-6"
+                >
+                  <div className="space-y-6">
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">SUBTRACTIVE PARADIGM REFLECTION</span>
+                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Reflection & Takeaways</h3>
+                    </div>
+                    
+                    <p className="text-zinc-650 leading-relaxed font-light text-base">
+                      PAR fundamentally changed how I think about product design. At the start, I approached the problem as a system-design challenge — workflows, statuses, operational logic. Over time I realized users rarely think in terms of systems. They think in terms of work.
+                    </p>
+
+                    <div className="space-y-3 pt-2">
+                      <p className="text-sm font-medium text-zinc-800">
+                        Throughout the project, my initial assumptions were wrong more often than they were right:
+                      </p>
+                      <ul className="space-y-2 text-sm text-zinc-650 font-light list-none pl-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span>Users did not think in terms of “production readiness.”</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span>Dashboards should communicate operations, not only problems.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span>Inventory should answer production questions, not reporting questions.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span>Workflows must support mistakes, exceptions, and partial completion.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500 font-bold mt-0.5">•</span>
+                          <span>Interfaces become believable when actions have consequences.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <p className="text-zinc-650 leading-relaxed font-light pt-2">
+                      This project also reinforced the value of designing through subtraction. The challenge was never to build the largest manufacturing system possible — it was to understand which workflows mattered most and design them exceptionally well.
+                    </p>
+
+                    <div className="p-6 bg-zinc-900 text-zinc-100 rounded-2xl space-y-2 my-4">
+                      <span className="text-[9px] text-zinc-500 font-mono font-bold uppercase tracking-widest block">KEY OUTCOME</span>
+                      <p className="text-lg md:text-xl font-medium font-sans leading-relaxed text-white italic">
+                        "Internal tools become valuable not because they contain more features, but because they help people answer the right questions faster."
+                      </p>
+                    </div>
+
+                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
+                      <p>
+                        Looking back, the most valuable outcome of PAR wasn't the interface itself. It was learning how to translate a complex operational process into a product that feels understandable, believable, and useful to the people who rely on it every day — all in service of one question that guided every decision in the project:
+                      </p>
+                      
+                      <div className="pl-4 border-l-2 border-blue-500/80 my-4 py-1">
+                        <p className="text-base md:text-lg font-medium text-zinc-800 leading-relaxed font-sans italic">
+                          Can production move forward, and if not, what should happen next?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+
+
+              </div>
+            </div>
+
+            {/* Back Button */}
+            <section className="py-20 text-center border-t border-zinc-100 mt-16">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {!isMyCampus && !isWalkForPlastic && !isPathwaysBadgeQuest && !isMotionDesign && !isParProductionControl && (
           <section className="py-32 text-center">
             <div className="flex justify-center">
               <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>

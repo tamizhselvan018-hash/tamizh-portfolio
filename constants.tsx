@@ -55,18 +55,22 @@ export const CASE_STUDIES: CaseStudy[] = [
     tools: 'Figma, FigJam'
   },
   {
-    id: 'motion-design',
-    title: 'Motion Design',
-    category: 'Motion · Animation',
-    description: 'Bringing digital interfaces to life through purposeful movement and fluid transitions.',
-    tags: ['UI Animation', 'Lottie', 'Micro-interactions'],
+    id: 'par-production-control',
+    title: 'PAR Production Control',
+    category: 'Operations · Process Design · Full-Stack UX',
+    description: 'An internal production control tool for pump assembly companies, built around an interconnected operational workflow and subtraction design Strategy.',
+    tags: ['Operations UX', 'System Design', 'Workflow Tools'],
     images: [
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800'
+      'https://i.imgur.com/kJ97VNS.png',
+      'https://i.imgur.com/MSI21zc.png',
+      'https://i.imgur.com/qCSorxc.png'
     ],
-    color: 'bg-white',
-    isComingSoon: true
+    color: 'bg-[#1e293b]',
+    role: 'Product & Interaction Designer',
+    platform: 'B2B Technical Web App',
+    duration: '6 Weeks',
+    tools: 'Figma, React Prototyping, Usability Testing',
+    liveUrl: 'https://tamizhselvan018-hash.github.io/par-prototype/par-prototype.html'
   }
 ];
 
