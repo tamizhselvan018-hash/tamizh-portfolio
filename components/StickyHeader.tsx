@@ -4,7 +4,12 @@ import { motion, useScroll, AnimatePresence } from 'motion/react';
 import { TextFill } from './TextFill';
 import { Mail, Briefcase, Copy, Check } from 'lucide-react';
 
-export const StickyHeader: React.FC = () => {
+interface StickyHeaderProps {
+  activeView?: 'portfolio' | 'sandbox';
+  setActiveView?: (view: 'portfolio' | 'sandbox') => void;
+}
+
+export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfolio', setActiveView }) => {
   const { scrollYProgress } = useScroll();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -42,23 +47,68 @@ export const StickyHeader: React.FC = () => {
       />
 
       <div className="w-full flex justify-between items-center h-16">
-        <div className="text-xl font-black tracking-tighter">
+        <div 
+          className="text-xl font-black tracking-tighter cursor-pointer"
+          onClick={() => {
+            setActiveView?.('portfolio');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        >
           <TextFill text="Tamizh" delay={0.5} duration={1} fillColor="text-red-500" />
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          {['Works', 'About'].map((item, i) => (
-            <motion.a 
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 + i * 0.1 }}
-              className="font-medium text-sm hover:text-red-500 transition-colors"
-            >
-              {item}
-            </motion.a>
-          ))}
+          <motion.button 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            onClick={() => {
+              setActiveView?.('portfolio');
+              setTimeout(() => {
+                const el = document.getElementById('works');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+            className={`font-medium text-sm hover:text-red-500 transition-colors cursor-pointer ${
+              activeView === 'portfolio' ? 'text-zinc-900 font-semibold border-b-2 border-red-500 pb-0.5' : 'text-zinc-500'
+            }`}
+          >
+            Works
+          </motion.button>
+
+          <motion.button 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            onClick={() => {
+              setActiveView?.('sandbox');
+              setTimeout(() => {
+                const el = document.getElementById('design-system-playground');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }, 105);
+            }}
+            className={`font-medium text-sm hover:text-red-500 transition-colors cursor-pointer ${
+              activeView === 'sandbox' ? 'text-zinc-900 font-semibold border-b-2 border-red-500 pb-0.5' : 'text-zinc-500'
+            }`}
+          >
+            Design Sandbox
+          </motion.button>
+
+          <motion.button 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            onClick={() => {
+              setActiveView?.('portfolio');
+              setTimeout(() => {
+                const el = document.getElementById('about');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+            className="font-medium text-sm hover:text-red-500 transition-colors cursor-pointer text-zinc-500"
+          >
+            About
+          </motion.button>
 
           {/* Contact Dropdown */}
           <div className="relative" ref={dropdownRef}>

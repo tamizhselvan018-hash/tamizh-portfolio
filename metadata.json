@@ -1,6 +1,8 @@
 {
-  "name": "Tamizh Portfolio - UX Case Studies",
+  "name": "Remix: Tamizh Portfolio - UX Case Studies- Main",
   "description": "Designing digital products that solve real problems. I’m a Product Designer focused on mobile experiences, simplifying complex workflows, and creating user-centric solutions.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

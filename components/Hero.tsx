@@ -1,9 +1,92 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { TextFill } from './TextFill';
 import { Star } from 'lucide-react';
+
+const NameRotator: React.FC = () => {
+  return (
+    <span className="inline-block text-red-500 font-playfair italic select-none">
+      Tamizh
+    </span>
+  );
+};
+
+const TypingHeading: React.FC = () => {
+  const sentence = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 0.2,
+        staggerChildren: 0.03,
+      },
+    },
+  };
+
+  const letter = {
+    hidden: { opacity: 0, y: 5 },
+    visible: {
+      opacity: 1,
+      y: 0,
+    },
+  };
+
+  return (
+    <div className="flex flex-col items-center text-center w-full max-w-5xl px-4">
+      <motion.h1
+        variants={sentence}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="text-4xl sm:text-5xl md:text-7xl font-bold leading-[1.2] tracking-tight text-zinc-900 mb-6 flex flex-col items-center gap-y-3"
+      >
+        <span className="flex flex-wrap justify-center items-baseline gap-x-[0.25em] gap-y-1">
+          {["Hey,", "I'm", "Tamizh."].map((word, wIdx) => (
+            <span key={`l1-${wIdx}`} className="inline-block whitespace-nowrap">
+              {word.split("").map((char, cIdx) => {
+                const isTamizhWord = word === "Tamizh.";
+                const isPeriod = char === ".";
+                const isItalicRed = isTamizhWord && !isPeriod;
+                return (
+                  <motion.span
+                    key={cIdx}
+                    variants={letter}
+                    className={isItalicRed ? "text-red-500 font-playfair italic inline-block" : "inline-block"}
+                  >
+                    {char}
+                  </motion.span>
+                );
+              })}
+            </span>
+          ))}
+        </span>
+
+        <span className="flex flex-wrap justify-center items-center gap-x-[0.25em] gap-y-1 font-medium text-zinc-700 text-2xl sm:text-3xl md:text-5xl mt-3 leading-relaxed">
+          {["I", "design", "products", "—", "and", "I", "can", "actually", "build", "them", "too."].map((word, wIdx) => (
+            <span key={`l2-${wIdx}`} className="inline-block whitespace-nowrap">
+              {word.split("").map((char, cIdx) => {
+                const isDesign = word === "design";
+                const isBuild = word === "build";
+                const isItalicRed = isDesign || isBuild;
+                return (
+                  <motion.span
+                    key={cIdx}
+                    variants={letter}
+                    className={isItalicRed ? "text-red-500 font-playfair italic inline-block font-semibold" : "inline-block"}
+                  >
+                    {char}
+                  </motion.span>
+                );
+              })}
+            </span>
+          ))}
+        </span>
+      </motion.h1>
+    </div>
+  );
+};
 
 const ShootingStar = ({ delay, left, top }: { delay: number; left: string; top: string }) => (
   <motion.div
@@ -88,16 +171,7 @@ export const Hero: React.FC = () => {
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-br from-brand-50 via-white to-emerald-50 rounded-full blur-[120px] -z-10"
       />
 
-      <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight text-zinc-900 mb-8 max-w-5xl text-balance flex flex-wrap justify-center gap-x-[0.25em] gap-y-2">
-        <TextFill text="From" delay={0.2} />
-        <TextFill text="research" delay={0.4} className="font-playfair italic" fillColor="text-red-500" />
-        <TextFill text="to" delay={0.6} />
-        <TextFill text="design," delay={0.8} className="font-playfair italic" fillColor="text-red-500" />
-        <TextFill text="building" delay={1.0} />
-        <TextFill text="products" delay={1.1} />
-        <TextFill text="that" delay={1.2} />
-        <TextFill text="work." delay={1.3} className="font-playfair italic" fillColor="text-red-500" />
-      </h1>
+      <TypingHeading />
 
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -105,7 +179,7 @@ export const Hero: React.FC = () => {
         transition={{ duration: 0.8, delay: 1.6 }}
         className="text-zinc-500 text-xl md:text-2xl leading-relaxed max-w-3xl mb-10 text-balance"
       >
-        I combine UX research, product thinking, and design to create clear, effective digital experiences.
+        I specialize in UX research and interaction design.
       </motion.p>
 
       <motion.div

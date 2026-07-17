@@ -1,16 +1,122 @@
 
 import React from 'react';
-import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock, Monitor, Image, ArrowUpRight } from 'lucide-react';
+import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock, Monitor, Image, ArrowUpRight, Plus, Coins, Building } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { CaseStudy } from '../types';
 import { Button } from './Button';
 import { InteractiveBrowserMockup } from './MockScreens';
 import { AnnotatedScreenshot } from './AnnotatedScreenshot';
+import { FolderTag } from './FolderTag';
 
 interface CaseStudyDetailProps {
   project: CaseStudy;
   onBack: () => void;
 }
+
+interface ActiveElbowDotProps {
+  coord: { x: number; y: number };
+  nextCoord: { x: number; y: number };
+  yGap: number;
+  scrollYProgress: any;
+  index: number;
+}
+
+const ActiveElbowDot: React.FC<ActiveElbowDotProps> = ({ coord, nextCoord, yGap, scrollYProgress, index }) => {
+  const fill1 = useTransform(
+    scrollYProgress, 
+    [index / 5, (index + 0.5) / 5], 
+    ["#e4e4e7", "#ef4444"]
+  );
+  const scale1 = useTransform(
+    scrollYProgress, 
+    [index / 5, (index + 0.5) / 5], 
+    [0.8, 1.2]
+  );
+
+  const fill2 = useTransform(
+    scrollYProgress, 
+    [index / 5, (index + 1) / 5], 
+    ["#e4e4e7", "#ef4444"]
+  );
+  const scale2 = useTransform(
+    scrollYProgress, 
+    [index / 5, (index + 1) / 5], 
+    [0.8, 1.2]
+  );
+
+  return (
+    <React.Fragment>
+      <motion.circle 
+        cx={coord.x} 
+        cy={yGap} 
+        r="3" 
+        style={{
+          fill: fill1,
+          scale: scale1
+        }}
+      />
+      <motion.circle 
+        cx={nextCoord.x} 
+        cy={yGap} 
+        r="3" 
+        style={{
+          fill: fill2,
+          scale: scale2
+        }}
+      />
+    </React.Fragment>
+  );
+};
+
+const AnimatedCounter: React.FC<{ value: number; duration?: number }> = ({ value, duration = 1.2 }) => {
+  const [count, setCount] = React.useState(0);
+  const nodeRef = React.useRef<HTMLSpanElement>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          let startTime: number | null = null;
+          const start = 0;
+          const end = value;
+
+          const step = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+            // Easing function - easeOutQuad
+            const easeProgress = progress * (2 - progress);
+            
+            if (active) {
+              setCount(Math.floor(easeProgress * (end - start) + start));
+            }
+
+            if (progress < 1) {
+              window.requestAnimationFrame(step);
+            } else if (active) {
+              setCount(end);
+            }
+          };
+
+          window.requestAnimationFrame(step);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (nodeRef.current) {
+      observer.observe(nodeRef.current);
+    }
+
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [value, duration]);
+
+  return <span ref={nodeRef}>{count}</span>;
+};
 
 export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBack }) => {
 
@@ -19,6 +125,44 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
   const isPathwaysBadgeQuest = project.id === 'pathways-badge-quest';
   const isMotionDesign = project.id === 'motion-design';
   const isParProductionControl = project.id === 'par-production-control';
+
+  const isMeridianHealth = project.id === 'meridian-health';
+  const isStylebook = project.id === 'stylebook';
+  const isHomestead = project.id === 'homestead';
+  const isNorthLight = project.id === 'north-light';
+
+  // Meridian Health Interactive States
+  const [mhMobility, setMhMobility] = React.useState<Record<string, string>>({
+    'Left Shoulder': 'Normal',
+    'Right Shoulder': 'Slightly Restricted',
+    'Left Knee': 'Normal',
+    'Right Knee': 'Restricted'
+  });
+  const [mhMilestones, setMhMilestones] = React.useState<Record<string, boolean>>({
+    'Pincer Grasp': true,
+    'Bilateral Reach': false,
+    'Transfer Object': false
+  });
+
+  // Stylebook Interactive States
+  const [stylebookAppts, setStylebookAppts] = React.useState([
+    { id: 1, time: '10:00 AM', client: 'Alice Smith', service: 'Haircut & Blowout', stylist: 'Alex', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
+    { id: 2, time: '11:15 AM', client: 'John Miller', service: 'Beard Trim', stylist: 'Jordan', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-200' },
+    { id: 3, time: '12:30 PM', client: 'Sarah Connor', service: 'Balayage Color', stylist: 'Alex', color: 'bg-amber-500/10 text-amber-700 border-amber-200' }
+  ]);
+  const [stylebookStylist, setStylebookStylist] = React.useState('Alex');
+  const [stylebookClient, setStylebookClient] = React.useState('');
+  const [stylebookService, setStylebookService] = React.useState('Haircut & Blowout');
+  const [stylebookTime, setStylebookTime] = React.useState('02:00 PM');
+  const [stylebookConflict, setStylebookConflict] = React.useState(false);
+
+  // Homestead Interactive States
+  const [homesteadHomePrice, setHomesteadHomePrice] = React.useState(450000);
+  const [homesteadDownPaymentPct, setHomesteadDownPaymentPct] = React.useState(20);
+
+  // North Light Interactive States
+  const [northLightMode, setNorthLightMode] = React.useState<'control' | 'field'>('control');
+  const [northLightMutedAlerts, setNorthLightMutedAlerts] = React.useState<string[]>([]);
 
 
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -39,6 +183,201 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
   const [earnedBadges, setEarnedBadges] = React.useState<string[]>([]);
   const [gameMessage, setGameMessage] = React.useState<string>('Your orientation start-board is ready. Roll the dice to trace paths!');
   const [diceRolling, setDiceRolling] = React.useState(false);
+
+  // PAR Production Control Interactive States
+  const [parActiveStep, setParActiveStep] = React.useState<number>(1);
+  const [parCutHover, setParCutHover] = React.useState<string | null>(null);
+
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const howItWorksRef = React.useRef<HTMLDivElement>(null);
+  const { scrollYProgress: howItWorksScrollYProgress } = useScroll({
+    target: isParProductionControl ? howItWorksRef : undefined,
+    container: scrollContainerRef,
+    offset: ["start 40%", "end 60%"]
+  });
+  const howItWorksPathLength = useTransform(howItWorksScrollYProgress, [0, 1], [0, 1]);
+
+  interface Point {
+    x: number;
+    y: number;
+  }
+  interface RowBounds {
+    top: number;
+    bottom: number;
+  }
+  const [badgeCoords, setBadgeCoords] = React.useState<Point[]>([]);
+  const [rowBounds, setRowBounds] = React.useState<RowBounds[]>([]);
+  const badgeRefs = React.useRef<(HTMLElement | null)[]>([]);
+  const rowRefs = React.useRef<(HTMLElement | null)[]>([]);
+ 
+  const measureBadges = React.useCallback(() => {
+    if (!howItWorksRef.current) return;
+    const parentRect = howItWorksRef.current.getBoundingClientRect();
+    const coords: Point[] = [];
+    const bounds: RowBounds[] = [];
+    
+    for (let i = 0; i < 5; i++) {
+      const el = badgeRefs.current[i];
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        // Calculate center of the badge relative to the parent container
+        const x = rect.left - parentRect.left + rect.width / 2;
+        const y = rect.top - parentRect.top + rect.height / 2;
+        coords.push({ x, y });
+      }
+
+      const rowEl = rowRefs.current[i];
+      if (rowEl) {
+        const rect = rowEl.getBoundingClientRect();
+        const top = rect.top - parentRect.top;
+        const bottom = rect.bottom - parentRect.top;
+        bounds.push({ top, bottom });
+      }
+    }
+    
+    // Only update if coords have actually changed to avoid redundant renders
+    setBadgeCoords(prev => {
+      if (prev.length !== coords.length) return coords;
+      const changed = prev.some((p, i) => Math.abs(p.x - coords[i].x) > 1 || Math.abs(p.y - coords[i].y) > 1);
+      return changed ? coords : prev;
+    });
+
+    // Only update if row bounds have actually changed to avoid redundant renders
+    setRowBounds(prev => {
+      if (prev.length !== bounds.length) return bounds;
+      const changed = prev.some((b, i) => Math.abs(b.top - bounds[i].top) > 1 || Math.abs(b.bottom - bounds[i].bottom) > 1);
+      return changed ? bounds : prev;
+    });
+  }, []);
+
+  React.useEffect(() => {
+    measureBadges();
+    
+    // Set up a couple of timeouts for layout shifts
+    const t1 = setTimeout(measureBadges, 100);
+    const t2 = setTimeout(measureBadges, 500);
+    const t3 = setTimeout(measureBadges, 1500);
+
+    window.addEventListener('resize', measureBadges);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (howItWorksRef.current && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        measureBadges();
+      });
+      resizeObserver.observe(howItWorksRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', measureBadges);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [measureBadges]);
+
+  const getOrthogonalPath = React.useCallback((coords: Point[], bounds: RowBounds[]) => {
+    if (coords.length < 2) return "";
+    let d = "";
+    for (let i = 0; i < coords.length - 1; i++) {
+      const p1 = coords[i];
+      const p2 = coords[i + 1];
+      let y_gap = (p1.y + p2.y) / 2;
+      if (bounds[i] && bounds[i + 1]) {
+        y_gap = (bounds[i].bottom + bounds[i + 1].top) / 2;
+      }
+      
+      if (i === 0) {
+        d += `M ${p1.x} ${p1.y}`;
+      }
+      
+      // Go vertically down from p1.x to the gap height (y_gap)
+      d += ` L ${p1.x} ${y_gap}`;
+      // Go horizontally across the gap from p1.x to p2.x
+      d += ` L ${p2.x} ${y_gap}`;
+      // Go vertically down from the gap height (y_gap) to p2.y
+      d += ` L ${p2.x} ${p2.y}`;
+    }
+    return d;
+  }, []);
+
+  const pathD = React.useMemo(() => {
+    return getOrthogonalPath(badgeCoords, rowBounds);
+  }, [badgeCoords, rowBounds, getOrthogonalPath]);
+
+  const parWorkflowSteps = [
+    {
+      num: "01",
+      name: "Create",
+      title: "Initiate Production",
+      desc: "An order is initiated for assembly on the shop floor with a specified Bill of Materials (BOM).",
+      icon: Plus,
+      color: "border-red-100 bg-red-50/50 text-red-600",
+      img: "https://i.imgur.com/14p7lou.png"
+    },
+    {
+      num: "02",
+      name: "Verify",
+      title: "Verify Inventory",
+      desc: "The system automatically matches order requirements against physical stock levels instantly.",
+      icon: CheckCircle,
+      color: "border-amber-100 bg-amber-50/50 text-amber-600",
+      img: "https://i.imgur.com/MSI21zc.png"
+    },
+    {
+      num: "03",
+      name: "Resolve",
+      title: "Resolve Shortages",
+      desc: "Missing components trigger auto-generated purchase cards with context-driven 1-click requisition.",
+      icon: Zap,
+      color: "border-indigo-100 bg-indigo-50/50 text-indigo-600",
+      img: "https://i.imgur.com/qCSorxc.png"
+    },
+    {
+      num: "04",
+      name: "Receive",
+      title: "Receive Materials",
+      desc: "Suppliers' partial deliveries are logged dynamically, and outstanding amounts are kept on active watch.",
+      icon: RefreshCw,
+      color: "border-purple-100 bg-purple-50/50 text-purple-600",
+      img: "https://i.imgur.com/yKtOh5N.png"
+    },
+    {
+      num: "05",
+      name: "Produce",
+      title: "Produce Pump",
+      desc: "The instant final parts arrive, the order is unblocked in the queue and heads to the assembly line.",
+      icon: Sparkles,
+      color: "border-emerald-100 bg-emerald-50/50 text-emerald-600",
+      img: "https://i.imgur.com/060G4ps.png"
+    }
+  ];
+
+  const cutFeatures = [
+    {
+      name: "Supplier management",
+      why: "The pump manufacturing company already had a fully functioning supplier database in their ERP. Building a duplicate interface inside the production app would create data conflicts and increase maintenance overhead without adding design value."
+    },
+    {
+      name: "Advanced scheduling",
+      why: "Observation showed that managers preferred a simple whiteboard scheduling session over a complex automated drag-and-drop calendar. Forcing software-guided scheduling created system resistance; a flexible queue model was far more effective."
+    },
+    {
+      name: "Reporting dashboards",
+      why: "Recruiters and managers alike often think tools need endless charts. But users in the plant didn't want charts — they wanted to know what to build next. An actionable list unblocked them, while passive telemetry only cluttered their screens."
+    },
+    {
+      name: "BOM admin",
+      why: "Pump configurations are engineering-controlled. Changing Bill of Materials specs on the shop floor is extremely dangerous. Keeping this read-only in the app eliminated the risk of critical manufacturing errors."
+    },
+    {
+      name: "Warehouse management",
+      why: "A comprehensive warehouse locator requires barcode scanning and physical layout mappings. We focused strictly on active production parts to deliver immediate value within a 2-month timeline, leaving generic storage for later."
+    }
+  ];
 
   const features = [
     { 
@@ -117,85 +456,170 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
     );
   };
 
+  const isLight = project.color === 'bg-white' || project.textColor === 'text-zinc-950';
+
   return (
     <motion.div 
+      ref={scrollContainerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white min-h-screen selection:bg-[#0a3161]/10 selection:text-[#0a3161]"
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed inset-0 z-50 bg-[#FAF9F6] overflow-y-auto w-full h-full selection:bg-[#0a3161]/10 selection:text-[#0a3161]"
     >
-      {/* Navigation */}
+      {/* Dual Engineering Blueprint Grid Background */}
+      <div className="fixed inset-0 opacity-[0.035] pointer-events-none z-0" style={{
+        backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
+        backgroundSize: '40px 40px'
+      }} />
+      <div className="fixed inset-0 opacity-[0.012] pointer-events-none z-0" style={{
+        backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
+        backgroundSize: '8px 8px'
+      }} />
+
+      <div className="relative z-10">
+        {/* Navigation */}
       <motion.nav 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl px-6 py-3 border-b border-zinc-100"
+        transition={{ delay: 0.1 }}
+        className="sticky top-0 z-50 w-full bg-[#FAF9F6]/80 backdrop-blur-xl px-6 py-4 border-b border-zinc-150/40"
       >
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <button 
             onClick={onBack}
             className="group flex items-center gap-2 font-semibold text-sm hover:text-zinc-500 transition-colors"
           >
-            <div className="p-1 rounded-full border border-zinc-200 group-hover:-translate-x-1 transition-transform">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="p-1 rounded-full border border-zinc-200 group-hover:-translate-x-1 transition-transform bg-white">
+              <svg className="w-3.5 h-3.5 text-zinc-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </div>
-            Back to portfolio
+            <span className="text-zinc-800">Back to portfolio</span>
           </button>
-          <div className="text-base font-black tracking-tighter">Tamizh</div>
+          <div className="text-base font-black tracking-tighter text-zinc-900">Tamizh</div>
         </div>
       </motion.nav>
 
-      {/* Case Study Header */}
-      <header className="max-w-5xl mx-auto px-6 pt-10 pb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-8">
-          <div className="space-y-3 flex-1">
-            <h1 className={isParProductionControl 
-              ? "text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-zinc-900 font-sans" 
-              : `text-4xl md:text-6xl font-bold tracking-tighter leading-tight font-playfair italic ${
-                  isWalkForPlastic ? 'text-[#0a3161]' :
-                  isMyCampus ? 'text-[#b31942]' :
-                  isPathwaysBadgeQuest ? 'text-[#5a8c69]' :
-                  'text-[#0a3161]'
-                }`
-            }>
-              {project.title}
-            </h1>
-            <p className={isParProductionControl
-              ? "text-lg md:text-xl text-zinc-600 max-w-3xl leading-relaxed font-sans font-normal mt-3"
-              : "text-lg md:text-xl text-zinc-400 max-w-2xl leading-snug font-light"
-            }>
-              {project.description}
-            </p>
-            {isParProductionControl && (
-              <div className="flex flex-wrap gap-x-8 gap-y-3 pt-4 border-t border-zinc-150 mt-6 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
-                <div><span className="font-bold text-zinc-400">Role:</span> {project.role}</div>
-                <div><span className="font-bold text-zinc-400">Platform:</span> {project.platform}</div>
-                <div><span className="font-bold text-zinc-400">Tools:</span> {project.tools}</div>
+      {/* Case Study Header Banner */}
+      <motion.div
+        layoutId={`card-container-${project.id}`}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={`relative ${project.color} ${isLight ? 'text-zinc-800 border border-zinc-100' : 'text-white'} mx-4 md:mx-8 mt-6 mb-12 p-8 md:p-16 rounded-[40px] overflow-hidden shadow-xl`}
+      >
+        {/* Abstract background shapes */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/5 blur-[80px] rounded-full pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col justify-between h-full max-w-5xl mx-auto">
+          <div className="space-y-4">
+            <motion.p 
+              layoutId={`card-category-${project.id}`}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className={`text-xs font-semibold uppercase tracking-widest ${isLight ? 'text-zinc-500' : 'text-white/60'} block text-left`}
+            >
+              {project.category}
+            </motion.p>
+            
+            <div className="flex flex-wrap items-center justify-between gap-6">
+              <div className="flex-1 min-w-[280px]">
+                <motion.h1 
+                  layoutId={`card-title-${project.id}`}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight block text-left font-sans"
+                >
+                  {isParProductionControl ? "PAR — Production Control" : project.title}
+                </motion.h1>
               </div>
-            )}
-          </div>
-          {project.liveUrl && !isParProductionControl && (
-            <div className="flex-shrink-0 pt-2 md:pt-0">
-              <a 
-                href={project.liveUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-2 font-sans text-sm font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg active:scale-95 duration-200 ${
-                  isParProductionControl 
-                    ? 'bg-zinc-900 hover:bg-zinc-800 text-white' 
-                    : 'bg-[#0a3161] hover:bg-[#07244a] text-white'
-                }`}
-              >
-                View Live App
-                <ArrowUpRight className="w-4 h-4" />
-              </a>
+              
+              {project.liveUrl && !isParProductionControl && (
+                <div className="flex-shrink-0">
+                  <a 
+                    href={project.liveUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center gap-2 font-sans text-sm font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg active:scale-95 duration-200 ${
+                      isLight 
+                        ? 'bg-zinc-900 hover:bg-zinc-800 text-white' 
+                        : 'bg-white text-zinc-900 hover:bg-zinc-100'
+                    }`}
+                  >
+                    View Live App
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
+                </div>
+              )}
             </div>
-          )}
+
+            <motion.p 
+              layoutId={`card-desc-${project.id}`}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className={`text-lg md:text-xl font-light leading-relaxed max-w-3xl block text-left ${isLight ? 'text-zinc-600' : 'text-white/90'}`}
+            >
+              {isParProductionControl 
+                ? "A connected production, inventory, and purchasing workflow for a pump manufacturing company." 
+                : project.description}
+            </motion.p>
+          </div>
+
+          {/* Quick Info Matrix */}
+          {(() => {
+            return (
+              <div className={`pt-8 mt-10 border-t ${isLight ? 'border-zinc-200/50' : 'border-white/10'} flex flex-col md:flex-row md:items-end md:justify-between gap-6 text-[11px] font-mono uppercase tracking-wider`}>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1 w-full">
+                  <div>
+                    <span className={`block font-bold mb-1 ${isLight ? 'text-zinc-400' : 'text-white/40'}`}>Role:</span>
+                    <span className={isLight ? 'text-zinc-800' : 'text-white'}>{project.role}</span>
+                  </div>
+                  <div>
+                    <span className={`block font-bold mb-1 ${isLight ? 'text-zinc-400' : 'text-white/40'}`}>Platform:</span>
+                    <span className={isLight ? 'text-zinc-800' : 'text-white'}>{project.platform}</span>
+                  </div>
+                  <div>
+                    <span className={`block font-bold mb-1 ${isLight ? 'text-zinc-400' : 'text-white/40'}`}>Duration:</span>
+                    <span className={isLight ? 'text-zinc-800' : 'text-white'}>{project.duration}</span>
+                  </div>
+                  <div>
+                    <span className={`block font-bold mb-1 ${isLight ? 'text-zinc-400' : 'text-white/40'}`}>Tools:</span>
+                    <span className={isLight ? 'text-zinc-800' : 'text-white'}>{project.tools}</span>
+                  </div>
+                </div>
+                
+                {/* Folder tags for the case study inline/parallel to the quick info line */}
+                <div className="flex items-center gap-3.5 self-start md:self-auto pt-2 md:pt-0">
+                  {project.tags.slice(0, 2).map((tag) => {
+                    const colors = (() => {
+                      if (isLight) {
+                        return { fillColor: '#09090b', textColorClass: 'text-white', isDark: true };
+                      }
+                      if (isWalkForPlastic) {
+                        return { fillColor: '#ffffff', textColorClass: 'text-[#0D9488]', isDark: false };
+                      }
+                      if (isMyCampus) {
+                        return { fillColor: '#ffffff', textColorClass: 'text-[#4338CA]', isDark: false };
+                      }
+                      if (isParProductionControl) {
+                        return { fillColor: '#ffffff', textColorClass: 'text-[#065f46]', isDark: false };
+                      }
+                      return { fillColor: '#ffffff', textColorClass: 'text-zinc-950', isDark: false };
+                    })();
+
+                    return (
+                      <FolderTag 
+                        key={tag}
+                        text={tag}
+                        fillColor={colors.fillColor}
+                        textColorClass={colors.textColorClass}
+                        isDark={colors.isDark}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </div>
-      </header>
+      </motion.div>
 
       {/* Main Content */}
       <main className={`mx-auto pb-20 space-y-12 ${isParProductionControl ? 'w-full max-w-none px-0' : 'px-6 max-w-5xl'}`}>
@@ -705,13 +1129,20 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 <p className="text-base text-zinc-600 leading-relaxed font-light">This project reinforced the value of simplifying complex systems, maintaining consistency across interactions, and designing experiences that support long-term engagement rather than one-time use.</p>
               </div>
             </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
+              </div>
+            </section>
           </>
         )}
 
         {isMyCampus && (
           <>
             {/* Section 1: The Challenge */}
-            <section className="space-y-6">
+            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">01. The Context</span>
                 <h2 className="text-3xl font-bold tracking-tight">University life is chaotic.</h2>
@@ -741,7 +1172,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Section 2: Research Insights */}
-            <section className="space-y-6">
+            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">02. Discovery</span>
                 <h2 className="text-3xl font-bold tracking-tight">Listening to the Students</h2>
@@ -762,7 +1193,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="p-5 bg-white border border-zinc-100 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                    className="p-5 bg-zinc-50/80 border border-zinc-200 rounded-2xl shadow-sm hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                   >
                     <p className="text-sm italic text-zinc-700 mb-4 leading-relaxed">"{quote.q}"</p>
                     <div className="flex items-center gap-2">
@@ -787,12 +1218,12 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="space-y-6"
+              className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md"
             >
                <div className="space-y-2">
                  <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03. The Core Problem</span>
                </div>
-               <div className="bg-[#b31942] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
+               <div className="bg-[#b31942] text-white p-8 md:p-12 rounded-[28px] relative overflow-hidden shadow-xl">
                   <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 blur-[100px] rounded-full"></div>
                   <div className="relative z-10 space-y-4">
                     <div className="space-y-2">
@@ -808,7 +1239,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </motion.section>
 
             {/* Section 4: Information Architecture */}
-            <section className="space-y-8">
+            <section className="space-y-8 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
                <div className="space-y-2">
                   <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">04. Information Architecture</span>
                   <h2 className="text-3xl font-bold tracking-tight">Information Architecture</h2>
@@ -819,8 +1250,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                <div className="space-y-4">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Entry Flow</h4>
                   <div className="flex items-center gap-2.5">
-                     <div className="px-4 py-2 bg-white border border-zinc-200 rounded-xl font-medium text-xs shadow-sm">Onboarding</div>
-                     <ArrowRight className="w-3.5 h-3.5 text-zinc-300" />
+                     <div className="px-4 py-2 bg-white border border-zinc-300 rounded-xl font-medium text-xs shadow-md">Onboarding</div>
+                     <ArrowRight className="w-3.5 h-3.5 text-zinc-400" />
                      <div className="px-4 py-2 bg-zinc-900 text-white rounded-xl font-medium text-xs shadow-lg">Dashboard</div>
                   </div>
                </div>
@@ -849,50 +1280,54 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                            <span className="text-[8px] font-bold uppercase tracking-wider">{item.label}</span>
                         </motion.div>
                      ))}
-                  </div>
+                           </div>
                </div>
 
                {/* Section Structure Table */}
                <div className="space-y-4">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Section Structure</h4>
-                  <div className="overflow-hidden border border-zinc-100 rounded-[20px] shadow-sm">
+                  <div className="overflow-hidden border border-zinc-200 rounded-[20px] shadow-lg bg-white">
                      <table className="w-full text-left">
-                        <thead className="bg-zinc-50 border-b border-zinc-100">
+                        <thead className="bg-[#0a3161]/5 border-b border-[#0a3161]/10">
                         <tr>
-                           <th className="px-5 py-3 font-bold text-[9px] uppercase tracking-widest text-zinc-400">SECTION</th>
-                           <th className="px-5 py-3 font-bold text-[9px] uppercase tracking-widest text-zinc-400">BROWSE</th>
-                           <th className="px-5 py-3 font-bold text-[9px] uppercase tracking-widest text-zinc-400">DETAIL</th>
+                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">SECTION</th>
+                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">BROWSE</th>
+                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">DETAIL</th>
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
                         {[
-                           { s: "Dashboard", b: "Curated feed", d: "Search & discovery" },
-                           { s: "Events", b: "Event list", d: "Event detail" },
-                           { s: "Academic", b: "Academic event list", d: "Academic event detail" },
-                           { s: "Professors", b: "Professor directory", d: "Professor profile" },
-                           { s: "Career", b: "Career services & events", d: "Service or event detail" }
+                           { s: "Dashboard", b: "Curated feed", d: "Search & discovery", badge: "bg-zinc-100 text-zinc-800 border border-zinc-300" },
+                           { s: "Events", b: "Event list", d: "Event detail", badge: "bg-lime-50 text-lime-800 border border-lime-200" },
+                           { s: "Academic", b: "Academic event list", d: "Academic event detail", badge: "bg-sky-50 text-sky-800 border border-sky-200" },
+                           { s: "Professors", b: "Professor directory", d: "Professor profile", badge: "bg-yellow-50 text-yellow-800 border border-yellow-200" },
+                           { s: "Career", b: "Career services & events", d: "Service or event detail", badge: "bg-orange-50 text-orange-800 border border-orange-200" }
                         ].map((row, i) => (
                            <tr key={i} className="group hover:bg-[#0a3161]/5 transition-colors">
-                              <td className="px-5 py-3 font-bold text-zinc-900 text-xs">{row.s}</td>
-                              <td className="px-5 py-3 text-zinc-600 text-xs">{row.b}</td>
-                              <td className="px-5 py-3 text-zinc-500 italic text-xs">{row.d}</td>
+                              <td className="px-5 py-4 font-bold text-zinc-900 text-xs">
+                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${row.badge}`}>
+                                    {row.s}
+                                 </span>
+                              </td>
+                              <td className="px-5 py-4 text-zinc-700 text-xs font-medium">{row.b}</td>
+                              <td className="px-5 py-4 text-zinc-600 italic text-xs font-light">{row.d}</td>
                            </tr>
                         ))}
                         </tbody>
-                     </table>
+                      </table>
                   </div>
                </div>
 
                {/* Note */}
-               <div className="bg-green-50/50 border border-green-100 p-5 rounded-xl">
-                  <p className="text-green-800 text-xs font-medium leading-relaxed">
+               <div className="bg-green-50 border border-green-200 p-5 rounded-xl shadow-sm">
+                  <p className="text-green-900 text-xs font-medium leading-relaxed">
                      Every section follows a consistent <span className="font-bold">browse → detail → action</span> structure, allowing interaction patterns learned in one section to transfer across the platform.
                   </p>
                </div>
             </section>
 
             {/* Section 5: User Testing */}
-            <section className="space-y-12">
+            <section className="space-y-12 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-[1px] bg-[#0a3161]"></span>
@@ -900,10 +1335,10 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight">What Testing Changed</h2>
                 <p className="text-base text-zinc-500 font-light max-w-2xl">
-                  I conducted moderated usability walkthroughs with six participants from earlier interviews, asking them to explore professors, browse events, and attempt booking actions while thinking aloud. The goal was to observe friction — not just task completion.
+                   I conducted moderated usability walkthroughs with six participants from earlier interviews, asking them to explore professors, browse events, and attempt booking actions while thinking aloud. The goal was to observe friction — not just task completion.
                 </p>
-                <div className="bg-green-50/50 border border-green-100 p-4 rounded-xl max-w-2xl">
-                  <p className="text-green-800 text-xs font-medium">Testing revealed structural gaps that were not obvious during initial design.</p>
+                <div className="bg-green-50 border border-green-200 p-4 rounded-xl max-w-2xl shadow-sm">
+                   <p className="text-green-900 text-xs font-medium">Testing revealed structural gaps that were not obvious during initial design.</p>
                 </div>
               </div>
 
@@ -922,10 +1357,10 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   </div>
                   <div className="space-y-4 max-w-2xl">
                     <p className="text-base text-zinc-600 leading-relaxed font-light">
-                      Users were able to discover content through the dashboard tiles, but switching between sections required returning to the home screen repeatedly.
+                       Users were able to discover content through the dashboard tiles, but switching between sections required returning to the home screen repeatedly.
                     </p>
-                    <div className="bg-[#0a3161]/5 p-5 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm">
-                      "Do I have to go back to the dashboard every time?"
+                    <div className="bg-zinc-50 border border-zinc-200 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">
+                       "Do I have to go back to the dashboard every time?"
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This revealed unnecessary navigation loops.</p>
                   </div>
@@ -939,11 +1374,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest">BEFORE</span>
                         <p className="text-[10px] text-zinc-500 mt-1">No Bottom Nav (Dashboard)</p>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[28px] p-6 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[28px] p-6 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/F8QgZSd.png" 
                           alt="Before: No Bottom Nav" 
-                          className="w-[150px] h-auto rounded-xl shadow-xl border border-zinc-100"
+                          className="w-[150px] h-auto rounded-xl shadow-xl border border-zinc-200"
                           referrerPolicy="no-referrer"
                         />
                       </div>
@@ -953,18 +1388,18 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         <span className="text-[9px] font-bold text-green-500 uppercase tracking-widest">AFTER</span>
                         <p className="text-[10px] text-zinc-500 mt-1">Persistent Bottom Nav</p>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[28px] p-6 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[28px] p-6 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/4lQw02B.png" 
                           alt="After: Persistent Bottom Nav" 
-                          className="w-[150px] h-auto rounded-xl shadow-xl border border-zinc-100"
+                          className="w-[150px] h-auto rounded-xl shadow-xl border border-zinc-200"
                           referrerPolicy="no-referrer"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-150">
                     <div className="space-y-2">
                       <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Improvement</h4>
                       <p className="text-sm text-zinc-700 font-light leading-relaxed">I introduced a persistent bottom navigation bar with five core sections: Home, Professors, Events, Career, and Saved.</p>
@@ -999,8 +1434,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       During event exploration, participants showed interest but hesitated to commit immediately.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-[#0a3161]/5 p-5 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm">"I'm interested, but I'm not ready to register yet."</div>
-                      <div className="bg-[#0a3161]/5 p-5 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm">"I'll screenshot this so I don't forget."</div>
+                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">"I'm interested, but I'm not ready to register yet."</div>
+                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">"I'll screenshot this so I don't forget."</div>
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This highlighted a behavioral gap — the system allowed discovery, but not intent capture.</p>
                   </div>
@@ -1013,7 +1448,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       <div className="text-center h-5 flex items-center justify-center">
                         <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Event Tile</span>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[40px] p-8 flex justify-center transition-all duration-500 hover:scale-[1.05]">
+                      <div className="bg-zinc-50 rounded-[40px] p-8 border border-zinc-200 shadow-sm flex justify-center transition-all duration-500 hover:scale-[1.05] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/wFRw6pN.png" 
                           alt="Event Tile: Save Button Added" 
@@ -1021,24 +1456,24 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           referrerPolicy="no-referrer"
                         />
                       </div>
-                      <div className="bg-green-50/50 border border-green-100 p-2.5 rounded-lg text-center max-w-[200px] mx-auto">
-                        <p className="text-[10px] font-bold text-green-700">Tap bookmark → item saved</p>
+                      <div className="bg-green-50 border border-green-200 p-2.5 rounded-lg text-center max-w-[200px] mx-auto shadow-sm">
+                        <p className="text-[10px] font-bold text-green-800">Tap bookmark → item saved</p>
                       </div>
                     </div>
                     <div className="space-y-6">
                       <div className="text-center h-5 flex items-center justify-center">
                         <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Saved Section</span>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[40px] p-8 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[40px] p-8 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/3AR8Sbv.png" 
                           alt="Dedicated Saved Section" 
-                          className="w-[180px] h-auto rounded-2xl shadow-xl border border-zinc-100"
+                          className="w-[180px] h-auto rounded-2xl shadow-xl border border-zinc-200"
                           referrerPolicy="no-referrer"
                         />
                       </div>
-                      <div className="bg-green-50/50 border border-green-100 p-2.5 rounded-lg text-center max-w-[200px] mx-auto">
-                        <p className="text-[10px] font-bold text-green-700">All saved items in one place</p>
+                      <div className="bg-green-50 border border-green-200 p-2.5 rounded-lg text-center max-w-[200px] mx-auto shadow-sm">
+                        <p className="text-[10px] font-bold text-green-800">All saved items in one place</p>
                       </div>
                     </div>
                   </div>
@@ -1078,11 +1513,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   </div>
                   <div className="space-y-4 max-w-3xl">
                     <p className="text-base text-zinc-600 leading-relaxed font-light">
-                      During usability walkthroughs, when participants tapped "Book Meeting" on a professor's profile, several paused briefly and looked for confirmation that the action had gone through.
+                       During usability walkthroughs, when participants tapped "Book Meeting" on a professor's profile, several paused briefly and looked for confirmation that the action had gone through.
                     </p>
                     <div className="flex flex-wrap gap-2 mt-4 items-start">
-                      <div className="bg-[#0a3161]/5 p-4 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm w-fit">"Did it go through?"</div>
-                      <div className="bg-[#0a3161]/5 p-4 rounded-xl border-l-4 border-[#0a3161]/20 italic text-zinc-600 text-sm whitespace-normal md:whitespace-nowrap">"One participant instinctively tapped the button a second time."</div>
+                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-4 rounded-r-xl italic text-zinc-700 text-sm w-fit shadow-sm">"Did it go through?"</div>
+                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-4 rounded-r-xl italic text-zinc-700 text-sm whitespace-normal md:whitespace-nowrap shadow-sm">"One participant instinctively tapped the button a second time."</div>
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This revealed a gap in immediate system feedback — the booking completed, but the interface gave no visible signal that it had.</p>
                   </div>
@@ -1095,11 +1530,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       <div className="text-center mb-1">
                         <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">1. Profile</span>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[20px] p-5 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/dNCYdrw.png" 
                           alt="1. Profile" 
-                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
+                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-200"
                           referrerPolicy="no-referrer"
                           onError={(e) => handleImageError(e, "1. Profile")}
                         />
@@ -1109,11 +1544,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       <div className="text-center mb-1">
                         <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">2. Selection</span>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[20px] p-5 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/t8tUPoc.png" 
                           alt="2. Selection" 
-                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
+                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-200"
                           referrerPolicy="no-referrer"
                           onError={(e) => handleImageError(e, "2. Selection")}
                         />
@@ -1123,11 +1558,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       <div className="text-center mb-1">
                         <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">3. Confirmation</span>
                       </div>
-                      <div className="bg-[#0a3161]/5 rounded-[20px] p-5 border border-[#0a3161]/10 flex justify-center shadow-inner transition-all duration-500 hover:scale-[1.02] hover:shadow-xl">
+                      <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
                           src="https://i.imgur.com/I0Yh5az.png" 
                           alt="3. Confirmation" 
-                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-100"
+                          className="w-[130px] h-auto rounded-lg shadow-lg border border-zinc-200"
                           referrerPolicy="no-referrer"
                           onError={(e) => handleImageError(e, "3. Confirmation")}
                         />
@@ -1135,7 +1570,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-200">
                     <div className="space-y-2">
                       <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Improvement</h4>
                       <p className="text-sm text-zinc-700 font-light leading-relaxed">I introduced a <span className="font-bold text-[#0a3161]">Meeting Confirmed</span> success toast that appears momentarily after booking — keeping the user on the professor profile without any page transition.</p>
@@ -1151,39 +1586,40 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </div>
                   </div>
                 </div>
-                <div className="bg-zinc-50 p-5 rounded-[20px] border border-zinc-100">
-                  <p className="text-zinc-600 font-medium text-xs">A small piece of feedback eliminated a significant source of confusion.</p>
+                <div className="bg-zinc-50 p-5 rounded-[20px] border border-zinc-200 shadow-sm">
+                  <p className="text-zinc-700 font-medium text-xs">A small piece of feedback eliminated a significant source of confusion.</p>
                 </div>
               </motion.div>
             </section>
 
-            <section className="space-y-8 py-5">
+            {/* Section 6: The Outcome */}
+            <section className="space-y-8 py-5 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">06. The Outcome</span>
                 <h2 className="text-3xl font-bold tracking-tight">Impact & Result</h2>
               </div>
-              <div className="bg-[#0a3161]/5 p-8 md:p-12 rounded-[40px] border border-[#0a3161]/10 space-y-12">
+              <div className="space-y-12">
                   <div className="space-y-6 max-w-2xl">
                     <div className="space-y-4">
                       <h4 className="text-lg font-bold">Unified Academic Life</h4>
-                      <p className="text-sm text-zinc-600 leading-relaxed font-light">
-                         The final prototype created a "single pane of glass" for the university experience, reducing the average time to find a professor's research alignment by 65%.
+                      <p className="text-sm text-zinc-700 leading-relaxed font-light">
+                          The final prototype created a "single pane of glass" for the university experience, reducing the average time to find a professor's research alignment by 65%.
                       </p>
                       <div className="grid grid-cols-2 gap-3">
                          <div className="space-y-1">
                             <p className="text-xl font-bold text-[#0a3161]">88%</p>
-                            <p className="text-[8px] text-zinc-400 uppercase tracking-widest font-bold">Usability Score</p>
+                            <p className="text-[8px] text-zinc-500 uppercase tracking-widest font-bold">Usability Score</p>
                          </div>
                          <div className="space-y-1">
                             <p className="text-xl font-bold text-[#0a3161]">65%</p>
-                            <p className="text-[8px] text-zinc-400 uppercase tracking-widest font-bold">Search Efficiency</p>
+                            <p className="text-[8px] text-zinc-500 uppercase tracking-widest font-bold">Search Efficiency</p>
                          </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Embedded Prototype */}
-                  <div className="max-w-4xl mx-auto w-full aspect-video md:aspect-[16/9] rounded-[32px] overflow-hidden border border-[#0a3161]/10 shadow-2xl bg-white">
+                  <div className="max-w-4xl mx-auto w-full aspect-video md:aspect-[16/9] rounded-[32px] overflow-hidden border border-zinc-200 shadow-2xl bg-zinc-50">
                     <iframe 
                       style={{ border: 'none' }}
                       width="100%" 
@@ -1196,12 +1632,12 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Section 7: Reflection */}
-            <section className="space-y-6">
+            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
                <div className="space-y-2">
                   <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">07. Reflection</span>
                   <h2 className="text-3xl font-bold tracking-tight">Growth & Takeaways</h2>
                </div>
-               <div className="p-8 border-l-4 border-[#0a3161] bg-[#0a3161]/5 rounded-r-[28px] space-y-4">
+               <div className="p-8 border border-zinc-200 border-l-4 border-l-[#0a3161] bg-zinc-50 rounded-r-[28px] space-y-4 shadow-sm">
                   <p className="text-lg font-light italic leading-relaxed text-zinc-700">
                     "This project taught me that UX isn't just about beautiful screens; it's about <span className="font-bold text-[#0a3161]">information hygiene.</span> When data is messy, design must be its architect."
                   </p>
@@ -1209,7 +1645,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Section 8: Next Steps */}
-            <section className="space-y-8 mb-16">
+            <section className="space-y-8 mb-16 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
               <div className="space-y-2">
                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">08. Next Steps</span>
                 <h2 className="text-3xl font-bold tracking-tight">Future Roadmap</h2>
@@ -1221,7 +1657,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                    { t: "Accessibility Audit", d: "Deep dive into WCAG 2.1 compliance for screen readers and high contrast modes." },
                    { t: "Social Discovery", d: "Allowing students to form groups within academic events directly." }
                  ].map((step, i) => (
-                   <div key={i} className="p-5 border border-zinc-100 rounded-xl flex items-start gap-3 hover:border-[#0a3161]/20 transition-colors">
+                   <div key={i} className="p-5 border border-zinc-200 bg-zinc-50 rounded-xl flex items-start gap-3 hover:border-[#0a3161] hover:shadow-sm transition-all duration-300">
                       <span className="w-7 h-7 rounded-full bg-[#0a3161] flex items-center justify-center font-bold text-white shrink-0 text-xs">{i+1}</span>
                       <div className="space-y-1">
                          <h5 className="font-bold text-sm">{step.t}</h5>
@@ -1229,6 +1665,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       </div>
                    </div>
                  ))}
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
               </div>
             </section>
           </>
@@ -2289,9 +2732,9 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </motion.section>
 
             {/* Back Button */}
-            <section className="py-20 text-center">
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
               <div className="flex justify-center">
-                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
               </div>
             </section>
           </>
@@ -2657,9 +3100,9 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Back Button */}
-            <section className="py-20 text-center">
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
               <div className="flex justify-center">
-                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
               </div>
             </section>
           </>
@@ -2667,1229 +3110,1904 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
         {isParProductionControl && (
           <>
-            {/* Live Interactive Dashboard Showcase */}
-            {project.liveUrl && (
-              <div className="max-w-5xl mx-auto mt-0 px-4 mb-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">INTERACTIVE PROTOTYPE</span>
-                        <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Interactive Prototype</h3>
-                      </div>
-                      <a 
-                        href={project.liveUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-2 font-sans text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:shadow-md active:scale-95 duration-200 shrink-0 ${
-                          isParProductionControl 
-                            ? 'bg-zinc-900 hover:bg-zinc-800 text-white' 
-                            : 'bg-[#0a3161] hover:bg-[#07244a] text-white'
-                        }`}
-                      >
-                        View Prototype
-                        <ArrowUpRight className="w-4 h-4" />
-                      </a>
+            {/* About This Project Section */}
+            <div className="max-w-7xl mx-auto mt-6 px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="p-8 md:p-10 rounded-3xl bg-gradient-to-br from-white to-zinc-50/40 border border-zinc-200 shadow-xl relative overflow-hidden group"
+              >
+                {/* Decorative background element */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-zinc-100 rounded-full blur-3xl pointer-events-none group-hover:bg-zinc-200/50 transition-all duration-500" />
+                
+                <div className="space-y-4 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                      <Briefcase className="w-4 h-4 stroke-[2]" />
                     </div>
+                    <span className="text-xs md:text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest block">
+                      Project Context
+                    </span>
+                  </div>
+                  
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight">
+                    About this project
+                  </h2>
 
-                    <p className="text-sm text-zinc-500 font-light leading-relaxed max-w-3xl">
-                      Interact with the fully functional React/HTML prototype directly. Try navigating through different order workflows, filtering items, and seeing the streamlined B2B status tracking design in action.
-                    </p>
+                  <p className="text-lg md:text-xl text-zinc-600 font-light leading-relaxed w-full">
+                    <strong className="font-extrabold text-zinc-900 bg-red-50/70 border-b-2 border-red-200 px-1 rounded-sm">PAR Engineering</strong> manufactures industrial pumps. This case study covers <strong className="font-bold text-zinc-800">PAR — Production Control</strong>, an <strong className="font-extrabold text-red-600 bg-red-50/50 px-1.5 py-0.5 rounded border border-red-100">internal tool I designed</strong> to connect <strong className="font-bold text-zinc-800 underline decoration-zinc-300 decoration-2 underline-offset-4">production scheduling, inventory, and purchasing</strong> — three functions that used to run separately, <strong className="font-medium text-zinc-700 bg-amber-50/60 border-b-2 border-amber-200/80 px-1 rounded-sm">on paper and in spreadsheets</strong>, with <strong className="font-medium text-rose-700 bg-rose-50/60 border-b-2 border-rose-200/80 px-1 rounded-sm">no shared view</strong> of what was actually happening on the <strong className="font-semibold text-zinc-900">shop floor</strong>.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
 
-                    {/* Clean Embedded App Frame */}
-                    <div className="w-full rounded-2xl border border-zinc-200 shadow-md overflow-x-auto bg-white">
-                      <div className="min-w-[960px] h-[480px] md:h-[580px] lg:h-[640px] bg-zinc-50 relative overflow-hidden">
-                        <iframe 
-                          src={project.liveUrl} 
-                          style={{
-                            width: '150%',
-                            height: '150%',
-                            transform: 'scale(0.6667)',
-                            transformOrigin: 'top left',
-                          }}
-                          className="border-none absolute top-0 left-0"
-                          title="PAR Production Control Live Dashboard"
-                          allow="clipboard-write"
-                        />
+
+
+            {/* HERO SECTION */}
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+              {/* Key Outcome - The Recruiter TL;DR Summary Block */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="p-8 md:p-10 rounded-3xl border-2 border-red-500 bg-white shadow-xl shadow-red-50/50 relative overflow-hidden group"
+              >
+                {/* Accent glow */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl group-hover:bg-red-500/10 transition-colors duration-500" />
+                
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] md:text-xs font-mono font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-md uppercase tracking-widest block">
+                      Key Outcome
+                    </span>
+                  </div>
+
+
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-snug">
+                    How I designed a connected B2B hub that reduced production checking loops from <span className="text-red-500 underline decoration-red-200 decoration-wavy underline-offset-4 decoration-2 inline-block"><span className="tabular-nums inline-flex"><AnimatedCounter value={15} /></span> minutes to <span className="tabular-nums inline-flex"><AnimatedCounter value={1} /></span> click</span> <span className="inline-flex items-center gap-1 bg-red-600 text-white font-mono font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-red-500/20 border border-red-500/30 select-none animate-bounce ml-2 align-middle"><Zap className="w-3 h-3 fill-white" />85% SAVED</span>.
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-zinc-100">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
+                        <span className="text-red-500">🎯</span>
+                        <span>The Objective</span>
                       </div>
+                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
+                        Unify fragmented shop-floor logs, purchasing emails, and warehouse counts into one cohesive, live web application.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
+                        <span className="text-red-500">🛠️</span>
+                        <span>My Approach</span>
+                      </div>
+                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
+                        Design by subtraction. Clear out administrative waste, speak the plant's literal language, and connect status directly to next actions.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
+                        <span className="text-red-500">📈</span>
+                        <span>The Outcome</span>
+                      </div>
+                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
+                        A live internal tool used daily to verify assemblies, trigger order recommendations, and track partial material receipts instantly.
+                      </p>
                     </div>
                   </div>
-                </motion.div>
-              </div>
-            )}
+                </div>
+              </motion.div>
 
-            {/* 10-Page Editorial Layout without Table of Contents */}
-            <div className="max-w-5xl mx-auto mt-0 px-4" id="par-case-study-container">
-              {/* Right Column: 10 Editorial Pages */}
-              <div className="space-y-0" id="par-pages-content">
+              <motion.div 
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="space-y-6"
+              >
 
-                {/* Page 1: Cover */}
-                <motion.div 
-                  id="par-page-1"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="pt-0 pb-6 border-b border-zinc-150 space-y-8"
-                >
-                  <div className="space-y-8">
-                    <div className="space-y-6">
-                      <div className="space-y-1 mb-4">
-                        <span className="text-[10px] font-mono text-rose-600 font-bold uppercase tracking-widest block">BACKGROUND & PROBLEM</span>
-                        <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">The Problem Nobody Could Answer</h3>
-                      </div>
 
-                      <div className="space-y-6 text-zinc-650 leading-relaxed font-light">
-                        <p>
-                          When I started working on PAR Engineering’s internal operations system, the company wasn’t struggling because they didn’t know how to manufacture pumps.
-                        </p>
-                        
-                        <div className="my-6 p-6 border-l-4 border-rose-500 bg-rose-50/40 rounded-r-2xl space-y-2">
-                          <span className="text-[10px] font-mono text-rose-600 font-bold uppercase tracking-widest block">THE CENTRAL DILEMMA</span>
-                          <p className="text-lg md:text-xl text-zinc-900 font-medium leading-relaxed">
-                            “The real problem was much smaller — but much more expensive. Nobody could quickly answer a simple operational question: <span className="font-extrabold underline decoration-rose-400 decoration-2 underline-offset-4">Can this production order move forward today?</span>”
+                {/* Hero Main Screenshot */}
+                <div className="space-y-3 pt-4">
+                  <div className="rounded-2xl border border-zinc-200 overflow-hidden shadow-2xl bg-white p-2">
+                    <div className="border border-zinc-150 rounded-xl overflow-hidden bg-zinc-50">
+                      <img 
+                        src="https://i.imgur.com/kJ97VNS.png" 
+                        alt="The dashboard — one view of production, inventory, and purchasing status."
+                        className="w-full h-auto object-cover"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => handleImageError(e, "PAR Dashboard Hero")}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-center text-xs text-zinc-500 font-mono italic">
+                    The operational dashboard — consolidated, live overview of production lists, active inventory shortages, and purchasing states.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* SECTION 1 — THE PROBLEM */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 pt-8 border-t border-zinc-150"
+              >
+                {/* Before / After side-by-side cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Before card */}
+                  <motion.div 
+                    whileHover={{ y: -6, scale: 1.01, boxShadow: "0 25px 50px -20px rgba(239,68,68,0.12)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    className="p-6 md:p-8 rounded-3xl border border-red-200 bg-gradient-to-b from-white to-red-50/10 space-y-6 relative overflow-hidden group shadow-lg"
+                  >
+                    <div className="absolute -top-4 -right-4 p-6 text-red-500/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 pointer-events-none">
+                      <AlertTriangle className="w-22 h-22 stroke-[1.2]" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <span className="inline-flex items-center text-xs md:text-sm font-bold text-red-600 uppercase tracking-wider font-mono bg-red-50 px-4 py-1.5 rounded-lg border border-red-100">
+                        BEFORE: ANARCHY OF SPREADSHEETS
+                      </span>
+                      <h3 className="text-xl font-bold text-zinc-950 tracking-tight">Fragile, Disconnected Operations</h3>
+                    </div>
+
+                    <ul className="space-y-4">
+                      {[
+                        "Shop-floor requests tracked on physical paper notes prone to getting lost.",
+                        "Fragmented Excel logs for material inventory, purchasing schedules, and finished pumps.",
+                        "Real operational status lived entirely in people's heads, not on an accessible screen.",
+                        "Finding simple component status required walking down to warehouses to manually count."
+                      ].map((bullet, bIdx) => (
+                        <motion.li 
+                          key={bIdx} 
+                          whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                          className="flex items-start gap-3 cursor-default group/li"
+                        >
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white font-extrabold shrink-0 text-[10px] mt-0.5 shadow-sm shadow-red-500/20">
+                            ✕
+                          </span>
+                          <span className="text-sm text-zinc-600 font-light leading-relaxed group-hover/li:text-zinc-900 transition-colors duration-200">{bullet}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
+
+                  {/* After card */}
+                  <motion.div 
+                    whileHover={{ y: -6, scale: 1.01, boxShadow: "0 25px 50px -20px rgba(16,185,129,0.12)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    className="p-6 md:p-8 rounded-3xl border border-emerald-200 bg-gradient-to-b from-white to-emerald-50/10 space-y-6 relative overflow-hidden shadow-lg group"
+                  >
+                    <div className="absolute -top-4 -right-4 p-6 text-emerald-500/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 pointer-events-none">
+                      <CheckCircle className="w-22 h-22 stroke-[1.2]" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="inline-flex items-center text-xs md:text-sm font-bold text-emerald-600 uppercase tracking-wider font-mono bg-emerald-50 px-4 py-1.5 rounded-lg border border-emerald-100">
+                        AFTER: CONNECTED OPERATIONS
+                      </span>
+                      <h3 className="text-xl font-bold text-zinc-950 tracking-tight">The Automated Manufacturing Hub</h3>
+                    </div>
+
+                    <ul className="space-y-4">
+                      {[
+                        { bold: "One connected flow:", normal: "Production, inventory, purchasing, and receiving in a single loop." },
+                        { bold: "Unified system:", normal: "Every shortage linked automatically to the order it unblocks." },
+                        { bold: "Instant clarity:", normal: "Real-time status visible instantly to planners and managers." },
+                        { bold: "Zero manual walk:", normal: "Checking stock, requests, and arrival dates takes a click." }
+                      ].map((bullet, bIdx) => (
+                        <motion.li 
+                          key={bIdx} 
+                          whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                          className="flex items-start gap-3 cursor-default group/li"
+                        >
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white font-bold shrink-0 text-xs mt-0.5 shadow-sm shadow-emerald-500/20">
+                            ✓
+                          </span>
+                          <span className="text-sm text-zinc-600 font-light leading-relaxed group-hover/li:text-zinc-900 transition-colors duration-200">
+                            <strong className="font-semibold text-zinc-950">{bullet.bold}</strong> {bullet.normal}
+                          </span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </div>
+
+                {/* Bordered Pull Quote */}
+                <div className="p-6 md:p-8 border border-zinc-200 border-l-4 border-l-red-500 bg-white rounded-r-2xl space-y-2 shadow-xs">
+                  <span className="text-[9px] font-mono text-red-500 font-bold uppercase tracking-widest block">
+                    THE CONSTANT DAILY BOTTLENECK
+                  </span>
+                  <p className="text-xl text-zinc-900 font-medium font-serif leading-relaxed italic">
+                    “Can this production order move forward today?”
+                  </p>
+                  <p className="text-xs text-zinc-500 font-light leading-relaxed">
+                    This was a question nobody—not production, not purchasing, not inventory—could answer without wasting half an hour checking across disjointed tools.
+                  </p>
+                </div>
+
+                {/* Three-Question Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { q: "What can we build today?", d: "Know which assemblies have 100% of their components in stock." },
+                    { q: "What is currently blocked?", d: "Identify which exact shortages are halting specific client orders." },
+                    { q: "What should happen next?", d: "See instantly whether to wait, request components, or start assembly." }
+                  ].map((item, idx) => (
+                    <div key={idx} className="p-5 border border-zinc-200/80 rounded-xl bg-white shadow-xs space-y-2 hover:border-zinc-300 transition-all duration-200">
+                      <span className="text-[10px] font-mono text-red-400 font-bold">0{idx + 1}</span>
+                      <h4 className="font-bold text-sm text-zinc-800 leading-tight">{item.q}</h4>
+                      <p className="text-xs text-zinc-500 font-light leading-relaxed">{item.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* SECTION 2 — THE WORKFLOW */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 p-6 md:p-10 bg-zinc-50 border border-zinc-200/60 rounded-3xl shadow-sm mt-8"
+              >
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">02. THE WORKFLOW</span>
+                  <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight">One Connected Pipeline, Not Four Separate Tools</h2>
+                </div>
+
+                {/* Left-Bordered Quote from first screenshot */}
+                <div className="p-6 md:p-8 border-l-4 border-l-blue-500 bg-white rounded-r-2xl space-y-2 shadow-2xs">
+                  <p className="text-lg md:text-xl text-zinc-950 font-bold leading-relaxed italic">
+                    "The problem wasn’t creating production orders. The problem was understanding what prevented those orders from moving forward."
+                  </p>
+                </div>
+
+                <p className="text-base text-zinc-650 font-light max-w-3xl leading-relaxed">
+                  I wasn't designing separate modules for production, inventory, and purchasing. I was designing one connected pipeline.
+                </p>
+
+                <p className="text-base text-zinc-650 font-light max-w-3xl leading-relaxed">
+                  This decision also helped define what the product would not become. Rather than building a large ERP system with supplier management, advanced scheduling, reporting, and administrative tools, I focused on the workflows that directly affected daily production decisions.
+                </p>
+
+                {/* THE TARGET OUTCOME Card */}
+                <div className="p-6 md:p-8 border border-zinc-200 bg-white rounded-2xl shadow-2xs space-y-4 max-w-3xl mx-auto">
+                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">
+                    THE TARGET OUTCOME
+                  </span>
+                  <h4 className="text-base md:text-lg font-bold text-zinc-800 leading-snug">
+                    The challenge was not to build more functionality. The challenge was to help employees understand:
+                  </h4>
+                  <ul className="space-y-3 mt-4 pl-1">
+                    <li className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
+                      <span className="text-sm md:text-base text-zinc-600 font-light">What can move forward?</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+                      <span className="text-sm md:text-base text-zinc-600 font-light">What is blocked?</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
+                      <span className="text-sm md:text-base text-zinc-600 font-light">Why is it blocked?</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="text-sm md:text-base text-zinc-600 font-light">What action needs to happen next?</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="pt-6 space-y-4">
+                  <p className="text-sm text-zinc-500 font-light max-w-2xl leading-relaxed">
+                    Most delays on the shop floor lived in the blind handoffs between departments. Explore the interactive pipeline below to see how each step of this connected flow is handled inside the tool:
+                  </p>
+                </div>
+
+                {/* Interactive Workflow Pipeline */}
+                <div className="space-y-6">
+                  {/* Stepper Buttons with Desktop Progress Line */}
+                  <div className="relative">
+                    {/* Background Progress track behind buttons */}
+                    <div className="hidden md:block absolute top-[40px] left-[10%] right-[10%] h-[3px] bg-zinc-150 rounded-full -z-0">
+                      <motion.div 
+                        initial={{ width: "0%" }}
+                        animate={{ width: `${((parActiveStep - 1) / 4) * 100}%` }}
+                        transition={{ type: "spring", stiffness: 80, damping: 15 }}
+                        className="h-full bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-2 md:gap-4 relative z-10">
+                      {parWorkflowSteps.map((step, idx) => {
+                        const isActive = parActiveStep === idx + 1;
+                        const StepIcon = step.icon;
+                        return (
+                          <motion.button
+                            key={idx}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setParActiveStep(idx + 1)}
+                            className={`flex flex-col items-center p-3 md:p-4 rounded-xl border text-center transition-all duration-300 relative overflow-hidden cursor-pointer ${
+                              isActive 
+                                ? 'border-red-500 bg-red-500/5 shadow-md shadow-red-500/5 font-semibold' 
+                                : 'border-zinc-200 bg-white hover:border-zinc-300'
+                            }`}
+                          >
+                            {/* Top indicator bar */}
+                            <div className={`absolute top-0 left-0 right-0 h-1 transition-all ${
+                              isActive ? 'bg-red-500' : 'bg-transparent'
+                            }`} />
+                            
+                            <motion.div 
+                              animate={isActive ? { scale: [1, 1.25, 1], rotate: [0, 8, -8, 0] } : {}}
+                              transition={{ duration: 0.4 }}
+                              className={`p-2 rounded-lg mb-2 transition-colors ${
+                                isActive ? 'bg-red-500 text-white' : 'bg-zinc-50 text-zinc-500'
+                              }`}
+                            >
+                              <StepIcon className="w-4 h-4 md:w-5 md:h-5" />
+                            </motion.div>
+                            
+                            <span className={`text-[10px] font-mono uppercase tracking-widest block ${
+                              isActive ? 'text-red-500 font-bold' : 'text-zinc-450'
+                            }`}>
+                              {step.num}
+                            </span>
+                            <span className={`text-xs md:text-sm mt-0.5 truncate max-w-full ${
+                              isActive ? 'text-zinc-900 font-bold' : 'text-zinc-650 font-light'
+                            }`}>
+                              {step.name}
+                            </span>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Active Step Content Detail Panel */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={parActiveStep}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -15 }}
+                      transition={{ duration: 0.3 }}
+                      className="max-w-4xl mx-auto w-full"
+                    >
+                      {/* Left side: Info (Full Width) */}
+                      <div className="w-full flex flex-col justify-between gap-4 p-5 md:p-8 rounded-2xl border border-red-200/80 bg-white shadow-lg shadow-red-500/[0.01]">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] md:text-xs font-bold font-mono text-red-500 bg-red-50 px-3 py-1.5 rounded-md border border-red-100">
+                              STEP {parActiveStep} — {parWorkflowSteps[parActiveStep - 1].name.toUpperCase()}
+                            </span>
+                          </div>
+                          <h3 className="text-xl md:text-2xl font-extrabold text-zinc-950 tracking-tight leading-tight">
+                            {parWorkflowSteps[parActiveStep - 1].title}
+                          </h3>
+                          <p className="text-xs md:text-sm text-zinc-650 leading-relaxed font-light">
+                            {parWorkflowSteps[parActiveStep - 1].desc}
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-                          <div className="p-6 border border-zinc-150 bg-zinc-50/30 rounded-2xl space-y-4">
-                            <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider block">THE STATUS QUO</span>
-                            <h4 className="font-bold text-base text-zinc-900">Manual Verification Loops</h4>
-                            <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                              The company managed production using spreadsheets, manual inventory checks, and constant verbal communication between production, purchasing, and store personnel.
-                            </p>
-                            <div className="space-y-2 pt-2 text-xs font-mono text-zinc-500">
-                              <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                                Verify component availability manually
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                                Trace pending purchase requests in emails
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                                Confirm incoming material receipt in warehouse
-                              </div>
-                            </div>
+                        <div className="p-4 md:p-5 bg-zinc-50 rounded-xl border border-zinc-200/60 shadow-2xs space-y-2 mt-2">
+                          <span className="text-[9px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">CONNECTIVITY MATRIX</span>
+                          <div className="text-sm md:text-base font-bold text-zinc-800 tracking-tight">
+                            {parActiveStep === 1 && "Assembly → Inventory"}
+                            {parActiveStep === 2 && "Order → Inventory"}
+                            {parActiveStep === 3 && "Inventory → Purchasing"}
+                            {parActiveStep === 4 && "Receiving → Active Order"}
+                            {parActiveStep === 5 && "Inventory → Production"}
                           </div>
-
-                          <div className="p-6 border border-rose-100 bg-rose-50/10 rounded-2xl space-y-4">
-                            <span className="text-[10px] font-mono text-rose-500 font-bold uppercase tracking-wider block">THE CONSEQUENCE</span>
-                            <h4 className="font-bold text-base text-zinc-900">Operational Bottlenecks</h4>
-                            <p className="text-xs text-rose-750 leading-relaxed font-light">
-                              Because verifying a single order took 10–15 minutes, decision-making ground to a halt. Small visibility gaps snowballed into massive coordination issues:
-                            </p>
-                            <div className="space-y-2 pt-2 text-xs font-mono text-rose-700">
-                              <div className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
-                                <span>Orders remained blocked longer than necessary</span>
-                              </div>
-                              <div className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
-                                <span>Inventory shortages were discovered too late</span>
-                              </div>
-                              <div className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0"></span>
-                                <span>Purchasing activities became disconnected from needs</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <p>
-                          Every time a new production order was created, employees had to manually verify whether components were available, whether purchase requests had already been created, and whether incoming materials had been received. This constant hunting for status led to teams spending precious time searching for information instead of making decisions.
-                        </p>
-
-                        <p className="text-zinc-800 text-base md:text-lg font-medium leading-relaxed my-4">
-                          The problem wasn’t a lack of data. The problem was that the <span className="underline decoration-blue-500 decoration-2 underline-offset-4 font-semibold">data existed in too many places</span>.
-                        </p>
-
-                        <p>
-                          What the company needed wasn’t a large manufacturing ERP system. They needed a way to answer three critical questions quickly:
-                        </p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                          {[
-                            { q: "What can we build today?", desc: "Instant visibility into production orders with fully matching on-hand stock.", num: "01" },
-                            { q: "What is currently blocked?", desc: "Clear identification of material deficits with associated part numbers.", num: "02" },
-                            { q: "What should happen next?", desc: "Direct action triggers linking raw material shortages directly to procurement.", num: "03" }
-                          ].map((item, idx) => (
-                            <div key={idx} className="p-5 bg-zinc-50/50 border border-zinc-150 hover:border-zinc-300 transition-colors rounded-2xl relative overflow-hidden group">
-                              <span className="absolute right-3 top-2 text-3xl font-black text-zinc-150/70 font-mono select-none group-hover:text-blue-50/50 transition-colors">{item.num}</span>
-                              <div className="space-y-2 relative z-10">
-                                <span className="text-[9px] font-mono font-bold text-blue-500 tracking-wider uppercase">CORE OBJECTIVE</span>
-                                <h4 className="font-extrabold text-sm text-zinc-900 leading-tight pr-6">{item.q}</h4>
-                                <p className="text-[11px] text-zinc-500 leading-relaxed font-light">{item.desc}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <p className="font-medium text-zinc-850 pt-2">
-                          That question became the foundation of <span className="font-bold text-blue-600">PAR Production Control</span>.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 2: Understanding the Workflow */}
-                <motion.div 
-                  id="par-page-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">UNDERSTANDING THE PIPELINE</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Understanding the Workflow</h3>
-                    </div>
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      After understanding the company’s day-to-day operations, I realized that I wasn’t designing separate modules for production, inventory, and purchasing. I was designing a <span className="font-semibold text-zinc-800">single operational workflow</span>.
-                    </p>
-
-                    <div className="space-y-3 pt-2">
-                      <p className="text-xs font-mono text-zinc-400 font-bold uppercase tracking-wider">The Actual Company Process</p>
-                      
-                      {/* Vertical / Horizontal Flow diagram */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 text-center text-[11px] font-mono font-medium">
-                        {[
-                          { title: "Customer Order", bg: "bg-zinc-50 border-zinc-250 text-zinc-700" },
-                          { title: "Production Order", bg: "bg-blue-50/50 border-blue-200 text-blue-700" },
-                          { title: "Inventory Check", bg: "bg-zinc-50 border-zinc-250 text-zinc-700" },
-                          { title: "Ready or Blocked", bg: "bg-amber-50/50 border-amber-200 text-amber-700" },
-                          { title: "Purchase Request", bg: "bg-indigo-50/50 border-indigo-200 text-indigo-700" },
-                          { title: "Materials Received", bg: "bg-emerald-50/50 border-emerald-200 text-emerald-700" },
-                          { title: "Production Runs", bg: "bg-zinc-900 border-zinc-850 text-white" }
-                        ].map((step, idx) => (
-                          <div key={idx} className="relative flex flex-col justify-between items-center h-full">
-                            <div className={`w-full p-3 border rounded-xl flex items-center justify-center min-h-[48px] text-center ${step.bg}`}>
-                              {step.title}
-                            </div>
-                            {idx < 6 && (
-                              <div className="hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 text-zinc-300 font-bold text-xs select-none">
-                                →
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      At first glance, this process looked straightforward. In reality, most operational delays happened between these steps.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 1</span>
-                        <h4 className="text-sm font-bold text-zinc-850">Disconnected Creation</h4>
-                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                          A production order could be created successfully, but nobody knew whether all required components were available.
-                        </p>
-                      </div>
-                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 2</span>
-                        <h4 className="text-sm font-bold text-zinc-850">Late Shortage Discoveries</h4>
-                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                          Inventory shortages were often discovered only after production planning had already begun on the shop floor.
-                        </p>
-                      </div>
-                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 3</span>
-                        <h4 className="text-sm font-bold text-zinc-850">Isolated Purchase Requests</h4>
-                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                          Purchase requests existed entirely separately from the production orders that depended on them, leading to double ordering.
-                        </p>
-                      </div>
-                      <div className="p-5 border border-zinc-150 rounded-2xl bg-zinc-50/50 space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase">DELAY PATTERN 4</span>
-                        <h4 className="text-sm font-bold text-zinc-850">Manual Tracking Cycles</h4>
-                        <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                          Receiving updates were tracked manually, making it incredibly difficult to know exactly when production could restart.
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="font-semibold text-zinc-850 italic bg-zinc-50 border-l-2 border-blue-500 p-4 rounded-r-xl">
-                      "The problem wasn’t creating production orders. The problem was understanding what prevented those orders from moving forward."
-                    </p>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      This insight became the foundation of PAR. Instead of designing isolated screens, I designed the product around a single operational loop:
-                    </p>
-
-                    {/* Operational Loop */}
-                    <div className="flex flex-wrap justify-center items-center gap-2 py-2">
-                      {["Create", "Verify", "Resolve", "Receive", "Produce"].map((stage, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="px-4 py-2 border border-zinc-200 bg-zinc-50 rounded-xl font-mono text-xs font-bold text-zinc-850 shadow-sm">{stage}</span>
-                          {idx < 4 && <span className="text-zinc-300 font-bold">→</span>}
-                        </div>
-                      ))}
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      This decision also helped define what the product would not become. Rather than building a large ERP system with supplier management, advanced scheduling, reporting, and administrative tools, I focused on the workflows that directly affected daily production decisions.
-                    </p>
-
-                    <div className="p-6 border border-zinc-200/60 bg-zinc-50/30 rounded-2xl space-y-3">
-                      <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block">THE TARGET OUTCOME</span>
-                      <p className="text-sm font-medium text-zinc-800">
-                        The challenge was not to build more functionality. The challenge was to help employees understand:
-                      </p>
-                      <ul className="space-y-1.5 text-xs font-mono text-zinc-600">
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                          <span>What can move forward?</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                          <span>What is blocked?</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                          <span>Why is it blocked?</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                          <span>What action needs to happen next?</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 3: My First Assumption Was Wrong */}
-                <motion.div 
-                  id="par-page-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">THE WORK VS READINESS SHIFT</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">My First Assumption Was Wrong</h3>
-                    </div>
-                    
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      When I first started designing PAR, I believed the product should revolve around <span className="font-semibold text-zinc-800">production readiness</span>.
-                    </p>
-                    
-                    <div className="p-5 border border-zinc-150 bg-zinc-50/50 rounded-2xl space-y-3">
-                      <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block">THE REASONING</span>
-                      <p className="text-xs text-zinc-600 font-light leading-relaxed">
-                        The idea seemed logical: if the company's biggest problem was understanding whether production could move forward, the system should focus on determining readiness:
-                      </p>
-                      <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-zinc-500">
-                        <span>Create Order</span>
-                        <span>→</span>
-                        <span>Check Inventory</span>
-                        <span>→</span>
-                        <span>Determine Readiness</span>
-                        <span>→</span>
-                        <span>Identify Missing Components</span>
-                        <span>→</span>
-                        <span>Proceed</span>
-                      </div>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      The earliest versions reflected this thinking. Production orders moved through statuses like <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Not Checked</code>, <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Ready</code>, <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Missing Components</code>, and <code className="text-xs font-mono bg-zinc-100 px-1.5 py-0.5 rounded">Complete</code>. From a system perspective, this model made sense.
-                    </p>
-
-                    <div className="p-5 bg-red-50/20 border-l-2 border-red-500 rounded-r-2xl space-y-2">
-                      <h4 className="text-sm font-bold text-zinc-800">From a user perspective, it didn't.</h4>
-                      <p className="text-xs text-zinc-650 leading-relaxed font-light">
-                        As I kept mapping workflows and talking with employees, I realized something important: <strong className="font-semibold text-zinc-800">users don't think about “readiness.” They think about work.</strong>
-                      </p>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      Production managers weren't asking “what is the readiness status of this order?” They were asking practical operational questions:
-                    </p>
-
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
-                        {[
-                          "Can we start this order?",
-                          "Is this order blocked?",
-                          "Is production already running?",
-                          "Is this order finished?",
-                          "If it is blocked, what needs to happen next?"
-                        ].map((q, idx) => (
-                          <div key={idx} className="p-3 border border-zinc-150 rounded-xl bg-zinc-50/50 flex items-center gap-2">
-                            <span className="text-blue-500 font-bold">?</span>
-                            <span className="text-zinc-700 leading-snug">{q}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light pt-2">
-                      That insight changed how I thought about the whole product. I stopped designing a production readiness checker and started designing a <strong className="font-semibold text-zinc-800">production workflow system</strong> — rebuilding the status model around the way employees actually talk about their day:
-                    </p>
-
-                    {/* Status Transformation Display */}
-                    <div className="grid grid-cols-2 gap-4 pt-1 max-w-xl">
-                      <div className="p-4 border border-zinc-150 bg-zinc-50/50 rounded-2xl space-y-3">
-                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block border-b border-zinc-200 pb-1.5">Earlier Approach</span>
-                        <div className="space-y-2 font-mono text-[11px] text-zinc-600">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                            Not Checked
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                            Ready
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                            Missing Components
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                            Complete
-                          </div>
+                          <p className="text-xs md:text-sm text-zinc-500 leading-relaxed font-light">
+                            {parActiveStep === 1 && "Production order instantly registers part requirements."}
+                            {parActiveStep === 2 && "Immediate status check without opening files or folders."}
+                            {parActiveStep === 3 && "Missing parts dynamically auto-generate buy lists."}
+                            {parActiveStep === 4 && "Supplier deliveries automatically alert waiting orders."}
+                            {parActiveStep === 5 && "Complete material verification unblocks queue."}
+                          </p>
                         </div>
                       </div>
-
-                      <div className="p-4 border border-blue-100 bg-blue-50/10 rounded-2xl space-y-3">
-                        <span className="text-[10px] font-mono text-blue-500 font-bold uppercase block border-b border-blue-100 pb-1.5">Final Approach</span>
-                        <div className="space-y-2 font-mono text-[11px] font-semibold text-zinc-900">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            Ready
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                            Blocked
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                            In Production
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900"></span>
-                            Finished
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      This change affected far more than labels. The entire product's behavior shifted:
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {[
-                        { title: "Dashboard Pivot", desc: "Shifted from showing checks to showing operational status." },
-                        { title: "Active Inventory", desc: "Became a decision-making tool rather than a reporting screen." },
-                        { title: "Connected Purchasing", desc: "Became part of the production workflow instead of a separate process." },
-                        { title: "Actionable Receiving", desc: "Became a mechanism for unblocking production — not just a record-keeping step." }
-                      ].map((item, idx) => (
-                        <div key={idx} className="p-4 border border-zinc-150 rounded-xl bg-zinc-50/30 space-y-1">
-                          <h4 className="text-xs font-bold text-zinc-800 font-mono">{item.title}</h4>
-                          <p className="text-[11px] text-zinc-500 leading-relaxed font-light">{item.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <p className="text-zinc-850 italic font-medium border-l-4 border-blue-500 pl-6 my-4 bg-zinc-50 py-4 pr-4 rounded-r-xl leading-relaxed">
-                      “Users rarely think in system language. They think in terms of the work they need to do.”
-                    </p>
-
-                    {/* Production Orders List Diagram */}
-                    <div className="my-6 rounded-2xl overflow-hidden border border-zinc-150 bg-zinc-50/50 p-4 shadow-sm">
-                      <img 
-                        src="https://i.imgur.com/MSI21zc.png" 
-                        alt="Production Orders list — status shown as Blocked, In Production, or Ready, with a detail panel explaining exactly why an order is blocked" 
-                        className="w-full h-auto rounded-xl border border-zinc-200 shadow-sm"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => handleImageError(e, "Production Orders list")}
-                      />
-                      <p className="text-[11px] text-zinc-500 mt-3 text-center leading-relaxed">
-                        Production Orders list — status shown as Blocked, In Production, or Ready, with a detail panel explaining exactly why an order is blocked.
-                      </p>
-                    </div>
-
-                  </div>
-                </motion.div>
-
-                {/* Page 4: Early Approach vs Final Approach */}
-                <motion.div 
-                  id="par-page-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-4"
-                >
-                  <div className="space-y-4">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">STRATEGIC FOCUS PIVOT</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Early Approach vs Final Approach</h3>
-                    </div>
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      I shifted the design focus from standard inventory record-keeping to proactive workflow coordination.
-                    </p>
-                    <div className="overflow-x-auto pt-2">
-                      <table className="w-full text-left text-xs font-mono border-collapse border border-zinc-200">
-                        <thead>
-                          <tr className="bg-zinc-50 border-b border-zinc-200">
-                            <th className="p-3 font-bold text-zinc-700 border-r border-zinc-200">FEATURE</th>
-                            <th className="p-3 font-bold text-zinc-700 border-r border-zinc-200">EARLY APPROACH</th>
-                            <th className="p-3 font-bold text-zinc-700">FINAL APPROACH</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-200 text-[11px] text-zinc-650">
-                          <tr>
-                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Core Metric</td>
-                            <td className="p-3 border-r border-zinc-200">Simple on-hand stock counts</td>
-                            <td className="p-3 font-semibold text-blue-600 bg-blue-50/10">Live component availability relative to active orders</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Production Order</td>
-                            <td className="p-3 border-r border-zinc-200">Created in isolation as a text record</td>
-                            <td className="p-3 font-semibold text-emerald-600 bg-emerald-50/10">Deeply connected to active material allocation lists</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Shortage Tracking</td>
-                            <td className="p-3 border-r border-zinc-200">Manual checks and physical walking</td>
-                            <td className="p-3 font-semibold text-indigo-600 bg-indigo-50/10">Automated alerts triggered by real demand</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-semibold text-zinc-900 border-r border-zinc-200 bg-zinc-50/50">Procurement</td>
-                            <td className="p-3 border-r border-zinc-200">Form-heavy ERP purchase requests</td>
-                            <td className="p-3 font-semibold text-purple-600 bg-purple-50/10">Contextual dispatch queues prefilled with shortages</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 5: Designing by Subtraction */}
-                <motion.div 
-                  id="par-page-5"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">SUBTRACTIVE METHODOLOGY</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Designing by Subtraction</h3>
-                    </div>
-                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
-                      <p>
-                        One of the biggest challenges in designing PAR was deciding what not to build. Once the core workflow became clear, it was tempting to keep expanding the product — and on paper, plenty of additions made sense, since most manufacturing systems include them:
-                      </p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 my-4">
-                        {[
-                          "Supplier management and procurement management",
-                          "Advanced production scheduling and forecasting tools",
-                          "Role and permission management, notifications, reporting dashboards",
-                          "Bill of materials administration",
-                          "Finished goods tracking and warehouse management"
-                        ].map((feat, idx) => (
-                          <div key={idx} className="p-3 border border-zinc-200 bg-zinc-50/20 rounded-xl flex items-start gap-2.5">
-                            <span className="text-red-500 font-mono text-sm font-bold select-none mt-0.5">✕</span>
-                            <span className="text-xs font-sans text-zinc-700 leading-snug">{feat}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="pt-2">
-                        But adding more features would have created a different product than the one this company needed. Every feature was evaluated against three core operational questions:
-                      </p>
-
-                      <div className="grid grid-cols-1 gap-3 my-4">
-                        {[
-                          "Does this help someone understand the current production situation?",
-                          "Does this help someone make an operational decision?",
-                          "Does this help move production forward?"
-                        ].map((q, idx) => (
-                          <div key={idx} className="p-4 border border-zinc-150 rounded-xl bg-zinc-50/50 flex items-start gap-3">
-                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[10px] font-mono font-bold">
-                              0{idx + 1}
-                            </span>
-                            <p className="text-xs text-zinc-750 font-medium leading-relaxed font-sans">{q}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="pt-2">
-                        If the answer was no, the feature was removed or postponed.
-                      </p>
-
-                      <p className="pt-2">
-                        That principle shaped two specific decisions. Inventory was scoped to production components only — early versions mixed in finished goods, but testing showed users viewed the screen through one narrow lens: <span className="font-medium text-zinc-800">“do we have the parts needed to build this pump?”</span> Finished products answered a different business question and only added noise. And I deliberately avoided supplier databases, purchase-order management, scheduling engines, and admin configuration screens — common in enterprise manufacturing systems, but unnecessary for the decisions employees actually needed to make every day.
-                      </p>
-
-                      <p className="pt-2 text-sm text-zinc-650 leading-relaxed font-light italic bg-zinc-50 p-4 border-l-2 border-blue-500 rounded-r-xl">
-                        "Product design is often an exercise in subtraction rather than addition."
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 6: Testing the Product with Real Users */}
-                <motion.div 
-                  id="par-page-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">USER VALIDATION COHORT</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Testing the Product with Real Users</h3>
-                    </div>
-                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
-                      <p>
-                        Once the core workflows were designed, I tested the product with employees who would realistically use this kind of system: a production manager, an inventory/store employee, and a purchasing/operations employee. The goal wasn't to validate visual design decisions — it was to see whether users could quickly answer the operational questions that matter most: which orders are active, which are blocked, which inventory items need attention, which purchase requests are pending or partially received, and what to do next.
-                      </p>
-                      <p>
-                        Because participants evaluated the product through the lens of their actual jobs rather than a design perspective, testing exposed several assumptions I'd made without realizing it.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 7: The Dashboard Was Solving the Wrong Problem */}
-                <motion.div 
-                  id="par-page-7"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <h3 className="text-[18px] font-extrabold tracking-tight text-zinc-900 leading-tight">The Dashboard Was Solving the Wrong Problem</h3>
-                    </div>
-                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
-                      <p>
-                        One of the earliest dashboard versions focused heavily on blocked production orders. My assumption was straightforward: blocked orders are urgent, so they should dominate the dashboard. A production manager challenged that immediately.
-                      </p>
-                      <p className="text-lg italic text-zinc-850 border-l-4 border-blue-600 pl-6 my-4 bg-zinc-50/50 py-4 pr-4 rounded-r-xl font-normal">
-                        “Most of our production isn't blocked.”
-                      </p>
-                      <p>
-                        That single comment changed how I thought about operational dashboards. A dashboard shouldn't primarily communicate problems — it should communicate the current state of operations. I redesigned it to show production status distribution, active orders, inventory requiring attention, and incoming receipts together. Blocked orders stayed important, but became part of the overall picture rather than the entire story.
-                      </p>
-                    </div>
-
-                    {/* Operational Dashboard Revision Image */}
-                    <div className="pt-4 space-y-4" id="dashboard-annotated-visual">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase block">VISUALIZATION — REDESIGNED OPERATIONAL DASHBOARD</span>
-                      <AnnotatedScreenshot
-                        src="https://i.imgur.com/kJ97VNS.png"
-                        alt="Redesigned Operational Dashboard Mockup with interactive annotation hotspots"
-                        title="Redesigned Operational Dashboard"
-                        subtitle="Dashboard Cognitive Alignment"
-                        caption="Interactive Screenshot Guide: Click the numbered hotspots on the screenshot, or use the panel on the right to navigate key layout decisions."
-                        annotations={[
-                          {
-                            id: 'dash-sidebar',
-                            x: 8,
-                            y: 40,
-                            title: 'Humble Task Sidebar',
-                            description: 'A focused, highly simplified sidebar navigation designed for quick touch interactions on active shop floors. We removed administrative clutter to prevent user distraction.',
-                            badge: 'Navigation'
-                          },
-                          {
-                            id: 'dash-kpis',
-                            x: 28,
-                            y: 18,
-                            title: 'Live Operational KPIs',
-                            description: 'Real-time counters representing active production states (In Production, Ready) and operational alerts, immediately answering the most critical shop floor questions.',
-                            badge: 'KPI Status Bar'
-                          },
-                          {
-                            id: 'dash-blocked',
-                            x: 62,
-                            y: 18,
-                            title: 'Blocked Assembly Flag',
-                            description: 'Highlighted urgent items needing instant care. Clicking this hotspot directly opens the component shortages causing the block, helping the operator act instantly.',
-                            badge: 'Alert System'
-                          },
-                          {
-                            id: 'dash-queue',
-                            x: 45,
-                            y: 55,
-                            title: 'Active Assembly Queue',
-                            description: 'Real-time list of current production orders, sorted by active assembly status. Operators can tap any row to load the material build sheet immediately.',
-                            badge: 'Active Work'
-                          },
-                          {
-                            id: 'dash-summary',
-                            x: 88,
-                            y: 55,
-                            title: 'Contextual Action Panel',
-                            description: 'An action-oriented detail drawer showing direct specifications and quick action links for the selected order. Keeps operators fully in-flow without jumping context.',
-                            badge: 'Decision Support'
-                          }
-                        ]}
-                      />
-                    </div>
-
-                    {/* Section: Inventory Was Trying to Answer Two Different Questions */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Inventory Was Trying to Answer Two Different Questions
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Early versions of the Inventory module contained both production components and finished products. From a system perspective, this organization seemed reasonable.
-                      </p>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        However, inventory users viewed the screen very differently. For them, the primary question was:
-                      </p>
-                      <p className="text-sm font-medium text-zinc-850 italic pl-4 border-l-2 border-zinc-200 py-1">
-                        “Do we have the parts needed to build this production order?”
-                      </p>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Finished goods did not help answer that question. Based on this feedback, I removed finished products from the Inventory workflow entirely and redesigned the screen to focus exclusively on production components. This significantly improved clarity and reduced cognitive load.
-                      </p>
-
-                      {/* Redesign Diagram */}
-                      <div className="my-6 rounded-2xl overflow-hidden border border-zinc-150 bg-zinc-50/50 p-4 shadow-sm">
-                        <img 
-                          src="https://i.imgur.com/qCSorxc.png" 
-                          alt="Inventory Redesigned to Focus Exclusively on Production Components" 
-                          className="w-full h-auto rounded-xl border border-zinc-200 shadow-sm"
-                          referrerPolicy="no-referrer"
-                          onError={(e) => handleImageError(e, "Inventory Redesign")}
-                        />
-                        <p className="text-[11px] font-mono text-zinc-400 mt-2 text-center">
-                          Visual Comparison: Removing finished goods to focus purely on active assembly parts
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Section: Real Workflows Are Not Linear */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Real Workflows Are Not Linear
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        One of the most valuable insights came from purchasing and operations users. Initially, purchase requests behaved like simple records. Once a request was created, the workflow effectively ended. Users quickly identified that this behavior did not match reality.
-                      </p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-                        <div className="p-4 bg-red-50/10 border border-red-100 rounded-2xl space-y-2">
-                          <span className="text-[10px] font-mono font-bold text-red-500 uppercase tracking-wider block">In Practice (Operational Reality)</span>
-                          <ul className="text-xs text-zinc-655 space-y-2 font-light list-none">
-                            <li className="flex items-start gap-2">
-                              <span className="text-red-400 font-mono select-none">✕</span>
-                              <span>Suppliers often deliver only part of an order.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-red-400 font-mono select-none">✕</span>
-                              <span>Completed requests sometimes require correction.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-red-400 font-mono select-none">✕</span>
-                              <span>Users need the ability to reopen requests.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-red-400 font-mono select-none">✕</span>
-                              <span>Requests that have already been acted on should disappear from work queues.</span>
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div className="p-4 bg-emerald-50/10 border border-emerald-100 rounded-2xl space-y-2">
-                          <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-wider block">Workflow Solutions Implemented</span>
-                          <ul className="text-xs text-zinc-655 space-y-2 font-light list-none">
-                            <li className="flex items-start gap-2">
-                              <span className="text-emerald-500 select-none">✓</span>
-                              <span>Support for partial receiving.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-emerald-500 select-none">✓</span>
-                              <span>Reopen request functionality.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-emerald-500 select-none">✓</span>
-                              <span>Removal of completed recommendations from active queues.</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="text-emerald-500 select-none">✓</span>
-                              <span>More realistic request lifecycle states.</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light italic bg-zinc-50 p-4 border-l-2 border-blue-500 rounded-r-xl">
-                        "At this point, the system stopped behaving like a prototype and started behaving like an operational tool."
-                      </p>
-                    </div>
-
-                    {/* Section: Removing Information Mattered More Than Adding It */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Removing Information Mattered More Than Adding It
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Testing also revealed that some screens contained too much repeated information. For example, side panels often repeated data that users could already see in selected rows. Although this redundancy seemed helpful during design, users perceived it as noise.
-                      </p>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        As a result, I redesigned side panels to focus exclusively on critical workflow items rather than repeating existing table data:
-                      </p>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 my-3">
-                        {[
-                          { title: "Operational Context", desc: "Current status & history" },
-                          { title: "Related Records", desc: "Linked orders & parts" },
-                          { title: "Shortage Impact", desc: "Assembly queue delays" },
-                          { title: "Recommended Actions", desc: "Direct procurement pathways" }
-                        ].map((item, idx) => (
-                          <div key={idx} className="p-3 border border-zinc-150 rounded-xl bg-zinc-50/50 space-y-1">
-                            <span className="text-blue-600 font-mono text-[10px] font-bold block">0{idx + 1}</span>
-                            <h5 className="font-sans font-bold text-[11px] text-zinc-800 leading-tight">{item.title}</h5>
-                            <p className="text-[10px] text-zinc-450 leading-snug font-light">{item.desc}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        This made the interfaces easier to scan and reduced unnecessary cognitive effort.
-                      </p>
-                    </div>
-
-                    {/* Section: Small Details Affect Trust */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Small Details Affect Trust
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Testing revealed another important lesson. Several users commented that stronger click animations made the interface feel unstable, almost as if the page was refreshing after every interaction.
-                      </p>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Although this was a relatively small visual detail, it affected users’ confidence in the system. I reduced interaction animations throughout the product and retained motion only where it helped communicate state changes or interaction feedback. The result was an interface that felt calmer, more predictable, and more trustworthy.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 8: Making the Product Behave Like Work */}
-                <motion.div 
-                  id="par-page-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">BEHAVIORAL OPERATIONAL FIT</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Making the Product Behave Like Work</h3>
-                    </div>
-
-                    {/* Section: Designing Workflows Over Screens */}
-                    <div className="space-y-4">
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Early versions of PAR successfully displayed information, but they didn't always behave the way real operational work behaves. During testing and iteration, I shifted focus from designing screens to designing workflows, states, and consequences — and that shift changed how the product actually worked.
-                      </p>
-                    </div>
-
-                    {/* Section: Purchase requests as a work queue */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Purchase Requests as a Work Queue
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        In early versions, purchase recommendations stayed visible even after a request had been created for them. It looked harmless in the UI; it felt wrong to purchasing users, who expected the list to behave like a work queue: if they'd already acted on something, it shouldn't still look like unfinished work. So purchase recommendations now disappear once a request is created, and users only ever see the work that still needs attention.
-                      </p>
-                      
-                      {/* Work Queue State Visualization */}
-                      <div className="pt-4 space-y-2">
-                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — THE WORK QUEUE TRANSITION DESIGN</span>
-                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
-                          <img 
-                            src="https://i.imgur.com/yKtOh5N.png" 
-                            alt="Purchase Requests Work Queue State Transition" 
-                            className="w-full h-auto object-cover"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => handleImageError(e, "Work Queue State Transition")}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Section: Supporting Partial Receiving */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Supporting Partial Receiving
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Initially, purchase requests could only be marked as either pending or received. However, users quickly pointed out that supplier deliveries rarely happen exactly as planned.
-                      </p>
-                      <div className="bg-zinc-50 border border-zinc-150 rounded-xl p-4 space-y-2 max-w-md">
-                        <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase block tracking-wider">Example Scenario:</span>
-                        <ul className="text-xs text-zinc-600 space-y-1 font-mono list-disc pl-4">
-                          <li>100 components may be ordered</li>
-                          <li>only 40 components arrive</li>
-                          <li>the remaining quantity arrives later</li>
-                        </ul>
-                      </div>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        The system needed to support this reality. I introduced partial receiving states that allow users to:
-                      </p>
-                      <ul className="text-sm text-zinc-650 space-y-2 font-light list-none pl-1">
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Record received quantities</strong> directly upon delivery.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Track remaining quantities</strong> outstanding from the vendor.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Continue monitoring incomplete deliveries</strong> without losing visibility.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Understand which production orders remain blocked</strong> until full delivery.</span>
-                        </li>
-                      </ul>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light pt-2">
-                        This change transformed receiving from a simple status update into an operational workflow.
-                      </p>
-                    </div>
-
-                    {/* Section: Allowing Users to Correct Mistakes */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Allowing Users to Correct Mistakes
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Another insight from testing was that operational systems cannot assume perfect execution. Mistakes happen. Requests may be closed accidentally, deliveries may be recorded incorrectly, and users may need to revise previous actions.
-                      </p>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        To support these scenarios and provide solid correction paths, I introduced:
-                      </p>
-                      <ul className="text-sm text-zinc-650 space-y-2 font-light list-none pl-1">
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Reopen request functionality</strong> to easily undo premature closures.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Request cancellation</strong> to purge mistaken orders cleanly.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span><strong>Editable request states</strong> to adapt to fast-moving real-world conditions.</span>
-                        </li>
-                      </ul>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light pt-2">
-                        This provided users with correction paths and made the system feel significantly more trustworthy.
-                      </p>
-
-                      {/* Correction Paths State Visualization */}
-                      <div className="pt-4 space-y-2">
-                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — ERROR RECOVERY & CORRECTION STATES</span>
-                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
-                          <img 
-                            src="https://i.imgur.com/060G4ps.png" 
-                            alt="Error Recovery and Correction States" 
-                            className="w-full h-auto object-cover"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => handleImageError(e, "Error Recovery and Correction States")}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Section: Designing Forms Around User Intent */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <h4 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                        Designing Forms Around User Intent
-                      </h4>
-                      <p className="text-sm text-zinc-650 leading-relaxed font-light">
-                        Early prototypes prefilled both manually created and system-generated forms. Testing showed users found manually created forms less credible when prefilled — they expected to type that information themselves. So manually created production orders and purchase requests now start empty, while requests generated from a system recommendation stay prefilled, since the system already has that context. A small distinction, but it meaningfully improved how authentic the workflow felt.
-                      </p>
-
-                      {/* Prefill vs Empty States Visualization */}
-                      <div className="pt-4 space-y-2">
-                        <span className="text-[10px] font-mono text-zinc-450 font-bold uppercase block">VISUALIZATION — FORM PREFILL & USER INTENT MODES</span>
-                        <div className="overflow-hidden border border-zinc-200/80 rounded-2xl bg-zinc-50 shadow-sm">
-                          <img 
-                            src="https://i.imgur.com/14p7lou.png" 
-                            alt="Designing Forms Around User Intent States" 
-                            className="w-full h-auto object-cover"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => handleImageError(e, "Form Prefill and User Intent Modes")}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 9: Impact */}
-                <motion.div 
-                  id="par-page-9"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 border-b border-zinc-150 space-y-8"
-                >
-                  <div className="space-y-8">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">DELIVERED IMPACT METRICS</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Delivered Business Impact</h3>
-                    </div>
-                    <p className="text-zinc-650 leading-relaxed font-light">
-                      PAR Production Control evolved into a live internal product used by the company. Because the production data is confidential, this portfolio piece uses an anonymized interactive prototype that faithfully recreates the workflows, interface patterns, and decisions from the live system.
-                    </p>
-
-                    {/* Before & After Comparison Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="p-6 border border-red-100 bg-red-50/10 rounded-2xl space-y-3">
-                        <span className="text-xs font-bold text-red-600 uppercase tracking-wider font-mono bg-red-50 px-2.5 py-1 rounded-full w-fit block">BEFORE</span>
-                        <ul className="space-y-2 text-sm text-zinc-650 font-light list-none">
-                          <li className="flex items-start gap-2">
-                            <span className="text-red-500 font-bold">●</span>
-                            <span>Production status required checking multiple spreadsheets and speaking with inventory and purchasing staff.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-red-500 font-bold">●</span>
-                            <span>Purchase requests were tracked separately from production needs.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-red-500 font-bold">●</span>
-                            <span>Receiving updates were recorded manually.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-red-500 font-bold">●</span>
-                            <span>Employees spent time locating information before taking action.</span>
-                          </li>
-                        </ul>
-                      </div>
-
-                      <div className="p-6 border border-emerald-100 bg-emerald-50/10 rounded-2xl space-y-3">
-                        <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider font-mono bg-emerald-50 px-2.5 py-1 rounded-full w-fit block">AFTER</span>
-                        <ul className="space-y-2 text-sm text-zinc-650 font-light list-none">
-                          <li className="flex items-start gap-2">
-                            <span className="text-emerald-500 font-bold">●</span>
-                            <span>Production, inventory, purchasing, and receiving status became visible in a single workflow.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-emerald-500 font-bold">●</span>
-                            <span>Users could identify blocked production orders more quickly.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-emerald-500 font-bold">●</span>
-                            <span>Purchase requests became directly traceable to production shortages.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-emerald-500 font-bold">●</span>
-                            <span>Receiving status became easier to monitor and update.</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <span className="text-emerald-500 font-bold">●</span>
-                            <span>Operational discussions shifted from finding information to deciding next actions.</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Operational Shift Table */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <p className="text-sm text-zinc-600 font-medium">
-                        Based on observation and feedback from the people using it day to day, that shift showed up consistently across every part of the workflow:
-                      </p>
-                      
-                      <div className="overflow-hidden border border-zinc-200/80 rounded-2xl shadow-sm bg-white">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left border-collapse text-sm">
-                            <thead>
-                              <tr className="bg-zinc-50/80 border-b border-zinc-200">
-                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">Activity</th>
-                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">Before</th>
-                                <th className="p-4 font-mono text-[10px] uppercase font-bold text-zinc-450 tracking-wider">After</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-100">
-                              <tr className="hover:bg-zinc-50/40 transition-colors">
-                                <td className="p-4 font-medium text-zinc-800">Checking production readiness</td>
-                                <td className="p-4 text-zinc-500 line-through">~10–15 minutes</td>
-                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">~1–2 minutes</td>
-                              </tr>
-                              <tr className="hover:bg-zinc-50/40 transition-colors">
-                                <td className="p-4 font-medium text-zinc-800">Identifying inventory shortages</td>
-                                <td className="p-4 text-zinc-500">Multiple spreadsheets and calls</td>
-                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Single screen</td>
-                              </tr>
-                              <tr className="hover:bg-zinc-50/40 transition-colors">
-                                <td className="p-4 font-medium text-zinc-800">Creating purchase requests</td>
-                                <td className="p-4 text-zinc-500">Manual lookup and entry</td>
-                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Context-driven workflow</td>
-                              </tr>
-                              <tr className="hover:bg-zinc-50/40 transition-colors">
-                                <td className="p-4 font-medium text-zinc-800">Tracking incoming materials</td>
-                                <td className="p-4 text-zinc-500">Manual follow-up</td>
-                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Centralized request tracking</td>
-                              </tr>
-                              <tr className="hover:bg-zinc-50/40 transition-colors">
-                                <td className="p-4 font-medium text-zinc-800">Determining next action</td>
-                                <td className="p-4 text-zinc-500">Required multiple stakeholders</td>
-                                <td className="p-4 text-emerald-600 font-medium bg-emerald-50/10">Visible directly in the workflow</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      
-                      <p className="text-[11px] text-zinc-400 italic leading-relaxed font-light font-mono">
-                        These figures are based on observation and user feedback, intended to illustrate the shape of the improvement rather than serve as formal operational measurements.
-                      </p>
-                    </div>
-
-                    {/* Qualitative Impact Concluding Section */}
-                    <div className="space-y-4 border-t border-zinc-100 pt-6">
-                      <p className="text-zinc-650 leading-relaxed font-light">
-                        More qualitatively, users consistently responded well to three things: the connection between production, inventory, and purchasing workflows; the visibility of operational status and next actions; and the realistic behavior of purchasing and receiving.
-                      </p>
-                      <div className="p-6 bg-zinc-900 text-zinc-100 rounded-2xl space-y-2 my-4">
-                        <span className="text-[9px] text-zinc-500 font-mono font-bold uppercase tracking-widest block">CORE TAKEAWAY</span>
-                        <p className="text-lg md:text-xl font-medium font-sans leading-relaxed text-white italic">
-                          "Most importantly, operational conversations shifted from “where can I find this information?” to “what action should happen next?” — which became the real measure of success for the project."
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Page 10: Reflection */}
-                <motion.div 
-                  id="par-page-10"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="py-6 space-y-6"
-                >
-                  <div className="space-y-6">
-                    <div className="space-y-1 mb-4">
-                      <span className="text-[10px] font-mono text-blue-600 font-bold uppercase tracking-widest block">SUBTRACTIVE PARADIGM REFLECTION</span>
-                      <h3 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">Reflection & Takeaways</h3>
-                    </div>
-                    
-                    <p className="text-zinc-650 leading-relaxed font-light text-base">
-                      PAR fundamentally changed how I think about product design. At the start, I approached the problem as a system-design challenge — workflows, statuses, operational logic. Over time I realized users rarely think in terms of systems. They think in terms of work.
-                    </p>
-
-                    <div className="space-y-3 pt-2">
-                      <p className="text-sm font-medium text-zinc-800">
-                        Throughout the project, my initial assumptions were wrong more often than they were right:
-                      </p>
-                      <ul className="space-y-2 text-sm text-zinc-650 font-light list-none pl-1">
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span>Users did not think in terms of “production readiness.”</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span>Dashboards should communicate operations, not only problems.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span>Inventory should answer production questions, not reporting questions.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span>Workflows must support mistakes, exceptions, and partial completion.</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-500 font-bold mt-0.5">•</span>
-                          <span>Interfaces become believable when actions have consequences.</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <p className="text-zinc-650 leading-relaxed font-light pt-2">
-                      This project also reinforced the value of designing through subtraction. The challenge was never to build the largest manufacturing system possible — it was to understand which workflows mattered most and design them exceptionally well.
-                    </p>
-
-                    <div className="p-6 bg-zinc-900 text-zinc-100 rounded-2xl space-y-2 my-4">
-                      <span className="text-[9px] text-zinc-500 font-mono font-bold uppercase tracking-widest block">KEY OUTCOME</span>
-                      <p className="text-lg md:text-xl font-medium font-sans leading-relaxed text-white italic">
-                        "Internal tools become valuable not because they contain more features, but because they help people answer the right questions faster."
-                      </p>
-                    </div>
-
-                    <div className="space-y-4 text-zinc-650 leading-relaxed font-light">
-                      <p>
-                        Looking back, the most valuable outcome of PAR wasn't the interface itself. It was learning how to translate a complex operational process into a product that feels understandable, believable, and useful to the people who rely on it every day — all in service of one question that guided every decision in the project:
-                      </p>
-                      
-                      <div className="pl-4 border-l-2 border-blue-500/80 my-4 py-1">
-                        <p className="text-base md:text-lg font-medium text-zinc-800 leading-relaxed font-sans italic">
-                          Can production move forward, and if not, what should happen next?
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-
-
-              </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
             </div>
 
+
+
+            {/* SECTION 3 — HOW IT WORKS: FOLLOWING ONE ORDER */}
+            <div className="max-w-7xl mx-auto px-4 py-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-12 p-8 md:p-14 bg-zinc-50 border border-zinc-200/60 rounded-3xl shadow-sm mt-8"
+              >
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">03. HOW IT WORKS</span>
+                  <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight">Following One Order from Creation to Completion</h2>
+                  <p className="text-sm text-zinc-500 font-light max-w-2xl leading-relaxed">
+                    Here's what actually happens inside PAR — follow one real order from creation to completion.
+                  </p>
+                </div>
+
+                <div className="space-y-16 mt-12 relative" ref={howItWorksRef}>
+                  {/* Orthogonal animated connector line on desktop */}
+                  <div className="hidden md:block absolute inset-0 z-0 pointer-events-none overflow-visible">
+                    {pathD && (
+                      <svg 
+                        className="w-full h-full overflow-visible" 
+                        fill="none"
+                      >
+                        {/* Background Track */}
+                        <path 
+                          d={pathD}
+                          stroke="#e4e4e7"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        
+                        {/* Active Progress Path Glow */}
+                        <motion.path 
+                          d={pathD}
+                          stroke="#ef4444"
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeOpacity="0.15"
+                          style={{ pathLength: howItWorksPathLength }}
+                        />
+                        
+                        {/* Active Progress Path */}
+                        <motion.path 
+                          d={pathD}
+                          stroke="#ef4444"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ pathLength: howItWorksPathLength }}
+                        />
+
+                        {/* Elbow Node Markers (Background Track) */}
+                        {badgeCoords.map((coord, i) => {
+                          if (i === badgeCoords.length - 1) return null;
+                          const nextCoord = badgeCoords[i + 1];
+                          let y_gap = (coord.y + nextCoord.y) / 2;
+                          if (rowBounds[i] && rowBounds[i + 1]) {
+                            y_gap = (rowBounds[i].bottom + rowBounds[i + 1].top) / 2;
+                          }
+                          return (
+                            <React.Fragment key={i}>
+                              <circle cx={coord.x} cy={y_gap} r="3" fill="#e4e4e7" />
+                              <circle cx={nextCoord.x} cy={y_gap} r="3" fill="#e4e4e7" />
+                            </React.Fragment>
+                          );
+                        })}
+
+                        {/* Active Elbow Node Markers (that illuminate on scroll) */}
+                        {badgeCoords.map((coord, i) => {
+                          if (i === badgeCoords.length - 1) return null;
+                          const nextCoord = badgeCoords[i + 1];
+                          let y_gap = (coord.y + nextCoord.y) / 2;
+                          if (rowBounds[i] && rowBounds[i + 1]) {
+                            y_gap = (rowBounds[i].bottom + rowBounds[i + 1].top) / 2;
+                          }
+                          return (
+                            <ActiveElbowDot
+                              key={`active-${i}`}
+                              coord={coord}
+                              nextCoord={nextCoord}
+                              yGap={y_gap}
+                              scrollYProgress={howItWorksScrollYProgress}
+                              index={i}
+                            />
+                          );
+                        })}
+
+
+                      </svg>
+                    )}
+                  </div>
+
+                  {[
+                    {
+                      num: "1",
+                      label: "Initiate Production",
+                      desc: "An order is initiated for assembly on the shop floor with a specified Bill of Materials (BOM). In PO-1092, we define the customer, pump model, quantity, and target delivery dates instantly.",
+                      img: "https://i.imgur.com/14p7lou.png",
+                      caption: "Step 1: Creating PO-1092 for a new pump order — a focused, production-ready form."
+                    },
+                    {
+                      num: "2",
+                      label: "Verify Inventory",
+                      desc: "The moment an order exists, the system automatically matches order requirements against physical stock levels. If parts are missing (like Seal Kit SK-08 for order PO-1048), it instantly marks it as Blocked.",
+                      img: "https://i.imgur.com/MSI21zc.png",
+                      caption: "Step 2: Automated inventory matching immediately flags missing seal kits as blocking issues."
+                    },
+                    {
+                      num: "3",
+                      label: "Resolve Shortages",
+                      desc: "Missing components trigger auto-generated purchase recommendations. With context-driven 1-click requisitioning, a purchaser turns raw shortages into actionable vendor purchase requests without extra searches.",
+                      img: "https://i.imgur.com/qCSorxc.png",
+                      caption: "Step 3: Purchasing gets automatic buy recommendations mapped directly to the blocked production orders."
+                    },
+                    {
+                      num: "4",
+                      label: "Receive Materials",
+                      desc: "Suppliers' partial or full deliveries are logged dynamically. Outstanding amounts are tracked under active watch, ensuring true operational visibility matches real-world receiving processes.",
+                      img: "https://i.imgur.com/yKtOh5N.png",
+                      caption: "Step 4: Real-time request tracking handles partial shipments without losing line-item history."
+                    },
+                    {
+                      num: "5",
+                      label: "Produce Pump",
+                      desc: "The instant final parts are received on the dock, PO-1048 drops its Blocked status automatically and is unblocked in the queue. The dashboard updates immediately to clear the team for assembly.",
+                      img: "https://i.imgur.com/060G4ps.png",
+                      caption: "Step 5: Automated material resolution unblocks the order for direct floor assembly."
+                    }
+                  ].map((step, idx) => {
+                    const isEven = idx % 2 === 0;
+                    return (
+                      <motion.div 
+                        key={idx} 
+                        ref={el => { rowRefs.current[idx] = el; }}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: false, margin: "-25% 0px -25% 0px" }}
+                        variants={{
+                          hidden: { opacity: 0.35, y: 20 },
+                          visible: { opacity: 1, y: 0 }
+                        }}
+                        transition={{ duration: 0.5 }}
+                        className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center relative z-10"
+                      >
+                        {/* Text Column - Alternates Left/Right */}
+                        <div className={`md:col-span-4 space-y-5 relative ${
+                          isEven ? 'md:order-1 md:pl-12' : 'md:order-12 md:pr-12 md:text-right md:items-end flex flex-col'
+                        }`}>
+                          <div className={`flex items-center gap-3.5 ${
+                            isEven 
+                              ? 'md:absolute md:-left-14 md:-top-4' 
+                              : 'md:absolute md:-right-14 md:-top-4 md:flex-row-reverse'
+                          }`}>
+                            <span 
+                              ref={el => { badgeRefs.current[idx] = el; }}
+                              className="w-9 h-9 rounded-full bg-red-500 text-white flex items-center justify-center font-mono font-extrabold text-sm shadow-md shadow-red-500/20"
+                            >
+                              {step.num}
+                            </span>
+                            <span className="text-xs font-mono font-bold uppercase tracking-widest text-red-600 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+                              Step {step.num}
+                            </span>
+                          </div>
+                          
+                          <h3 className="text-2.5xl md:text-3.5xl font-black text-zinc-950 tracking-tight leading-tight">
+                            {step.label}
+                          </h3>
+                          
+                          <p className={`text-base md:text-lg text-zinc-600 font-light leading-relaxed ${
+                            !isEven && 'md:text-right'
+                          }`}>
+                            {step.desc}
+                          </p>
+                        </div>
+
+                        {/* Image Column - Alternates Left/Right */}
+                        <div className={`md:col-span-8 ${
+                          isEven ? 'md:order-12' : 'md:order-1'
+                        }`}>
+                          <motion.div 
+                            whileHover={{ y: -6, scale: 1.015 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            className="rounded-2xl border border-zinc-200 overflow-hidden shadow-lg bg-white p-2 group"
+                          >
+                            <img 
+                              src={step.img} 
+                              alt={step.label}
+                              className="w-full h-auto rounded-xl border border-zinc-100 transition-all duration-300 group-hover:scale-[1.005]"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => handleImageError(e, step.label)}
+                            />
+                          </motion.div>
+                          <p className="text-[11px] text-zinc-400 text-center font-mono mt-3 leading-normal">
+                            {step.caption}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* SECTION 4 — THE PIVOT (KEY DECISION) */}
+            <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 pt-8 border-t border-zinc-150 grid grid-cols-1 md:grid-cols-12 gap-8 items-start"
+              >
+                <div className="md:col-span-5 space-y-6">
+                  <div className="space-y-2">
+                    <span className="text-xs font-mono text-red-500 font-extrabold uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+                      <motion.span 
+                        animate={{ 
+                          scale: [1, 1.25, 1],
+                          opacity: [0.8, 1, 0.8]
+                        }}
+                        transition={{ 
+                          duration: 2, 
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-[#fee2e2] shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                      />
+                      Key Decision
+                    </span>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight">
+                      Getting It Wrong First
+                    </h3>
+                  </div>
+
+                  <p className="text-base text-zinc-650 leading-relaxed">
+                    My first dashboard put blocked orders front and center — the logic seemed obvious: urgent things should lead. A production manager looked at it and said one thing that changed the whole design.
+                  </p>
+
+                  <blockquote className="border-l-4 border-red-500 pl-4 py-1.5 text-lg md:text-xl font-bold text-zinc-900 italic">
+                    "Most of our production isn't blocked."
+                  </blockquote>
+
+                  <p className="text-base text-zinc-650 leading-relaxed">
+                    Most days, most orders are fine. Leading with blockers made a normal day look like a crisis. I rebuilt the dashboard to show production status, inventory, and incoming deliveries side by side — an accurate picture first, problems second.
+                  </p>
+                </div>
+
+                <div className="md:col-span-7 space-y-3">
+                  <motion.div 
+                    whileHover={{ scale: 1.02, y: -4 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    className="rounded-2xl border border-zinc-200 overflow-hidden shadow-lg hover:shadow-xl bg-white p-2 md:p-3 transition-shadow duration-300 cursor-pointer"
+                  >
+                    <img 
+                      src="https://i.imgur.com/kJ97VNS.png" 
+                      alt="Production Dashboard"
+                      className="w-full h-auto rounded-xl border border-zinc-100"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => handleImageError(e, "Production Dashboard")}
+                    />
+                  </motion.div>
+                  <p className="text-xs text-zinc-400 text-center font-mono">
+                    Production, inventory, and purchasing shown as equal-weight cards — not a wall of red.
+                  </p>
+                </div>
+              </motion.div>
+
+
+
+              {/* SECTION 7 — IMPACT METRICS DASHBOARD */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 pt-8 border-t border-zinc-150"
+              >
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">06. IMPACT</span>
+                  <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight">What Actually Changed</h2>
+                  <p className="text-base text-zinc-500 font-light max-w-2xl leading-relaxed">
+                    Based on direct user observation and production manager feedback, the application immediately shifted the focus from finding data to executing work:
+                  </p>
+                </div>
+
+                {/* 2x2 Grid of Beautiful Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    {
+                      label: "CHECKING PRODUCTION READINESS",
+                      before: "~10–15 min",
+                      after: "~1–2 min",
+                      desc: "Reduced check loops from multiple spreadsheets and emails to a single visual status click.",
+                      percent: "90% Faster"
+                    },
+                    {
+                      label: "IDENTIFYING STOCK SHORTAGES",
+                      before: "Spreadsheets + verbal calls",
+                      after: "Unified dashboard screen",
+                      desc: "Low-stock items visible in one screen — no manual counts needed.",
+                      percent: "Instant Clarity"
+                    },
+                    {
+                      label: "CREATING PURCHASE REQS",
+                      before: "Manual looking & typing",
+                      after: "Context-driven (1-click)",
+                      desc: "Automatically prefills missing parts, vendors, and quantities from active stock shortages.",
+                      percent: "Zero Friction"
+                    },
+                    {
+                      label: "TRACKING MATERIALS ON THE WAY",
+                      before: "Chasing emails & vendors",
+                      after: "Centralized request queue",
+                      desc: "Provides clear watch lists for incoming supplies, linking them directly to blocked assemblies.",
+                      percent: "Total Control"
+                    }
+                  ].map((card, idx) => (
+                    <div 
+                      key={idx}
+                      className="p-6 md:p-8 rounded-2xl border border-zinc-200 bg-white hover:border-red-300 hover:shadow-lg hover:shadow-red-500/[0.02] transition-all duration-300 space-y-5 relative overflow-hidden group"
+                    >
+                      <div className="absolute top-0 right-0 px-4 py-2 font-mono text-[10px] font-extrabold text-red-600 bg-red-50 rounded-bl-xl uppercase tracking-wider">
+                        {card.percent}
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-xs font-mono text-zinc-700 font-extrabold uppercase tracking-widest block">
+                          {card.label}
+                        </span>
+                        <div className="flex items-center gap-4 py-2">
+                          <div>
+                            <span className="text-[10px] font-mono text-zinc-500 font-bold block">BEFORE:</span>
+                            <span className="text-sm md:text-base font-semibold text-zinc-500">
+                              {card.before}
+                            </span>
+                          </div>
+                          <div className="text-zinc-400 text-xl font-light transform group-hover:translate-x-1 transition-transform duration-300">→</div>
+                          <div>
+                            <span className="text-[10px] font-mono text-red-600 font-extrabold block">AFTER:</span>
+                            <span className="text-2xl md:text-3xl font-black text-zinc-950 tracking-tight">
+                              {card.after}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-zinc-700 font-normal leading-relaxed">
+                          {card.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+
+              </motion.div>
+
+              {/* SECTION 7.5 — CHALLENGES & CONSTRAINTS */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 pt-16 border-t border-zinc-150 mt-16"
+              >
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">
+                    Working Within Real Limits
+                  </span>
+                  <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight animate-fade-in">
+                    This Wasn't Built with Unlimited Resources
+                  </h2>
+                  <p className="text-base text-zinc-500 font-light max-w-2xl leading-relaxed">
+                    A few constraints shaped almost every decision on this project — worth naming, because they explain some of the choices above.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    {
+                      eyebrow: "CONSTRAINT 1",
+                      title: "Users Who'd Never Used a Workflow Tool Before",
+                      desc: "Production, inventory, and purchasing staff were used to paper and Excel, not software. The product couldn't assume any prior tool familiarity — every screen had to be self-explanatory on first use."
+                    },
+                    {
+                      eyebrow: "CONSTRAINT 2",
+                      title: "Competing with \"Just Use Excel\"",
+                      desc: "Spreadsheets were free, familiar, and already installed. If the tool added friction anywhere, people would quietly go back to what they knew. Every added step had to earn its place."
+                    },
+                    {
+                      eyebrow: "CONSTRAINT 3",
+                      title: "Small Team, Limited Engineering Time",
+                      desc: "No room for a large feature set or a long build queue. Every feature had to justify the engineering time it would cost — another reason the product stayed narrow and workflow-focused rather than broad."
+                    }
+                  ].map((card, idx) => (
+                    <div 
+                      key={idx} 
+                      className="p-6 border border-zinc-200/80 rounded-2xl bg-white shadow-xs space-y-3 hover:border-red-300 hover:shadow-md transition-all duration-300"
+                    >
+                      <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">
+                        {card.eyebrow}
+                      </span>
+                      <h4 className="font-extrabold text-lg text-zinc-950 leading-snug tracking-tight">
+                        {card.title}
+                      </h4>
+                      <p className="text-sm text-zinc-650 font-normal leading-relaxed">
+                        {card.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+
+              </motion.div>
+
+            </div>
+
+            {/* SECTION 8 — INTERACTIVE PROTOTYPE */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-8 pt-16 border-t border-zinc-150 mt-16 max-w-7xl xl:max-w-[1360px] mx-auto px-4 md:px-8"
+            >
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">
+                    Interactive Prototype
+                  </span>
+                  <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight">
+                    Try the PAR Prototype
+                  </h2>
+                  <p className="text-base text-zinc-500 font-light max-w-2xl leading-relaxed">
+                    Interact with the high-fidelity tactical interface below to experience how production monitoring and stock control flows are integrated.
+                  </p>
+                </div>
+                <a 
+                  href="https://tamizhselvan018-hash.github.io/par-prototype/par-prototype.html" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-zinc-900 text-white hover:bg-zinc-800 px-5 py-2.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md hover:scale-[1.02] active:scale-[0.98] self-start md:self-auto"
+                >
+                  Open in New Window
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              <div className="border border-zinc-200 rounded-[32px] overflow-hidden bg-white shadow-2xl relative">
+                <div className="relative w-full h-[600px] md:h-[720px] overflow-hidden bg-white">
+                  <iframe 
+                    src="https://tamizhselvan018-hash.github.io/par-prototype/par-prototype.html" 
+                    title="PAR Interactive Prototype"
+                    className="absolute top-0 left-0 border-none bg-white origin-top-left"
+                    style={{
+                      width: "133.333%",
+                      height: "133.333%",
+                      transform: "scale(0.75)",
+                    }}
+                    referrerPolicy="no-referrer"
+                    sandbox="allow-scripts allow-same-origin allow-popups"
+                  />
+                </div>
+              </div>
+            </motion.div>
+
             {/* Back Button */}
-            <section className="py-20 text-center border-t border-zinc-100 mt-16">
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
               <div className="flex justify-center flex-col items-center gap-4">
-                <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
               </div>
             </section>
           </>
         )}
 
-        {!isMyCampus && !isWalkForPlastic && !isPathwaysBadgeQuest && !isMotionDesign && !isParProductionControl && (
-          <section className="py-32 text-center">
+        {isMeridianHealth && (
+          <>
+            {/* Overview */}
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <span className="text-[#48C0F0] font-mono font-bold text-xs tracking-widest uppercase">01. THE PROBLEM</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Therapists drowning in clicking.</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-4 text-base text-zinc-650 leading-relaxed font-light">
+                  <p>
+                    Pediatric occupational and physical therapists enter their profession to heal children, but instead find themselves staring at screens. Legacy electronic health record (EHR) systems are designed for medical billing audits rather than actual patient care.
+                  </p>
+                  <p>
+                    For a typical 45-minute pediatric therapy session, a therapist must record dozens of clinical data points across fine motor, gross motor, and sensory domains. On desktop-based software, this required a average of 42 clicks per joint-mobility observation, adding 15+ minutes of clerical compliance drafting to every session.
+                  </p>
+                </div>
+                <div className="bg-[#48C0F0]/10 border border-[#48C0F0]/30 p-6 rounded-[28px] space-y-4 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-[#0c7ba5] font-mono">The Compliance Burden</h4>
+                  <ul className="space-y-3">
+                    {[
+                      'Over 40% of session time spent on manual documentation rather than child interaction',
+                      'Double-entry of measurements onto temporary paper cheatsheets and sticky notes',
+                      'High levels of professional burnout and clerical error rates across clinics',
+                      'Billing delays due to incomplete or delayed SOAP notes'
+                    ].map((point, i) => (
+                      <li key={i} className="flex gap-2.5 items-start text-zinc-800 text-sm">
+                        <span className="text-[#48C0F0] font-black">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Design Strategy */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#48C0F0] font-mono font-bold text-xs tracking-widest uppercase">02. USER INSIGHT</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Sticky notes on knees.</h2>
+              </div>
+              <div className="space-y-4 text-base text-zinc-650 leading-relaxed font-light">
+                <p>
+                  By shadowing 8 pediatric therapy sessions, I noticed a striking pattern: therapists rarely had their laptops open during sessions. Laptops were intimidating to children and restricted mobility.
+                </p>
+                <p>
+                  Instead, therapists wrote measurements on sticky notes slapped onto their own jeans, or on paper drafts on clipboard tables. They would then spend the final 15 minutes of their day — or their evenings at home — transcribing these notes back into the EHR.
+                </p>
+              </div>
+              <div className="bg-white border border-zinc-150 p-6 rounded-[28px] flex items-center gap-4 shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-[#48C0F0]/10 flex items-center justify-center shrink-0">
+                  <Lightbulb className="w-6 h-6 text-[#0c7ba5]" />
+                </div>
+                <div>
+                  <h5 className="font-sans font-bold text-sm text-zinc-900">The Design Breakthrough</h5>
+                  <p className="text-xs text-zinc-500 font-light leading-relaxed mt-0.5">
+                    "A child's session is active play. The tool must be an active play companion. It should be tablet-first, support swipe gestures for quick-logging range-of-motion, and automate document generation."
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Interactive Workspace Widget */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#48C0F0] font-mono font-bold text-xs tracking-widest uppercase">03. INTERACTIVE SIMULATOR</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Clinical session logging interface</h2>
+                <p className="text-sm text-zinc-500 font-light">
+                  Interact with the tablet prototype below. Tap the joint states to record ranges of motion or check developmental achievements. Watch how the automated clinical SOAP progress summary drafted below updates in real-time.
+                </p>
+              </div>
+
+              {/* Tablet Mockup */}
+              <div className="border border-zinc-250 rounded-[32px] overflow-hidden bg-white shadow-xl max-w-4xl mx-auto flex flex-col md:flex-row">
+                {/* Left Panel: Active Controls */}
+                <div className="p-6 md:p-8 md:w-3/5 border-r border-zinc-100 space-y-6 bg-zinc-50/50">
+                  <div className="flex justify-between items-center pb-3 border-b border-zinc-200/60">
+                    <span className="text-xs font-mono font-bold text-zinc-500 flex items-center gap-1.5 uppercase">
+                      <Smartphone className="w-4 h-4 text-[#0c7ba5]" /> Patient: Liam (Age 5)
+                    </span>
+                    <span className="text-[10px] bg-[#48C0F0]/20 text-[#0c7ba5] font-mono font-bold px-2 py-0.5 rounded-full">ACTIVE SESSION</span>
+                  </div>
+
+                  {/* Joint mobility range selector */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">Joint Range of Motion</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {Object.keys(mhMobility).map((joint) => (
+                        <div key={joint} className="bg-white p-3.5 border border-zinc-150 rounded-xl space-y-2 shadow-2xs">
+                          <span className="text-xs font-bold text-zinc-700 block">{joint}</span>
+                          <div className="flex gap-1.5">
+                            {['Normal', 'Restricted', 'Severe'].map((state) => (
+                              <button
+                                key={state}
+                                onClick={() => setMhMobility(prev => ({ ...prev, [joint]: state }))}
+                                className={`flex-1 text-[9px] font-mono py-1 rounded-md transition-all border ${
+                                  mhMobility[joint] === state
+                                    ? 'bg-[#48C0F0] text-zinc-950 font-bold border-[#48C0F0] shadow-xs'
+                                    : 'bg-zinc-50 text-zinc-500 border-zinc-150 hover:bg-zinc-100'
+                                }`}
+                              >
+                                {state}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Milestones toggle */}
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">Pediatric Milestones Completed</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {Object.keys(mhMilestones).map((milestone) => (
+                        <button
+                          key={milestone}
+                          onClick={() => setMhMilestones(prev => ({ ...prev, [milestone]: !prev[milestone] }))}
+                          className={`flex items-center justify-between p-3 border rounded-xl text-left transition-all ${
+                            mhMilestones[milestone]
+                              ? 'bg-[#48C0F0]/10 border-[#48C0F0] text-zinc-950 font-bold'
+                              : 'bg-white border-zinc-150 text-zinc-500 hover:bg-zinc-50'
+                          }`}
+                        >
+                          <span className="text-[11px] font-medium leading-snug">{milestone}</span>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ml-2 ${
+                            mhMilestones[milestone] ? 'bg-[#48C0F0] border-[#48C0F0]' : 'border-zinc-350'
+                          }`}>
+                            {mhMilestones[milestone] && <Check className="w-2.5 h-2.5 text-zinc-950 font-black" />}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Panel: Auto-drafted Clinical Progress SOAP Note */}
+                <div className="p-6 md:p-8 md:w-2/5 flex flex-col justify-between space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#0c7ba5] font-mono flex items-center gap-1.5 border-b pb-2">
+                      <FileText className="w-4 h-4" /> Automated Clinical Summary
+                    </h4>
+                    
+                    <div className="bg-zinc-50 border border-zinc-150 rounded-2xl p-4 space-y-4 text-xs font-mono text-zinc-700 leading-relaxed max-h-[300px] overflow-y-auto">
+                      <div>
+                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">SUBJECTIVE (S):</span>
+                        <p className="mt-0.5">Patient Liam engaged enthusiastically in occupational therapeutic session utilizing building blocks and coordination games.</p>
+                      </div>
+
+                      <div>
+                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">OBJECTIVE (O):</span>
+                        <ul className="list-disc pl-4 mt-1 space-y-1">
+                          {(Object.entries(mhMobility) as [string, string][]).map(([joint, state]) => (
+                            <li key={joint}>
+                              {joint}: <span className={state !== 'Normal' ? 'text-red-600 font-bold' : 'text-emerald-700'}>{state.toUpperCase()}</span>
+                            </li>
+                          ))}
+                          <li>
+                            Milestones achieved: {Object.entries(mhMilestones).filter(([_, val]) => val).map(([k]) => k).join(', ') || 'None'}
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">ASSESSMENT (A):</span>
+                        <p className="mt-0.5">
+                          {mhMobility['Right Knee'] === 'Restricted' || mhMobility['Right Shoulder'] === 'Slightly Restricted'
+                            ? 'Asymmetry persistent. Focus on therapeutic manipulation. Range of motion below nominal thresholds.'
+                            : 'Patient shows stable physiological range of motion.'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-mono text-zinc-400 uppercase font-semibold">Ready to Sync</span>
+                      <span className="text-[9px] font-mono text-[#0c7ba5] font-bold">Secure HIPAA Cloud</span>
+                    </div>
+                    <button 
+                      onClick={() => alert('Clinical SOAP note successfully generated and synced securely with hospital EHR database.')}
+                      className="bg-[#48C0F0] text-zinc-950 font-semibold font-mono text-xs px-5 py-2.5 rounded-full shadow-md hover:bg-[#2cb2e8] transition-all"
+                    >
+                      Sync SOAP Note
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Impact Metric & Takeaways */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#48C0F0] font-mono font-bold text-xs tracking-widest uppercase">04. OUTCOME</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">A system that gets out of the way.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                By designing a gesture-based clinical tablet workflow that maps seamlessly onto a therapist's existing workflow, we completely eliminated transcription and clerical overhead. Therapists spend less time staring at pixels and more time guiding children through vital therapeutic milestones.
+              </p>
+
+              {/* Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 border border-zinc-150 rounded-[32px] overflow-hidden bg-zinc-50/50 shadow-2xs">
+                {[
+                  { val: "-80%", label: "Reduction in session compliance drafting time", clr: "text-[#0c7ba5]" },
+                  { val: "25%", label: "Increase in physical therapy face-to-face duration", clr: "text-zinc-800" },
+                  { val: "0 min", label: "Documentation taken home after hours", clr: "text-[#0c7ba5]" }
+                ].map((stat, i) => (
+                  <div key={i} className="p-6 md:p-8 flex flex-col justify-center text-center md:text-left space-y-2 border-b md:border-b-0 md:border-r last:border-b-0 last:border-r-0 border-zinc-150 hover:bg-white transition-all duration-300">
+                    <span className={`text-4xl md:text-5xl font-black tracking-tight ${stat.clr} font-sans`}>
+                      {stat.val}
+                    </span>
+                    <span className="text-xs font-semibold text-zinc-600 leading-snug">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {isStylebook && (
+          <>
+            {/* Overview */}
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <span className="text-zinc-500 font-mono font-bold text-xs tracking-widest uppercase">01. THE CHALLENGE</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Paper is the real competitor.</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-4 text-base text-zinc-650 leading-relaxed font-light">
+                  <p>
+                    StyleBook is a high-growth SaaS platform for salon management. But in physical salons, booking calendars operate in a state of high-stress chaos. On a busy Saturday morning, the salon receptionist is juggling walk-ins, phone calls, and coordinating 12 stylists simultaneously.
+                  </p>
+                  <p>
+                    While the product possessed high technical capabilities, its scheduling UI was slow, requiring multiple click dialogs and pages to schedule an appointment. Receptionists reverted to physical paper books for speed, transcribing them later — creating massive scheduling conflicts and double bookings.
+                  </p>
+                </div>
+                <div className="bg-[#121212]/5 border border-zinc-200 p-6 rounded-[28px] space-y-4 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-800 font-mono">The Booking Bottlenecks</h4>
+                  <ul className="space-y-3">
+                    {[
+                      'Adding a simple appointment required 9 distinct mouse clicks',
+                      'Laggy interface caused double-bookings during busy phone hours',
+                      'No real-time conflict warnings for preferred stylist rosters',
+                      'Frustrated receptionists abandoned software in peak weekend traffic'
+                    ].map((point, i) => (
+                      <li key={i} className="flex gap-2.5 items-start text-zinc-800 text-sm">
+                        <span className="text-zinc-950 font-black">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Design Strategy */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-zinc-500 font-mono font-bold text-xs tracking-widest uppercase">02. INSIGHT</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Speed is non-negotiable.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                Observation showed that a receptionist has an average of only 30 seconds to book a telephone client. If the software takes 45 seconds, the client hangs up or gets impatient. We redesigned StyleBook's core scheduling engine to be 100% keyboard-navigable and context-aware, completely avoiding modal overlays.
+              </p>
+            </section>
+
+            {/* Interactive Workspace */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-zinc-500 font-mono font-bold text-xs tracking-widest uppercase">03. INTERACTIVE CALENDAR BOARD</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Fast-path scheduler with conflict checking</h2>
+                <p className="text-sm text-zinc-500 font-light">
+                  Use the active scheduling board below to add bookings. Try choosing a stylist at a time they are already scheduled to witness the real-time conflict resolution system override workflow.
+                </p>
+              </div>
+
+              {/* Booking board */}
+              <div className="border border-zinc-200/80 rounded-[32px] bg-white overflow-hidden shadow-xl max-w-4xl mx-auto flex flex-col md:flex-row">
+                {/* Timeline Grid */}
+                <div className="p-6 md:p-8 md:w-3/5 bg-zinc-50/50 space-y-4">
+                  <span className="text-xs font-mono font-bold text-zinc-400 block uppercase">TODAY'S SCHEDULE</span>
+                  
+                  <div className="space-y-2">
+                    {stylebookAppts.map((appt) => (
+                      <div key={appt.id} className="bg-white border border-zinc-150 p-3 rounded-xl flex justify-between items-center shadow-2xs">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-mono font-bold text-zinc-400 bg-zinc-100 px-2 py-1 rounded">{appt.time}</span>
+                          <div>
+                            <h4 className="text-xs font-bold text-zinc-800">{appt.client}</h4>
+                            <p className="text-[10px] text-zinc-450">{appt.service}</p>
+                          </div>
+                        </div>
+                        <span className={`text-[9px] font-bold font-mono px-2.5 py-0.5 rounded-full border ${appt.color}`}>
+                          Stylist: {appt.stylist}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Interactive Booking Form */}
+                <div className="p-6 md:p-8 md:w-2/5 flex flex-col justify-between space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono flex items-center gap-1.5 border-b pb-2">
+                      <Plus className="w-4 h-4 text-zinc-500" /> Fast-Book Scheduler
+                    </h4>
+
+                    {stylebookConflict && (
+                      <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-start gap-2.5 animate-pulse">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <h5 className="text-[11px] font-bold text-amber-800 leading-none">STYLIST CONFLICT</h5>
+                          <p className="text-[10px] text-amber-700 leading-snug">
+                            {stylebookStylist} is already booked at {stylebookTime}. Reassign to Jordan or override to continue.
+                          </p>
+                          <div className="flex gap-2 pt-1.5">
+                            <button
+                              onClick={() => {
+                                setStylebookStylist('Jordan');
+                                setStylebookConflict(false);
+                              }}
+                              className="text-[9px] font-mono bg-white text-zinc-700 border border-zinc-200 px-2 py-0.5 rounded font-bold shadow-2xs hover:bg-zinc-50"
+                            >
+                              Auto-Assign Jordan
+                            </button>
+                            <button
+                              onClick={() => {
+                                // Add Overridden
+                                setStylebookAppts(prev => [
+                                  ...prev,
+                                  {
+                                    id: prev.length + 1,
+                                    time: stylebookTime,
+                                    client: stylebookClient || 'Walk-In Guest',
+                                    service: stylebookService,
+                                    stylist: stylebookStylist,
+                                    color: 'bg-rose-500/10 text-rose-700 border-rose-200'
+                                  }
+                                ]);
+                                setStylebookClient('');
+                                setStylebookConflict(false);
+                              }}
+                              className="text-[9px] font-mono bg-rose-600 text-white px-2 py-0.5 rounded font-bold shadow-2xs hover:bg-rose-700"
+                            >
+                              Double Book
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-3 text-xs">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-zinc-450 uppercase font-mono">Client Name</label>
+                        <input
+                          type="text"
+                          value={stylebookClient}
+                          onChange={(e) => setStylebookClient(e.target.value)}
+                          placeholder="e.g. Robert Downey"
+                          className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 font-mono text-zinc-800 focus:outline-none focus:border-zinc-950"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-zinc-450 uppercase font-mono">Time</label>
+                          <select
+                            value={stylebookTime}
+                            onChange={(e) => setStylebookTime(e.target.value)}
+                            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 font-mono text-zinc-800"
+                          >
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:15 AM">11:15 AM</option>
+                            <option value="12:30 PM">12:30 PM</option>
+                            <option value="02:00 PM">02:00 PM</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-zinc-450 uppercase font-mono">Stylist</label>
+                          <select
+                            value={stylebookStylist}
+                            onChange={(e) => setStylebookStylist(e.target.value)}
+                            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 font-mono text-zinc-800"
+                          >
+                            <option value="Alex">Alex</option>
+                            <option value="Jordan">Jordan</option>
+                            <option value="Taylor">Taylor</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-zinc-450 uppercase font-mono">Service</label>
+                        <select
+                          value={stylebookService}
+                          onChange={(e) => setStylebookService(e.target.value)}
+                          className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 font-mono text-zinc-800"
+                        >
+                          <option value="Haircut & Blowout">Haircut & Blowout</option>
+                          <option value="Beard Trim">Beard Trim</option>
+                          <option value="Balayage Color">Balayage Color</option>
+                          <option value="Nail Therapy">Nail Therapy</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      // Check for conflict
+                      const conflict = stylebookAppts.some(
+                        (a) => a.time === stylebookTime && a.stylist === stylebookStylist
+                      );
+                      if (conflict) {
+                        setStylebookConflict(true);
+                      } else {
+                        setStylebookAppts((prev) => [
+                          ...prev,
+                          {
+                            id: prev.length + 1,
+                            time: stylebookTime,
+                            client: stylebookClient || 'Walk-In Guest',
+                            service: stylebookService,
+                            stylist: stylebookStylist,
+                            color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200'
+                          }
+                        ]);
+                        setStylebookClient('');
+                        setStylebookConflict(false);
+                      }
+                    }}
+                    className="w-full bg-zinc-950 text-white font-mono text-xs font-semibold py-3 rounded-xl hover:bg-zinc-800 transition-colors shadow-md"
+                  >
+                    Confirm Booking
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Impact */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-zinc-500 font-mono font-bold text-xs tracking-widest uppercase">04. DELIVERED IMPACT</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">98% product adoption in salons.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                By accelerating context entry and implementing proactive, non-modal conflict tracking, the redesigned StyleBook scheduler achieved complete product adoption in salons. Receptionists threw away their physical logbooks entirely and double-booking customer incidents vanished.
+              </p>
+
+              {/* Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 border border-zinc-150 rounded-[32px] overflow-hidden bg-zinc-50/50 shadow-2xs">
+                {[
+                  { val: "45 sec", label: "Average phone booking time down from 140s", clr: "text-zinc-900" },
+                  { val: "0", label: "Double-booking scheduling conflicts reported", clr: "text-zinc-900" },
+                  { val: "98%", label: "Adoption rate within 7 days of rollout", clr: "text-zinc-900" }
+                ].map((stat, i) => (
+                  <div key={i} className="p-6 md:p-8 flex flex-col justify-center text-center md:text-left space-y-2 border-b md:border-b-0 md:border-r last:border-b-0 last:border-r-0 border-zinc-150 hover:bg-white transition-all duration-300">
+                    <span className={`text-4xl md:text-5xl font-black tracking-tight ${stat.clr} font-sans`}>
+                      {stat.val}
+                    </span>
+                    <span className="text-xs font-semibold text-zinc-600 leading-snug">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {isHomestead && (
+          <>
+            {/* Overview */}
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <span className="text-[#f3b23a] font-mono font-bold text-xs tracking-widest uppercase">01. THE PROBLEM</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">The closing cost shock.</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-4 text-base text-zinc-650 leading-relaxed font-light">
+                  <p>
+                    First-time homebuyers are incredibly vulnerable. They use glossy proptech applications to discover their dream home, only to be hit by intense financial anxiety when they reach the transaction phase.
+                  </p>
+                  <p>
+                    Most online mortgage calculators only calculate "Principal & Interest", leaving out crucial extra fees like closing costs, escrow reserves, local property taxes, and private mortgage insurance (PMI). When buyers finally sit down with a lender, they learn they need an additional $10k–$15k in upfront liquid cash, collapsing their purchase.
+                  </p>
+                </div>
+                <div className="bg-[#f3b23a]/10 border border-[#f3b23a]/30 p-6 rounded-[28px] space-y-4 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-[#a8740c] font-mono">The Budget Blindspots</h4>
+                  <ul className="space-y-3">
+                    {[
+                      'Closing fees (origination, title, appraisal) can add up to 3% to 4% of purchase cost',
+                      'PMI is often hidden, adding $150+ monthly if down payment is under 20%',
+                      'Escrow prepayments require pre-funding 3 to 6 months of tax and insurance reserves',
+                      'Vague jargon leaves buyers feeling anxious, distrustful, and disempowered'
+                    ].map((point, i) => (
+                      <li key={i} className="flex gap-2.5 items-start text-zinc-800 text-sm">
+                        <span className="text-[#f3b23a] font-black">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Design Strategy */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#f3b23a] font-mono font-bold text-xs tracking-widest uppercase">02. USER FOCUS</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Radical transparency over glossy pages.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                We designed Homestead as an educational budget-mapping system. Instead of hiding transaction realities, it guides first-time buyers through a visually decomposed financial model. The interface calculates and explains closing fees, reserve thresholds, and tax variances, empowering buyers with authentic affordability planning before they speak to brokers.
+              </p>
+            </section>
+
+            {/* Interactive Calculator widget */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#f3b23a] font-mono font-bold text-xs tracking-widest uppercase">03. INTERACTIVE PORTFOLIO WIDGET</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Upfront and monthly cost calculator</h2>
+                <p className="text-sm text-zinc-500 font-light">
+                  Adjust the sliders to set a home price and down payment percentage. Watch how the real financial formulas dynamically calculate the required upfront cash reserves and a comprehensive monthly payment breakdown.
+                </p>
+              </div>
+
+              {/* Calculator Box */}
+              <div className="border border-zinc-200/80 rounded-[32px] overflow-hidden bg-white shadow-xl max-w-4xl mx-auto flex flex-col md:flex-row">
+                {/* Inputs */}
+                <div className="p-6 md:p-8 md:w-1/2 bg-zinc-50/50 space-y-6">
+                  <span className="text-xs font-mono font-bold text-zinc-400 block uppercase">PLANNING CRITERIA</span>
+                  
+                  {/* Home Price Slider */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-zinc-700">Home Purchase Price</span>
+                      <span className="font-mono font-bold text-[#a8740c] text-sm">${homesteadHomePrice.toLocaleString()}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={150000}
+                      max={1200000}
+                      step={10000}
+                      value={homesteadHomePrice}
+                      onChange={(e) => setHomesteadHomePrice(Number(e.target.value))}
+                      className="w-full accent-[#f3b23a] h-1.5 bg-zinc-200 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
+                      <span>$150,000</span>
+                      <span>$1,200,000</span>
+                    </div>
+                  </div>
+
+                  {/* Down Payment Pct Slider */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-zinc-700">Down Payment Pct</span>
+                      <span className="font-mono font-bold text-[#a8740c] text-sm">{homesteadDownPaymentPct}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={3}
+                      max={30}
+                      step={1}
+                      value={homesteadDownPaymentPct}
+                      onChange={(e) => setHomesteadDownPaymentPct(Number(e.target.value))}
+                      className="w-full accent-[#f3b23a] h-1.5 bg-zinc-200 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
+                      <span>3% (FHA Min)</span>
+                      <span>30%</span>
+                    </div>
+                  </div>
+
+                  {/* Financial metrics list */}
+                  <div className="pt-4 border-t border-zinc-200/60 space-y-3 font-mono text-xs text-zinc-500">
+                    <div className="flex justify-between">
+                      <span>Principal Loan Amount:</span>
+                      <span className="font-bold text-zinc-800">
+                        ${(homesteadHomePrice * (1 - homesteadDownPaymentPct / 100)).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Est. Annual Property Tax (1.1%):</span>
+                      <span className="font-bold text-zinc-800">
+                        ${(homesteadHomePrice * 0.011).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Interest Rate Fixed:</span>
+                      <span className="font-bold text-zinc-800">6.80% Fixed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Outputs Layout */}
+                <div className="p-6 md:p-8 md:w-1/2 flex flex-col justify-between space-y-6">
+                  {/* Calculations */}
+                  {(() => {
+                    // Math calculations
+                    const loanAmount = homesteadHomePrice * (1 - homesteadDownPaymentPct / 100);
+                    const downPayment = homesteadHomePrice * (homesteadDownPaymentPct / 100);
+                    const closingCosts = homesteadHomePrice * 0.03; // 3% estimation
+                    const escrowReserves = homesteadHomePrice * 0.012; // 1.2% estimation
+                    const totalUpfront = downPayment + closingCosts + escrowReserves;
+
+                    // Monthly Payment Formulas
+                    const monthlyRate = 0.068 / 12;
+                    const totalMonths = 360; // 30 Years
+                    const principalInterest = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+                    const monthlyTaxes = (homesteadHomePrice * 0.011) / 12;
+                    const monthlyInsurance = 100;
+                    const monthlyPmi = homesteadDownPaymentPct < 20 ? (loanAmount * 0.0075) / 12 : 0;
+                    const totalMonthly = principalInterest + monthlyTaxes + monthlyInsurance + monthlyPmi;
+
+                    return (
+                      <div className="space-y-6">
+                        {/* Section 1: Cash Needed Upfront */}
+                        <div className="space-y-3">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-[#a8740c] font-mono flex items-center gap-1.5 border-b pb-1.5">
+                            <Coins className="w-4 h-4" /> Upfront Cash Required
+                          </h4>
+                          <div className="bg-zinc-50 border border-zinc-150 p-4 rounded-2xl flex justify-between items-center shadow-2xs">
+                            <div>
+                              <span className="text-[10px] font-mono text-zinc-400 font-bold block">LIQUID CASH NEEDED</span>
+                              <span className="text-2xl font-black font-sans text-zinc-950">${Math.round(totalUpfront).toLocaleString()}</span>
+                            </div>
+                            <span className="text-[9px] font-bold font-mono bg-[#f3b23a]/10 text-[#a8740c] px-2.5 py-1 rounded-md border border-[#f3b23a]/30">
+                              Verified affordability
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2 font-mono text-[10px] text-zinc-500">
+                            <div className="bg-zinc-50/50 p-2 border border-zinc-100 rounded-lg">
+                              <span className="block font-bold">Down Payment</span>
+                              <span className="text-zinc-800 font-black">${Math.round(downPayment).toLocaleString()}</span>
+                            </div>
+                            <div className="bg-zinc-50/50 p-2 border border-zinc-100 rounded-lg">
+                              <span className="block font-bold">Closing Fees</span>
+                              <span className="text-zinc-800 font-black">${Math.round(closingCosts).toLocaleString()}</span>
+                            </div>
+                            <div className="bg-zinc-50/50 p-2 border border-zinc-100 rounded-lg">
+                              <span className="block font-bold">Escrow Reserves</span>
+                              <span className="text-zinc-800 font-black">${Math.round(escrowReserves).toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Section 2: Est Monthly Fee */}
+                        <div className="space-y-3">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-[#a8740c] font-mono flex items-center gap-1.5 border-b pb-1.5">
+                            <Building className="w-4 h-4" /> Monthly Payment Breakdown
+                          </h4>
+                          <div className="bg-zinc-50 border border-zinc-150 p-4 rounded-2xl flex justify-between items-center shadow-2xs">
+                            <div>
+                              <span className="text-[10px] font-mono text-zinc-450 font-bold block">EST. TOTAL MONTHLY</span>
+                              <span className="text-2xl font-black font-sans text-zinc-950">${Math.round(totalMonthly).toLocaleString()}/mo</span>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-4 gap-1.5 font-mono text-[9px] text-zinc-500">
+                            <div className="bg-zinc-50/50 p-1.5 border border-zinc-100 rounded-lg text-center">
+                              <span className="block font-bold">P &amp; I</span>
+                              <span className="text-zinc-800 font-semibold">${Math.round(principalInterest).toLocaleString()}</span>
+                            </div>
+                            <div className="bg-zinc-50/50 p-1.5 border border-zinc-100 rounded-lg text-center">
+                              <span className="block font-bold">Taxes</span>
+                              <span className="text-zinc-800 font-semibold">${Math.round(monthlyTaxes).toLocaleString()}</span>
+                            </div>
+                            <div className="bg-zinc-50/50 p-1.5 border border-zinc-100 rounded-lg text-center">
+                              <span className="block font-bold">Insurance</span>
+                              <span className="text-zinc-800 font-semibold">${monthlyInsurance}</span>
+                            </div>
+                            <div className="bg-zinc-50/50 p-1.5 border border-zinc-100 rounded-lg text-center">
+                              <span className="block font-bold">PMI (Ins.)</span>
+                              <span className={monthlyPmi > 0 ? 'text-amber-600 font-black' : 'text-zinc-400'}>
+                                ${Math.round(monthlyPmi)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-zinc-400 italic">HIPAA-free financial ledger</span>
+                    <button 
+                      onClick={() => alert('Affordability budget successfully saved to your Homestead dashboard.')}
+                      className="bg-[#f3b23a] text-zinc-950 font-semibold font-mono text-xs px-5 py-2.5 rounded-full shadow-md hover:bg-[#e2a225] transition-all"
+                    >
+                      Save Affordable Plan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Impact */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#f3b23a] font-mono font-bold text-xs tracking-widest uppercase">04. DELIVERED VALUE</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Empowering first-time buyers.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                By presenting financial realities clearly and explaining every line-item budget requirement beforehand, Homestead established high trust and psychological calm. Real homebuyers mapped their purchase plans confidently, completely avoiding closing day panic.
+              </p>
+
+              {/* Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 border border-zinc-150 rounded-[32px] overflow-hidden bg-zinc-50/50 shadow-2xs">
+                {[
+                  { val: "4.9/5", label: "User satisfaction score on budgeting clarity", clr: "text-[#a8740c]" },
+                  { val: "12,000+", label: "Prospective first-time buyers budgeted", clr: "text-zinc-800" },
+                  { val: "35%", label: "Increase in mortgage pre-approval completions", clr: "text-[#a8740c]" }
+                ].map((stat, i) => (
+                  <div key={i} className="p-6 md:p-8 flex flex-col justify-center text-center md:text-left space-y-2 border-b md:border-b-0 md:border-r last:border-b-0 last:border-r-0 border-zinc-150 hover:bg-white transition-all duration-300">
+                    <span className={`text-4xl md:text-5xl font-black tracking-tight ${stat.clr} font-sans`}>
+                      {stat.val}
+                    </span>
+                    <span className="text-xs font-semibold text-zinc-600 leading-snug">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {isNorthLight && (
+          <>
+            {/* Overview */}
+            <section className="space-y-6">
+              <div className="space-y-2">
+                <span className="text-[#b31942] font-mono font-bold text-xs tracking-widest uppercase">01. THE ENTERPRISE PROBLEM</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">The 6-month developer stalemate.</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-4 text-base text-zinc-650 leading-relaxed font-light">
+                  <p>
+                    North Light builds grid telemetries for high-volume energy grids. During a product refresh cycle, development hit a critical block: the core dashboard layout was stuck in stakeholder conflict.
+                  </p>
+                  <p>
+                    The power systems engineers wanted incredibly dense, granular telemetry data feeds — real-time waves, microsecond logs, and nested knobs. Meanwhile, the field technicians on physical grid platforms wore heavy gloves and operated in extreme cold; they demanded high-contrast, massive status banners and single-tap triggers, calling the engineers' layout "unusable clutter."
+                  </p>
+                </div>
+                <div className="bg-[#b31942]/10 border border-[#b31942]/30 p-6 rounded-[28px] space-y-4 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-[#9c1236] font-mono">Divergent Enterprise Needs</h4>
+                  <ul className="space-y-3">
+                    {[
+                      'Control Room: Needs multi-series charts, microsecond frequency logs, and granular details',
+                      'Field Platform: Needs high-contrast, glove-friendly giant alert tap zones',
+                      'Development halted due to inability to agree on a single dashboard layout',
+                      'High risk of critical power infrastructure terminal failures from usability lag'
+                    ].map((point, i) => (
+                      <li key={i} className="flex gap-2.5 items-start text-zinc-800 text-sm">
+                        <span className="text-[#b31942] font-black">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Solution Strategy */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#b31942] font-mono font-bold text-xs tracking-widest uppercase">02. STRATEGIC INSIGHT</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Modular Profile Switching.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                Instead of forcing a compromise that satisfied neither stakeholder, I designed an adaptable modular widget dashboard with a top-level workspace profile switch. By toggling between Control Room Mode and Field Technician Mode, we preserved the precise telemetry layers for engineers while scaling active alerts for field platforms — utilizing a unified underlying codebase.
+              </p>
+            </section>
+
+            {/* Interactive Widget Mode Swapper */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#b31942] font-mono font-bold text-xs tracking-widest uppercase">03. INTERACTIVE SIMULATOR</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Unified Adaptable Telemetry Dashboard</h2>
+                <p className="text-sm text-zinc-500 font-light">
+                  Toggle the profile switch below to see how the dashboard transforms. Click "Trigger Frequency Spike" to see how the failure state is handled in each specific operational environment.
+                </p>
+              </div>
+
+              {/* Mode Controller UI */}
+              <div className="border border-zinc-200/80 rounded-[32px] overflow-hidden bg-white shadow-xl max-w-4xl mx-auto flex flex-col">
+                {/* Switcher bar */}
+                <div className="p-4 bg-zinc-950 text-white flex justify-between items-center border-b border-zinc-800">
+                  <div className="flex gap-2 items-center">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#b31942] animate-pulse" />
+                    <span className="text-xs font-mono font-bold tracking-wider uppercase">GRID telemetry: NORTH_LIGHT_GRID_A</span>
+                  </div>
+                  
+                  {/* Toggles */}
+                  <div className="flex bg-zinc-800 p-1 rounded-lg border border-zinc-700">
+                    <button
+                      onClick={() => setNorthLightMode('control')}
+                      className={`text-[10px] font-mono font-bold px-3 py-1.5 rounded transition-all ${
+                        northLightMode === 'control'
+                          ? 'bg-[#b31942] text-white shadow'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Control Room
+                    </button>
+                    <button
+                      onClick={() => setNorthLightMode('field')}
+                      className={`text-[10px] font-mono font-bold px-3 py-1.5 rounded transition-all ${
+                        northLightMode === 'field'
+                          ? 'bg-[#b31942] text-white shadow'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Field Operator
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dashboard Panel Viewport */}
+                <div className="p-6 md:p-8 min-h-[320px] bg-zinc-50 flex flex-col justify-between">
+                  {northLightMode === 'control' ? (
+                    /* CONTROL ROOM MODE */
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center pb-3 border-b border-zinc-200">
+                        <span className="text-xs font-mono font-bold text-zinc-500">CONTROL CENTER PANEL (DENSE DRAFT)</span>
+                        <span className="text-[10px] bg-emerald-500/15 text-emerald-700 font-mono font-bold px-2 py-0.5 rounded border border-emerald-300">SYSTEM: NORMAL</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Dial 1 */}
+                        <div className="bg-white border border-zinc-200 rounded-xl p-4 space-y-1 shadow-2xs">
+                          <span className="text-[9px] font-mono text-zinc-400 font-bold block">GRID FREQUENCY</span>
+                          <span className="text-lg font-mono font-black text-zinc-800">60.00 Hz</span>
+                          <div className="h-1 w-full bg-zinc-150 rounded-full overflow-hidden mt-2">
+                            <div className="h-full bg-emerald-500 w-3/5" />
+                          </div>
+                        </div>
+
+                        {/* Dial 2 */}
+                        <div className="bg-white border border-zinc-200 rounded-xl p-4 space-y-1 shadow-2xs">
+                          <span className="text-[9px] font-mono text-zinc-400 font-bold block">THERMAL LOAD</span>
+                          <span className="text-lg font-mono font-black text-zinc-800">42.4 °C</span>
+                          <div className="h-1 w-full bg-zinc-150 rounded-full overflow-hidden mt-2">
+                            <div className="h-full bg-emerald-500 w-2/5" />
+                          </div>
+                        </div>
+
+                        {/* Dial 3 */}
+                        <div className="bg-white border border-zinc-200 rounded-xl p-4 space-y-1 shadow-2xs">
+                          <span className="text-[9px] font-mono text-zinc-400 font-bold block">VOLTAGE LEAKAGE</span>
+                          <span className="text-lg font-mono font-black text-zinc-800">0.02 kV</span>
+                          <div className="h-1 w-full bg-zinc-150 rounded-full overflow-hidden mt-2">
+                            <div className="h-full bg-emerald-500 w-1/12" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SVG Live Looking Wavechart */}
+                      <div className="bg-zinc-900 border border-zinc-850 p-4 rounded-xl space-y-2 text-white font-mono text-xs shadow-inner">
+                        <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Real-time Oscilloscope Grid Feed</span>
+                        <div className="h-24 w-full flex items-center justify-center relative overflow-hidden bg-black/40 rounded border border-zinc-800">
+                          <svg className="w-full h-full text-emerald-500" viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <path d="M0,10 Q10,1 20,10 T40,10 T60,10 T80,10 T100,10" fill="none" stroke="currentColor" strokeWidth="0.8" className="animate-pulse" />
+                          </svg>
+                          <div className="absolute top-2 left-2 text-[9px] bg-black/50 px-1.5 py-0.5 rounded border border-zinc-800 text-zinc-500">60.00 Hz nominal</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* FIELD TECHNICIAN MODE */
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center pb-3 border-b border-zinc-200">
+                        <span className="text-xs font-mono font-bold text-zinc-500">FIELD GLOVE-FRIENDLY PANEL</span>
+                        <span className="text-[10px] bg-zinc-950 text-white font-mono font-bold px-2 py-0.5 rounded">Glove-Fit active</span>
+                      </div>
+
+                      {/* Giant touch panels */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button 
+                          onClick={() => alert('Triggering physical on-site diagnostic suite')}
+                          className="bg-[#b31942] hover:bg-[#9c1236] text-white rounded-2xl p-6 flex flex-col justify-between text-left h-36 shadow-lg border-2 border-white/20 active:scale-95 transition-all"
+                        >
+                          <span className="text-[10px] font-mono tracking-widest font-black uppercase text-white/60">Tap to Initiate</span>
+                          <span className="text-2xl font-black font-sans leading-none">GRID DIAGNOSTIC</span>
+                          <span className="text-[9px] font-mono text-white/50 block mt-2">Giant 44px+ click zone</span>
+                        </button>
+
+                        <button 
+                          onClick={() => alert('Sending all current fault codes to Control Center via sat-relay')}
+                          className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl p-6 flex flex-col justify-between text-left h-36 shadow-lg border-2 border-zinc-800 active:scale-95 transition-all"
+                        >
+                          <span className="text-[10px] font-mono tracking-widest font-black uppercase text-zinc-500">Status Nominal</span>
+                          <span className="text-2xl font-black font-sans leading-none">REPORT NOMINAL</span>
+                          <span className="text-[9px] font-mono text-zinc-400 block mt-2">Instant field sync</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-4 border-t border-zinc-200/60 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-zinc-400 italic">North Light Tactical Framework</span>
+                    <button 
+                      onClick={() => {
+                        alert(`Alert triggered! Telemetry frequency spike reported at 62.4 Hz. ${
+                          northLightMode === 'control' 
+                            ? 'Cascading logs and frequency oscillation lines generated in Control Center.' 
+                            : 'FIELD INTERFACE: Displaying large flashing warning cards on the tablet screen!'
+                        }`);
+                      }}
+                      className="bg-[#b31942] text-white font-semibold font-mono text-xs px-5 py-2.5 rounded-full shadow-md hover:bg-[#9c1236] transition-all"
+                    >
+                      Trigger Frequency Spike (62.4 Hz)
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Outcome */}
+            <section className="space-y-6 pt-6">
+              <div className="space-y-2">
+                <span className="text-[#b31942] font-mono font-bold text-xs tracking-widest uppercase">04. DELIVERED IMPACT</span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-sans">Stakeholder deadlock broken.</h2>
+              </div>
+              <p className="text-base text-zinc-650 leading-relaxed font-light">
+                By presenting modular switching profile layers, we fully satisfied both engineering telemetry and on-field tactical demands. Stakeholders aligned within 2 workshops, accelerating product deployment with significant engineering overhead savings.
+              </p>
+
+              {/* Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 border border-zinc-150 rounded-[32px] overflow-hidden bg-zinc-50/50 shadow-2xs">
+                {[
+                  { val: "2", label: "Workshops to reach absolute layout alignment", clr: "text-[#b31942]" },
+                  { val: "$300k", label: "Estimated development capital saved", clr: "text-zinc-800" },
+                  { val: "4 mo", label: "Acceleration in product development lifecycle", clr: "text-[#b31942]" }
+                ].map((stat, i) => (
+                  <div key={i} className="p-6 md:p-8 flex flex-col justify-center text-center md:text-left space-y-2 border-b md:border-b-0 md:border-r last:border-b-0 last:border-r-0 border-zinc-150 hover:bg-white transition-all duration-300">
+                    <span className={`text-4xl md:text-5xl font-black tracking-tight ${stat.clr} font-sans`}>
+                      {stat.val}
+                    </span>
+                    <span className="text-xs font-semibold text-zinc-600 leading-snug">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Back Button */}
+            <section className="py-4 text-center border-t border-zinc-100 mt-4">
+              <div className="flex justify-center flex-col items-center gap-4">
+                <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
+              </div>
+            </section>
+          </>
+        )}
+
+        {!isMyCampus && !isWalkForPlastic && !isPathwaysBadgeQuest && !isMotionDesign && !isParProductionControl && !isMeridianHealth && !isStylebook && !isHomestead && !isNorthLight && (
+          <section className="py-4 text-center">
             <div className="flex justify-center">
-              <Button onClick={onBack} variant="outline" className="px-8 h-12 rounded-full text-sm">Explore other work</Button>
+              <Button onClick={onBack} className="px-8 h-12 rounded-full text-sm bg-zinc-950 text-white hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-semibold border border-zinc-950">Explore other work</Button>
             </div>
           </section>
         )}
       </main>
+
+      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="flex flex-col gap-2 items-center md:items-start">
+          <div className="text-xl font-black tracking-tighter text-zinc-950">Tamizh</div>
+          <div className="text-zinc-400 text-xs tracking-widest uppercase font-medium">Product Designer</div>
+        </div>
+
+        <div className="flex gap-8 text-sm font-medium">
+          <a href="https://www.linkedin.com/in/tamizhselvan-u" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">LinkedIn</a>
+          <a href="https://github.com/tamizhselvan018" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">GitHub</a>
+          <a href="mailto:tamizhselvan018@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors">Email</a>
+        </div>
+
+        <div className="text-zinc-400 text-sm">© 2025 Tamizh. All rights reserved.</div>
+      </footer>
+      </div>
     </motion.div>
   );
 };

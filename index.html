@@ -10,6 +10,12 @@
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+              space: ['"Space Grotesk"', 'sans-serif'],
+              playfair: ['"Playfair Display"', 'serif'],
+              inter: ['"Inter"', 'sans-serif'],
+            },
             colors: {
               brand: {
                 50: '#FDF2F4',
@@ -33,10 +39,10 @@
         }
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
             scroll-behavior: smooth;
         }
         .text-balance {
@@ -44,6 +50,21 @@
         }
         .font-playfair {
             font-family: 'Playfair Display', serif;
+        }
+        .font-space {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
 <script type="importmap">

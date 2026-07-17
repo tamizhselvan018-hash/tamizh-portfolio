@@ -7,6 +7,8 @@ export interface CaseStudy {
   tags: string[];
   images: string[];
   color?: string;
+  textColor?: string;
+  date?: string;
   isFeatured?: boolean;
   role?: string;
   platform?: string;
