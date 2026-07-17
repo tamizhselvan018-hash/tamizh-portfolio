@@ -79,24 +79,6 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
           <motion.button 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            onClick={() => {
-              setActiveView?.('sandbox');
-              setTimeout(() => {
-                const el = document.getElementById('design-system-playground');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }, 105);
-            }}
-            className={`font-medium text-sm hover:text-red-500 transition-colors cursor-pointer ${
-              activeView === 'sandbox' ? 'text-zinc-900 font-semibold border-b-2 border-red-500 pb-0.5' : 'text-zinc-500'
-            }`}
-          >
-            Design Sandbox
-          </motion.button>
-
-          <motion.button 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
             onClick={() => {
               setActiveView?.('portfolio');

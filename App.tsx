@@ -9,7 +9,6 @@ import { CASE_STUDIES } from './constants';
 import { Button } from './components/Button';
 import { motion, AnimatePresence } from 'motion/react';
 
-import { DesignSystemSandbox } from './components/DesignSystemSandbox';
 import { TextFill } from './components/TextFill';
 
 const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProjectClick }) => {
@@ -140,18 +139,8 @@ const App: React.FC = () => {
           <Hero />
         </div>
 
-        {activeView === 'sandbox' ? (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <DesignSystemSandbox />
-          </motion.div>
-        ) : (
-          <>
-            {/* Dynamic Section: Works */}
-            <WorksList onProjectClick={(id) => setSelectedProjectId(id)} />
+        {/* Dynamic Section: Works */}
+        <WorksList onProjectClick={(id) => setSelectedProjectId(id)} />
 
             {/* Journey Section */}
             <section id="about" className="max-w-5xl mx-auto px-6 pt-6 pb-8 mb-16">
@@ -263,8 +252,6 @@ const App: React.FC = () => {
              </div>
           </motion.div>
         </section>
-        </>
-        )}
       </main>
 
       <footer className="max-w-5xl mx-auto px-6 py-24 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-8">
@@ -275,7 +262,6 @@ const App: React.FC = () => {
 
         <div className="flex gap-8 text-sm font-medium">
           <a href="https://www.linkedin.com/in/tamizhselvan-u" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">LinkedIn</a>
-          <a href="https://github.com/tamizhselvan018" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">GitHub</a>
           <a href="mailto:tamizhselvan018@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors">Email</a>
         </div>
 
