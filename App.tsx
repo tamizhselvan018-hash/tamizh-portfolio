@@ -52,11 +52,11 @@ const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProje
           {CASE_STUDIES.map((study, index) => (
             <motion.div
               key={study.id}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-120px" }}
+              viewport={{ once: true, margin: "-20px" }}
               transition={{ 
-                duration: 0.8, 
+                duration: 0.55,
                 ease: [0.16, 1, 0.3, 1],
                 delay: index * 0.08 
               }}
@@ -66,7 +66,7 @@ const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProje
                 top: '110px', // Perfect offset below StickyHeader
                 zIndex: index + 10
               }}
-              className={study.isComingSoon ? "cursor-default" : "cursor-pointer"}
+              className={`transform-gpu will-change-transform ${study.isComingSoon ? "cursor-default" : "cursor-pointer"}`}
             >
               <CaseStudyCard study={study} index={index} />
             </motion.div>
@@ -239,14 +239,6 @@ const App: React.FC = () => {
                     className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
                   >
                     <span>Connect on LinkedIn</span>
-                  </a>
-                  <a 
-                    href="https://github.com/tamizhselvan018" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
-                  >
-                    <span>View GitHub</span>
                   </a>
                 </motion.div>
              </div>

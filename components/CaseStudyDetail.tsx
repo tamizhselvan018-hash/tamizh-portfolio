@@ -441,16 +441,19 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
     }, [isInView, index, setActiveIndex]);
 
     return (
-      <div ref={ref} className="py-20 flex justify-center">
-        <div className="relative rounded-[32px] overflow-hidden border border-zinc-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] bg-white group max-w-[320px]">
-          <img 
-            src={feature.img} 
-            alt={feature.t} 
-            className="w-full h-auto transition-transform duration-1000"
-            referrerPolicy="no-referrer"
-            onError={(e) => handleImageError(e, feature.t)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a3161]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+      <div ref={ref} className="py-16 flex justify-center">
+        <div className="p-4 md:p-6 bg-gradient-to-b from-[#0D9488]/10 via-teal-50/30 to-emerald-50/40 rounded-[40px] border border-[#0D9488]/20 shadow-xl relative overflow-hidden group">
+          <div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(#0D9488_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
+          <div className="relative rounded-[28px] overflow-hidden border border-zinc-200/80 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] bg-white max-w-[300px]">
+            <img 
+              src={feature.img} 
+              alt={feature.t} 
+              className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+              referrerPolicy="no-referrer"
+              onError={(e) => handleImageError(e, feature.t)}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a3161]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          </div>
         </div>
       </div>
     );
@@ -596,7 +599,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         return { fillColor: '#ffffff', textColorClass: 'text-[#0D9488]', isDark: false };
                       }
                       if (isMyCampus) {
-                        return { fillColor: '#ffffff', textColorClass: 'text-[#4338CA]', isDark: false };
+                        return { fillColor: '#ffffff', textColorClass: 'text-[#7C3AED]', isDark: false };
                       }
                       if (isParProductionControl) {
                         return { fillColor: '#ffffff', textColorClass: 'text-[#065f46]', isDark: false };
@@ -623,30 +626,37 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
       {/* Main Content */}
       <main className={`mx-auto pb-20 space-y-12 ${isParProductionControl ? 'w-full max-w-none px-0' : 'px-6 max-w-5xl'}`}>
-        
-        {isWalkForPlastic && (
+             {isWalkForPlastic && (
           <>
             {/* Overview */}
             <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">01. Overview</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">01. Overview</span>
                 <h2 className="text-3xl font-bold tracking-tight">Walk for Plastic</h2>
               </div>
-              <div className="space-y-3 text-base text-zinc-600 leading-relaxed font-light">
-                <p>Walk for Plastic is a mobile application designed to support community-led cleanup initiatives. While these efforts are driven by strong intent, the experience of participating in them is often fragmented and inconsistent.</p>
-                <p>This project focuses on transforming that experience into a structured, engaging system that allows volunteers to easily participate and clearly understand the impact they are creating.</p>
+              <div className="space-y-3 text-base text-zinc-700 leading-relaxed font-light">
+                <p>
+                  <strong className="font-semibold text-zinc-900">Walk for Plastic</strong> is a <span className="inline-inline-flex items-center font-semibold text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 text-sm">mobile application</span> designed to support <span className="inline-flex items-center font-semibold text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 text-sm">community-led cleanup initiatives</span>. While these efforts are driven by strong intent, the user experience of participating in them was historically <span className="inline-flex items-center font-medium text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm">fragmented and inconsistent</span>.
+                </p>
+                <p>
+                  This project focuses on transforming that experience into a <span className="inline-flex items-center font-semibold text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 text-sm">structured design system</span> that empowers volunteers to easily discover events and measure their <span className="inline-flex items-center font-semibold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 text-sm">tangible environmental impact</span>.
+                </p>
               </div>
             </section>
 
             {/* Understanding the Context */}
             <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">02. Context</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">02. Context</span>
                 <h2 className="text-3xl font-bold tracking-tight">Understanding the Context</h2>
               </div>
-              <div className="space-y-3 text-base text-zinc-600 leading-relaxed font-light">
-                <p>Walk for Plastic is a grassroots initiative based in Chennai that brings together volunteers to clean public spaces, including beaches, parks, and streets.</p>
-                <p>Although participation is driven by motivation and community spirit, the overall experience is largely unstructured — relying on social media, manual coordination, and informal communication.</p>
+              <div className="space-y-3 text-base text-zinc-700 leading-relaxed font-light">
+                <p>
+                  Walk for Plastic is a <span className="inline-flex items-center font-semibold text-teal-900 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 text-sm">grassroots environmental initiative</span> in Chennai that mobilizes volunteers to restore public spaces, beaches, and streets.
+                </p>
+                <p>
+                  Although volunteer motivation is high, the overall experience was severely <span className="inline-flex items-center font-medium text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm">unstructured</span> — relying on scattered social media posts, <span className="inline-flex items-center font-medium text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm">manual coordination</span>, and ad-hoc communications.
+                </p>
               </div>
             </section>
 
@@ -659,18 +669,18 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               className="space-y-6"
             >
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03. Problem Statement</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">03. Problem Statement</span>
               </div>
-              <div className="bg-[#5a8c69] text-white p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl">
+              <div className={`${project.color} ${project.textColor || 'text-white'} p-8 md:p-12 rounded-[40px] relative overflow-hidden shadow-2xl`}>
                 <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full"></div>
                 <div className="relative z-10 space-y-4">
                   <div className="space-y-2">
-                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM5.01697 21L5.01697 18C5.01697 16.8954 5.91241 16 7.01697 16H10.017C11.1215 16 12.017 16.8954 12.017 18V21C12.017 22.1046 11.1215 23 10.017 23H7.01697C5.91241 23 5.01697 22.1046 5.01697 21ZM14.017 11L14.017 8C14.017 6.89543 14.9124 6 16.017 6H19.017C20.1216 6 21.017 6.89543 21.017 8V11C21.017 12.1046 20.1216 13 19.017 13H16.017C14.9124 13 14.017 12.1046 14.017 11ZM5.01697 11L5.01697 8C5.01697 6.89543 5.91241 6 7.01697 6H10.017C11.1215 16 12.017 6.89543 12.017 8V11C12.017 12.1046 11.1215 13 10.017 13H7.01697C5.91241 13 5.01697 12.1046 5.01697 11Z" />
+                    <svg className={`w-8 h-8 ${project.textColor || 'text-white'}`} fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM5.01697 21L5.01697 18C5.01697 16.8954 5.91241 16 7.01697 16H10.017C11.1215 16 12.017 16.8954 12.017 18V21C12.017 22.1046 20.1216 23 10.017 23H7.01697C5.91241 23 5.01697 22.1046 5.01697 21ZM14.017 11L14.017 8C14.017 6.89543 14.9124 6 16.017 6H19.017C20.1216 6 21.017 6.89543 21.017 8V11C21.017 12.1046 20.1216 13 16.017 13H16.017C14.9124 13 14.017 12.1046 14.017 11ZM5.01697 11L5.01697 8C5.01697 6.89543 5.91241 6 7.01697 6H10.017C11.1215 16 12.017 6.89543 12.017 8V11C12.017 12.1046 11.1215 13 10.017 13H7.01697C5.91241 13 5.01697 12.1046 5.01697 11Z" />
                     </svg>
                   </div>
-                  <p className="text-xl md:text-2xl font-medium leading-tight max-w-4xl">
-                    The challenge goes beyond simple cleanup—it's about transforming fragmented intent into a <span className="font-bold">structured, measurable movement.</span> Volunteers are motivated, but without a clear system, their impact remains invisible and their motivation fades.
+                  <p className="text-xl md:text-2xl font-medium leading-relaxed max-w-4xl">
+                    The challenge goes beyond simple cleanup—it's about transforming <span className="inline-flex items-center font-semibold text-white bg-white/15 px-2.5 py-0.5 rounded-md border border-white/20">fragmented volunteer intent</span> into a <span className="inline-flex items-center font-semibold text-white bg-white/15 px-2.5 py-0.5 rounded-md border border-white/20">measurable impact ecosystem</span>. Without a clear product system, volunteer motivation fades and real-world impact remains unquantified.
                   </p>
                 </div>
               </div>
@@ -679,7 +689,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* User Research */}
             <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">04. User Research</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">04. User Research</span>
                 <h2 className="text-3xl font-bold tracking-tight">Listening to Volunteers</h2>
               </div>
               <div className="space-y-3 text-base text-zinc-600 leading-relaxed font-light">
@@ -723,7 +733,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* Affinity Map */}
             <section className="space-y-8">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">05. Affinity Mapping</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">05. Affinity Mapping</span>
                 <h2 className="text-3xl font-bold tracking-tight">Synthesizing Research</h2>
                 <p className="text-base text-zinc-500 font-light max-w-xl">I synthesized user insights into key themes to identify core challenges and guide the design direction.</p>
               </div>
@@ -793,7 +803,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           <motion.div 
                             key={i} 
                             whileHover={{ scale: 1.05, rotate: 0 }}
-                            className={`${note.color} p-3 rounded-lg shadow-sm rotate-${(i % 3) - 1} transition-transform duration-300`}
+                            className={`${note.color} p-3 rounded-xl shadow-md hover:shadow-lg border border-black/5 rotate-${(i % 3) - 1} transition-all duration-300`}
                           >
                             <p className="text-sm font-medium text-zinc-800 leading-tight">{note.text}</p>
                           </motion.div>
@@ -814,12 +824,12 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       </div>
                       <div className="p-5 bg-white border border-zinc-100 rounded-xl relative group shadow-lg">
                         <div className="absolute -left-8 top-1/2 -translate-y-1/2 hidden lg:block">
-                          <ArrowRight className="w-5 h-5 text-[#0A3161]/40 group-hover:text-[#0a3161] transition-colors" />
+                          <ArrowRight className="w-5 h-5 text-[#0D9488]/40 group-hover:text-[#0D9488] transition-colors" />
                         </div>
-                        <h5 className="font-bold text-[#0a3161] mb-1 text-sm">
+                        <h5 className="font-bold text-[#0D9488] mb-1 text-sm">
                           {group.theme}
                         </h5>
-                        <p className="text-sm text-[#0a3161]/80 leading-relaxed">{group.themeDesc}</p>
+                        <p className="text-sm text-[#0D9488]/80 leading-relaxed">{group.themeDesc}</p>
                       </div>
                     </motion.div>
 
@@ -834,7 +844,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       <div className="lg:hidden flex items-center gap-2 mb-3">
                         <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Design Direction</h4>
                       </div>
-                      <div className="p-5 bg-[#0A3161] text-white border-0 rounded-xl shadow-lg relative group">
+                      <div className="p-5 bg-[#0D9488] text-white border-0 rounded-xl shadow-lg relative group">
                         <div className="absolute -left-8 top-1/2 -translate-y-1/2 hidden lg:block">
                           <ArrowRight className="w-5 h-5 text-white/20 group-hover:text-white transition-colors" />
                         </div>
@@ -859,7 +869,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* From Insights to Solution */}
             <section className="space-y-12 py-5 border-t border-zinc-100">
               <div className="space-y-3 max-w-3xl">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">Strategy</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">Strategy</span>
                 <h3 className="text-4xl font-bold tracking-tight">From Insights to Solution</h3>
                 <p className="text-lg text-zinc-500 font-light">
                   The research findings were synthesized into three core themes that guided the design toward a structured, user-centered solution.
@@ -885,7 +895,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         title: "Contribution Visibility", 
                         desc: "Lack of measurable impact made users feel their efforts weren't making a difference.",
                         icon: Target,
-                        color: "bg-[#0a3161]/5 text-[#0a3161]"
+                        color: "bg-[#0D9488]/10 text-[#0D9488]"
                       },
                       { 
                         title: "Motivation & Engagement", 
@@ -899,7 +909,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="p-5 bg-white border border-zinc-100 rounded-2xl flex gap-5 items-start group hover:border-[#0a3161]/20 transition-colors shadow-sm"
+                        className="p-5 bg-white border border-zinc-100 rounded-2xl flex gap-5 items-start group hover:border-[#0D9488]/20 transition-colors shadow-sm"
                       >
                         <div className={`w-10 h-10 rounded-xl ${insight.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                           <insight.icon className="w-5 h-5" />
@@ -945,14 +955,14 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="p-5 bg-[#0A3161] text-white rounded-2xl flex gap-5 items-start group transition-colors shadow-lg shadow-blue-900/20"
+                        className="p-5 bg-[#0D9488] text-white rounded-2xl flex gap-5 items-start group transition-colors shadow-lg shadow-teal-900/20"
                       >
                         <div className={`w-10 h-10 rounded-xl ${solution.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                           <solution.icon className="w-5 h-5" />
                         </div>
                         <div className="space-y-1">
                           <h5 className="font-bold text-sm">{solution.title}</h5>
-                          <p className="text-blue-50/80 text-xs leading-relaxed font-light">{solution.desc}</p>
+                          <p className="text-teal-50/80 text-xs leading-relaxed font-light">{solution.desc}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -964,7 +974,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* Solution */}
             <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">06. Solution</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">06. Solution</span>
                 <h2 className="text-3xl font-bold tracking-tight">A Centralized Platform</h2>
               </div>
               <div className="space-y-3 text-base text-zinc-600 leading-relaxed font-light">
@@ -978,19 +988,18 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="space-y-4 py-6 bg-zinc-50 rounded-[40px] border border-zinc-100"
+              className="space-y-6 py-8 px-4 sm:px-6 bg-gradient-to-br from-[#0D9488]/10 via-emerald-50/60 to-teal-50/40 rounded-[40px] border border-[#0D9488]/20 shadow-xl relative overflow-hidden"
             >
-              <div className="max-w-3xl space-y-1 px-6">
-                <span className="text-[#0a3161] font-bold text-[10px] tracking-widest uppercase">Live Demo</span>
-                <h2 className="text-xl font-bold tracking-tight">Interactive Prototype</h2>
-                <p className="text-zinc-500 text-xs font-light">Experience the Walk for Plastic app directly. Navigate through events, track impact, and explore the growth system.</p>
+              <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#0D9488_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+              
+              <div className="max-w-3xl space-y-1 px-2 relative z-10">
+                <span className="text-[#0D9488] font-bold text-[10px] tracking-widest uppercase">Live Demo</span>
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900">Interactive Prototype</h2>
+                <p className="text-zinc-600 text-xs font-light">Experience the Walk for Plastic app directly. Navigate through events, track impact, and explore the growth system.</p>
               </div>
               
-              <div className="flex justify-center px-6">
+              <div className="flex justify-center px-2 relative z-10">
                 <div className="relative w-full max-w-[380px] aspect-[11.5/18.5] bg-zinc-900 rounded-[2.5rem] p-1.5 shadow-2xl border-[3px] border-zinc-800">
-                  {/* Speaker/Camera Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-2 bg-zinc-800 rounded-b-xl z-20"></div>
-                  
                   {/* The App Iframe */}
                   <div className="w-full h-full bg-white rounded-[2rem] overflow-hidden relative z-10">
                     <iframe 
@@ -1010,7 +1019,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* Key Features - Sticky Text Scroll Interaction */}
             <section className="pt-24 pb-0 -mx-6 md:-mx-20 lg:-mx-40 px-6 md:px-20 lg:px-40">
               <div className="space-y-2 mb-24 max-w-3xl">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">07. Key Features</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">07. Key Features</span>
                 <h2 className="text-4xl font-bold tracking-tight">Structuring the Experience</h2>
                 <p className="text-zinc-500 font-light max-w-xl">A centralized platform that connects the full volunteer journey through structured interactions.</p>
               </div>
@@ -1032,7 +1041,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         className="space-y-8"
                       >
                         <div className="flex items-center gap-6">
-                          <span className="text-6xl font-black text-[#0a3161] tracking-tighter tabular-nums">{features[activeIndex].num}</span>
+                          <span className="text-6xl font-black text-[#0D9488] tracking-tighter tabular-nums">{features[activeIndex].num}</span>
                           <div className="h-[1px] w-24 bg-zinc-100"></div>
                         </div>
                         <div className="space-y-4">
@@ -1051,7 +1060,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       {/* Mobile Text (only visible on small screens) */}
                       <div className="md:hidden space-y-4 pt-12">
                         <div className="flex items-center gap-4">
-                          <span className="text-4xl font-black text-[#0a3161]/10 tracking-tighter">{feature.num}</span>
+                          <span className="text-4xl font-black text-[#0D9488]/20 tracking-tighter">{feature.num}</span>
                           <h3 className="text-2xl font-bold text-zinc-900">{feature.t}</h3>
                         </div>
                         <p className="text-zinc-500 font-light leading-relaxed">{feature.d}</p>
@@ -1070,10 +1079,10 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Usability Testing */}
-            <section className="space-y-8 !mt-0">
+            <section className="space-y-8">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">08. Usability Testing</span>
-                <h2 className="text-3xl font-bold tracking-tight">Refining the Experience</h2>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">08. Usability Testing</span>
+                <h2 className="text-3xl font-bold tracking-tight text-zinc-900">Refining the Experience</h2>
               </div>
 
               <div className="space-y-6">
@@ -1091,26 +1100,28 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     img: "https://i.imgur.com/uHolwuU.png"
                   }
                 ].map((test, i) => (
-                  <div key={i} className="space-y-4 p-6 bg-white border border-zinc-100 rounded-[28px] shadow-sm">
-                    <h4 className="text-lg font-bold">{test.t}</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                      <div className="md:col-span-7 space-y-6">
-                        <div className="space-y-2">
-                          <span className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">The Problem</span>
-                          <p className="text-base text-zinc-600 leading-relaxed font-light">{test.p}</p>
+                  <div key={i} className="space-y-4 p-6 border border-[#0D9488]/20 rounded-[28px] bg-white/40 shadow-sm">
+                    <h4 className="text-lg font-bold text-zinc-900">{test.t}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                      <div className="md:col-span-7 space-y-5">
+                        <div className="space-y-1.5">
+                          <span className="text-xs font-bold uppercase tracking-widest text-[#0D9488]">The Problem</span>
+                          <p className="text-base text-zinc-700 leading-relaxed font-light">{test.p}</p>
                         </div>
-                        <div className="space-y-2">
-                          <span className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">The Change</span>
-                          <p className="text-base text-zinc-600 leading-relaxed font-light">{test.c}</p>
+                        <div className="space-y-1.5">
+                          <span className="text-xs font-bold uppercase tracking-widest text-[#0D9488]">The Change</span>
+                          <p className="text-base text-zinc-700 leading-relaxed font-light">{test.c}</p>
                         </div>
                       </div>
-                      <div className="md:col-span-5 rounded-xl overflow-hidden bg-zinc-50 p-4 flex justify-center">
-                        <img 
-                          src={test.img} 
-                          alt={test.t} 
-                          className="w-full max-w-[180px] h-auto border border-zinc-200 rounded-xl"
-                          referrerPolicy="no-referrer"
-                        />
+                      <div className="md:col-span-5 flex items-center justify-center">
+                        <div className="w-full max-w-[200px] rounded-2xl overflow-hidden bg-[#0D9488]/10 p-4 flex items-center justify-center border border-[#0D9488]/20 shadow-sm">
+                          <img 
+                            src={test.img} 
+                            alt={test.t} 
+                            className="w-full h-auto rounded-xl shadow-md object-contain"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1121,10 +1132,10 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             {/* Reflection */}
             <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">09. Reflection</span>
+                <span className="text-[#0D9488] font-bold text-xs tracking-widest uppercase">09. Reflection</span>
                 <h2 className="text-3xl font-bold tracking-tight">Final Thoughts</h2>
               </div>
-              <div className="p-8 border-l-4 border-[#0a3161] bg-[#0a3161]/5 rounded-r-[28px] space-y-4">
+              <div className="p-8 border-l-4 border-[#0D9488] bg-[#0D9488]/5 rounded-r-[28px] space-y-4">
                 <p className="text-base text-zinc-600 leading-relaxed font-light">Designing for a real-world, community-driven initiative highlighted the importance of clarity, structure, and motivation in user experience. The challenge was not just enabling participation, but ensuring users could understand and feel the impact of their contributions over time.</p>
                 <p className="text-base text-zinc-600 leading-relaxed font-light">This project reinforced the value of simplifying complex systems, maintaining consistency across interactions, and designing experiences that support long-term engagement rather than one-time use.</p>
               </div>
@@ -1142,24 +1153,28 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
         {isMyCampus && (
           <>
             {/* Section 1: The Challenge */}
-            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">01. The Context</span>
+                <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">01. The Context</span>
                 <h2 className="text-3xl font-bold tracking-tight">University life is chaotic.</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                <div className="space-y-4 text-base text-zinc-600 leading-relaxed font-light">
-                  <p>When I joined the university, I noticed that important academic information already existed — but it was scattered across department websites, emails, PDFs, and informal conversations.</p>
-                  <p>As a result, students often had to navigate multiple sources just to evaluate a single opportunity.</p>
+                <div className="space-y-4 text-base text-zinc-700 leading-relaxed font-light">
+                  <p>
+                    When I joined the university, I noticed that critical <span className="inline-flex items-center font-semibold text-purple-950 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200/60 text-sm">academic information</span> already existed — but it was <span className="inline-flex items-center font-medium text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm">scattered across multiple channels</span> like department websites, PDFs, and informal emails.
+                  </p>
+                  <p>
+                    As a result, students faced significant <span className="inline-flex items-center font-medium text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm">cognitive friction</span>, navigating disjointed sources just to discover research and career opportunities.
+                  </p>
                 </div>
-                <div className="bg-[#0A3161] p-6 rounded-[28px] border border-blue-900/20 space-y-4 shadow-xl shadow-blue-900/10">
+                <div className="bg-[#7C3AED] p-6 rounded-[28px] border border-purple-900/20 space-y-4 shadow-xl shadow-purple-900/10">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-white">Major Pain Points</h4>
                   <ul className="space-y-2">
                     {[
                       'Fragmented department websites with inconsistent UX',
-                      'Professor research profiles hidden in long PDFs',
-                      'Career events spread via word-of-mouth',
-                      'No centralized academic calendar for events'
+                      'Professor research profiles hidden in unsearchable PDFs',
+                      'Career events spread via informal word-of-mouth',
+                      'Lack of a centralized academic calendar'
                     ].map((point, i) => (
                       <li key={i} className="flex gap-2.5 items-start text-white text-sm">
                         <span className="text-white font-bold">•</span>
@@ -1172,13 +1187,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Section 2: Research Insights */}
-            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-6">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">02. Discovery</span>
+                <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">02. Discovery</span>
                 <h2 className="text-3xl font-bold tracking-tight">Listening to the Students</h2>
               </div>
-              <p className="text-lg text-zinc-500 font-light max-w-3xl">
-                I conducted interviews with 12 students across different years to find the common denominator of frustration.
+              <p className="text-lg text-zinc-600 font-light max-w-3xl">
+                I conducted qualitative user research through <span className="inline-flex items-center font-semibold text-purple-950 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200/60 text-base">12 semi-structured student interviews</span> across diverse academic tracks to isolate core usability bottlenecks.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
@@ -1193,7 +1208,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="p-5 bg-zinc-50/80 border border-zinc-200 rounded-2xl shadow-sm hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                    className="p-6 bg-white border border-zinc-100 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_35px_-10px_rgba(124,58,237,0.15)] hover:-translate-y-1.5 transition-all duration-300 relative group overflow-hidden"
                   >
                     <p className="text-sm italic text-zinc-700 mb-4 leading-relaxed">"{quote.q}"</p>
                     <div className="flex items-center gap-2">
@@ -1218,12 +1233,12 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md"
+              className="space-y-6"
             >
                <div className="space-y-2">
-                 <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">03. The Core Problem</span>
+                 <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">03. The Core Problem</span>
                </div>
-               <div className="bg-[#b31942] text-white p-8 md:p-12 rounded-[28px] relative overflow-hidden shadow-xl">
+               <div className={`${project.color} ${project.textColor || 'text-white'} p-8 md:p-12 rounded-[28px] relative overflow-hidden shadow-xl`}>
                   <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 blur-[100px] rounded-full"></div>
                   <div className="relative z-10 space-y-4">
                     <div className="space-y-2">
@@ -1231,19 +1246,19 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM5.01697 21L5.01697 18C5.01697 16.8954 5.91241 16 7.01697 16H10.017C11.1215 16 12.017 16.8954 12.017 18V21C12.017 22.1046 11.1215 23 10.017 23H7.01697C5.91241 23 5.01697 22.1046 5.01697 21ZM14.017 11L14.017 8C14.017 6.89543 14.9124 6 16.017 6H19.017C20.1216 6 21.017 6.89543 21.017 8V11C21.017 12.1046 20.1216 13 19.017 13H16.017C14.9124 13 14.017 12.1046 14.017 11ZM5.01697 11L5.01697 8C5.01697 6.89543 5.91241 6 7.01697 6H10.017C11.1215 16 12.017 6.89543 12.017 8V11C12.017 12.1046 11.1215 13 10.017 13H7.01697C5.91241 13 5.01697 12.1046 5.01697 11Z" />
                       </svg>
                     </div>
-                    <p className="text-xl md:text-2xl font-medium leading-tight max-w-4xl">
-                      The hurdle goes beyond simple access—it's about transforming scattered information into a <span className="font-bold">unified, confident decision-making experience.</span> How might we design a platform that reduces fragmentation and improves scannability?
+                    <p className="text-xl md:text-2xl font-medium leading-relaxed max-w-4xl">
+                      How might we transform scattered academic information into a <span className="inline-flex items-center font-semibold text-white bg-white/15 px-2.5 py-0.5 rounded-md border border-white/20">unified decision-making experience</span> that <span className="inline-flex items-center font-semibold text-white bg-white/15 px-2.5 py-0.5 rounded-md border border-white/20">reduces cognitive friction</span> and <span className="inline-flex items-center font-semibold text-white bg-white/15 px-2.5 py-0.5 rounded-md border border-white/20">improves scannability</span>?
                     </p>
                   </div>
                </div>
             </motion.section>
 
             {/* Section 4: Information Architecture */}
-            <section className="space-y-8 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-8">
                <div className="space-y-2">
-                  <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">04. Information Architecture</span>
+                  <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">04. Information Architecture</span>
                   <h2 className="text-3xl font-bold tracking-tight">Information Architecture</h2>
-                  <p className="text-base text-zinc-500 font-light max-w-xl">My Campus is structured around five core sections, each accessible directly from the bottom navigation.</p>
+                  <p className="text-base text-zinc-500 font-light max-w-none">My Campus is structured around five core sections, each accessible directly from the bottom navigation.</p>
                </div>
 
                {/* Entry Flow */}
@@ -1285,60 +1300,62 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
                {/* Section Structure Table */}
                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Section Structure</h4>
-                  <div className="overflow-hidden border border-zinc-200 rounded-[20px] shadow-lg bg-white">
-                     <table className="w-full text-left">
-                        <thead className="bg-[#0a3161]/5 border-b border-[#0a3161]/10">
-                        <tr>
-                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">SECTION</th>
-                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">BROWSE</th>
-                           <th className="px-5 py-4.5 font-bold text-[10px] uppercase tracking-widest text-[#0a3161]">DETAIL</th>
-                        </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-100">
-                        {[
-                           { s: "Dashboard", b: "Curated feed", d: "Search & discovery", badge: "bg-zinc-100 text-zinc-800 border border-zinc-300" },
-                           { s: "Events", b: "Event list", d: "Event detail", badge: "bg-lime-50 text-lime-800 border border-lime-200" },
-                           { s: "Academic", b: "Academic event list", d: "Academic event detail", badge: "bg-sky-50 text-sky-800 border border-sky-200" },
-                           { s: "Professors", b: "Professor directory", d: "Professor profile", badge: "bg-yellow-50 text-yellow-800 border border-yellow-200" },
-                           { s: "Career", b: "Career services & events", d: "Service or event detail", badge: "bg-orange-50 text-orange-800 border border-orange-200" }
-                        ].map((row, i) => (
-                           <tr key={i} className="group hover:bg-[#0a3161]/5 transition-colors">
-                              <td className="px-5 py-4 font-bold text-zinc-900 text-xs">
-                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${row.badge}`}>
-                                    {row.s}
-                                 </span>
-                              </td>
-                              <td className="px-5 py-4 text-zinc-700 text-xs font-medium">{row.b}</td>
-                              <td className="px-5 py-4 text-zinc-600 italic text-xs font-light">{row.d}</td>
-                           </tr>
-                        ))}
-                        </tbody>
-                      </table>
+                  <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
+                     <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#7C3AED]">Section Architecture</h4>
+                     <span className="text-[10px] font-bold text-[#7C3AED] bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">Browse → Detail → Action</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                     {[
+                        { s: "Dashboard", b: "Curated feed & quick access", d: "Search, filter & discovery", icon: Home, badge: "bg-zinc-900 text-white" },
+                        { s: "Events", b: "Categorized event listings", d: "Detailed event view & RSVP", icon: Calendar, badge: "bg-lime-600 text-white" },
+                        { s: "Academic", b: "Course & deadline calendar", d: "Academic event details", icon: GraduationCap, badge: "bg-sky-600 text-white" },
+                        { s: "Professors", b: "Searchable faculty directory", d: "Full profile & office hours", icon: Presentation, badge: "bg-amber-600 text-white" },
+                        { s: "Career", b: "Service portal & workshops", d: "Application & appointment detail", icon: Briefcase, badge: "bg-orange-600 text-white" }
+                     ].map((item, i) => (
+                        <div key={i} className="p-4 bg-white border border-zinc-200/90 rounded-2xl shadow-sm hover:border-[#7C3AED] hover:shadow-md transition-all duration-300 space-y-3 flex flex-col justify-between group">
+                           <div className="flex items-center justify-between">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${item.badge} shadow-xs`}>
+                                 <item.icon className="w-3 h-3" />
+                                 {item.s}
+                              </span>
+                              <span className="text-[10px] font-mono text-zinc-400 font-bold">0{i+1}</span>
+                           </div>
+                           <div className="space-y-2 pt-1">
+                              <div className="space-y-0.5">
+                                 <span className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">Browse</span>
+                                 <p className="text-xs text-zinc-800 font-medium leading-snug">{item.b}</p>
+                              </div>
+                              <div className="border-t border-dashed border-zinc-100 pt-1.5 space-y-0.5">
+                                 <span className="text-[9px] uppercase font-bold text-[#7C3AED] tracking-wider">Detail</span>
+                                 <p className="text-xs text-zinc-600 font-light leading-snug">{item.d}</p>
+                              </div>
+                           </div>
+                        </div>
+                     ))}
                   </div>
                </div>
 
                {/* Note */}
-               <div className="bg-green-50 border border-green-200 p-5 rounded-xl shadow-sm">
-                  <p className="text-green-900 text-xs font-medium leading-relaxed">
+               <div className="bg-purple-50 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-5 rounded-r-xl shadow-sm">
+                  <p className="text-purple-900 text-xs font-medium leading-relaxed">
                      Every section follows a consistent <span className="font-bold">browse → detail → action</span> structure, allowing interaction patterns learned in one section to transfer across the platform.
                   </p>
                </div>
             </section>
 
             {/* Section 5: User Testing */}
-            <section className="space-y-12 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-12">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-[1px] bg-[#0a3161]"></span>
-                  <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">05. User Testing</span>
+                  <span className="w-8 h-[1px] bg-[#7C3AED]"></span>
+                  <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">05. User Testing</span>
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight">What Testing Changed</h2>
-                <p className="text-base text-zinc-500 font-light max-w-2xl">
+                <p className="text-base text-zinc-500 font-light max-w-none">
                    I conducted moderated usability walkthroughs with six participants from earlier interviews, asking them to explore professors, browse events, and attempt booking actions while thinking aloud. The goal was to observe friction — not just task completion.
                 </p>
-                <div className="bg-green-50 border border-green-200 p-4 rounded-xl max-w-2xl shadow-sm">
-                   <p className="text-green-900 text-xs font-medium">Testing revealed structural gaps that were not obvious during initial design.</p>
+                <div className="bg-purple-50 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-5 rounded-r-xl max-w-none shadow-sm">
+                   <p className="text-purple-900 text-xs font-medium">Testing revealed structural gaps that were not obvious during initial design.</p>
                 </div>
               </div>
 
@@ -1355,11 +1372,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">1</div>
                     <h3 className="text-2xl font-bold">Navigation Efficiency</h3>
                   </div>
-                  <div className="space-y-4 max-w-2xl">
+                  <div className="space-y-4 max-w-none">
                     <p className="text-base text-zinc-600 leading-relaxed font-light">
                        Users were able to discover content through the dashboard tiles, but switching between sections required returning to the home screen repeatedly.
                     </p>
-                    <div className="bg-zinc-50 border border-zinc-200 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">
+                    <div className="bg-purple-50/70 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-5 rounded-r-xl italic text-purple-950 text-sm shadow-sm">
                        "Do I have to go back to the dashboard every time?"
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This revealed unnecessary navigation loops.</p>
@@ -1371,8 +1388,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
                       <div className="text-center">
-                        <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest">BEFORE</span>
-                        <p className="text-[10px] text-zinc-500 mt-1">No Bottom Nav (Dashboard)</p>
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-red-100 text-red-700 border border-red-200 shadow-2xs">BEFORE</span>
+                        <p className="text-xs text-zinc-700 font-semibold mt-1.5">No Bottom Nav (Dashboard)</p>
                       </div>
                       <div className="bg-zinc-50 rounded-[28px] p-6 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1385,8 +1402,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </div>
                     <div className="space-y-4">
                       <div className="text-center">
-                        <span className="text-[9px] font-bold text-green-500 uppercase tracking-widest">AFTER</span>
-                        <p className="text-[10px] text-zinc-500 mt-1">Persistent Bottom Nav</p>
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">AFTER</span>
+                        <p className="text-xs text-zinc-700 font-semibold mt-1.5">Persistent Bottom Nav</p>
                       </div>
                       <div className="bg-zinc-50 rounded-[28px] p-6 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1401,15 +1418,15 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-150">
                     <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Improvement</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Improvement</h4>
                       <p className="text-sm text-zinc-700 font-light leading-relaxed">I introduced a persistent bottom navigation bar with five core sections: Home, Professors, Events, Career, and Saved.</p>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Impact</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Impact</h4>
                       <ul className="space-y-1.5 text-zinc-600 font-light text-sm">
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Reduced backtracking between sections</li>
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Improved cross-section accessibility</li>
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Created a more cohesive system structure</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Reduced backtracking between sections</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Improved cross-section accessibility</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Created a more cohesive system structure</li>
                       </ul>
                     </div>
                   </div>
@@ -1429,13 +1446,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">2</div>
                     <h3 className="text-2xl font-bold">Supporting Deferred Decisions</h3>
                   </div>
-                  <div className="space-y-4 max-w-3xl">
+                  <div className="space-y-4 max-w-none">
                     <p className="text-lg text-zinc-600 leading-relaxed font-light">
                       During event exploration, participants showed interest but hesitated to commit immediately.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">"I'm interested, but I'm not ready to register yet."</div>
-                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-5 rounded-r-xl italic text-zinc-700 text-sm shadow-sm">"I'll screenshot this so I don't forget."</div>
+                      <div className="bg-purple-50/70 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-5 rounded-r-xl italic text-purple-950 text-sm shadow-sm">"I'm interested, but I'm not ready to register yet."</div>
+                      <div className="bg-purple-50/70 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-5 rounded-r-xl italic text-purple-950 text-sm shadow-sm">"I'll screenshot this so I don't forget."</div>
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This highlighted a behavioral gap — the system allowed discovery, but not intent capture.</p>
                   </div>
@@ -1445,8 +1462,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 <div className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     <div className="space-y-6">
-                      <div className="text-center h-5 flex items-center justify-center">
-                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Event Tile</span>
+                      <div className="text-center flex items-center justify-center">
+                        <span className="text-xs font-bold text-purple-900 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200 uppercase tracking-wider shadow-2xs">Event Tile</span>
                       </div>
                       <div className="bg-zinc-50 rounded-[40px] p-8 border border-zinc-200 shadow-sm flex justify-center transition-all duration-500 hover:scale-[1.05] hover:shadow-lg">
                         <img 
@@ -1456,13 +1473,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           referrerPolicy="no-referrer"
                         />
                       </div>
-                      <div className="bg-green-50 border border-green-200 p-2.5 rounded-lg text-center max-w-[200px] mx-auto shadow-sm">
-                        <p className="text-[10px] font-bold text-green-800">Tap bookmark → item saved</p>
+                      <div className="bg-zinc-100 border border-zinc-200/80 px-4 py-2 rounded-full text-center max-w-[210px] mx-auto shadow-2xs">
+                        <p className="text-[10px] font-bold text-zinc-800 tracking-wide">Tap bookmark → item saved</p>
                       </div>
                     </div>
                     <div className="space-y-6">
-                      <div className="text-center h-5 flex items-center justify-center">
-                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Saved Section</span>
+                      <div className="text-center flex items-center justify-center">
+                        <span className="text-xs font-bold text-purple-900 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200 uppercase tracking-wider shadow-2xs">Saved Section</span>
                       </div>
                       <div className="bg-zinc-50 rounded-[40px] p-8 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1472,26 +1489,26 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                           referrerPolicy="no-referrer"
                         />
                       </div>
-                      <div className="bg-green-50 border border-green-200 p-2.5 rounded-lg text-center max-w-[200px] mx-auto shadow-sm">
-                        <p className="text-[10px] font-bold text-green-800">All saved items in one place</p>
+                      <div className="bg-zinc-100 border border-zinc-200/80 px-4 py-2 rounded-full text-center max-w-[210px] mx-auto shadow-2xs">
+                        <p className="text-[10px] font-bold text-zinc-800 tracking-wide">All saved items in one place</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-zinc-100">
                     <div className="space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Improvement</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Improvement</h4>
                       <ul className="space-y-2 text-zinc-700 font-light text-sm">
-                        <li className="flex gap-2.5 items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#0a3161]/40"></span> A Save option for events and opportunities</li>
-                        <li className="flex gap-2.5 items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#0a3161]/40"></span> A dedicated Saved section accessible via bottom navigation</li>
+                        <li className="flex gap-2.5 items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]/40"></span> A Save option for events and opportunities</li>
+                        <li className="flex gap-2.5 items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]/40"></span> A dedicated Saved section accessible via bottom navigation</li>
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Impact</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Impact</h4>
                       <ul className="space-y-2 text-zinc-600 font-light text-sm">
-                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Reduced pressure to decide immediately</li>
-                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Supported follow-up behavior</li>
-                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Encouraged intentional tracking rather than passive browsing</li>
+                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Reduced pressure to decide immediately</li>
+                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Supported follow-up behavior</li>
+                        <li className="flex gap-2.5 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Encouraged intentional tracking rather than passive browsing</li>
                       </ul>
                     </div>
                   </div>
@@ -1511,13 +1528,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">3</div>
                     <h3 className="text-2xl font-bold">Clear Booking Confirmation</h3>
                   </div>
-                  <div className="space-y-4 max-w-3xl">
+                  <div className="space-y-4 max-w-none">
                     <p className="text-base text-zinc-600 leading-relaxed font-light">
                        During usability walkthroughs, when participants tapped "Book Meeting" on a professor's profile, several paused briefly and looked for confirmation that the action had gone through.
                     </p>
                     <div className="flex flex-wrap gap-2 mt-4 items-start">
-                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-4 rounded-r-xl italic text-zinc-700 text-sm w-fit shadow-sm">"Did it go through?"</div>
-                      <div className="bg-zinc-50 border border-zinc-200/80 border-l-4 border-l-[#0a3161] p-4 rounded-r-xl italic text-zinc-700 text-sm whitespace-normal md:whitespace-nowrap shadow-sm">"One participant instinctively tapped the button a second time."</div>
+                      <div className="bg-purple-50/70 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-4 rounded-r-xl italic text-purple-950 text-sm w-fit shadow-sm">"Did it go through?"</div>
+                      <div className="bg-purple-50/70 border border-purple-200/80 border-l-4 border-l-[#7C3AED] p-4 rounded-r-xl italic text-purple-950 text-sm whitespace-normal md:whitespace-nowrap shadow-sm">"One participant instinctively tapped the button a second time."</div>
                     </div>
                     <p className="text-zinc-400 font-medium uppercase tracking-widest text-xs">This revealed a gap in immediate system feedback — the booking completed, but the interface gave no visible signal that it had.</p>
                   </div>
@@ -1528,7 +1545,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                     <div className="space-y-2">
                       <div className="text-center mb-1">
-                        <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">1. Profile</span>
+                        <span className="text-xs font-bold text-purple-900 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200 uppercase tracking-wider inline-block shadow-2xs">1. Profile</span>
                       </div>
                       <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1542,7 +1559,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </div>
                     <div className="space-y-2">
                       <div className="text-center mb-1">
-                        <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">2. Selection</span>
+                        <span className="text-xs font-bold text-purple-900 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200 uppercase tracking-wider inline-block shadow-2xs">2. Selection</span>
                       </div>
                       <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1556,7 +1573,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     </div>
                     <div className="space-y-2">
                       <div className="text-center mb-1">
-                        <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">3. Confirmation</span>
+                        <span className="text-xs font-bold text-purple-900 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200 uppercase tracking-wider inline-block shadow-2xs">3. Confirmation</span>
                       </div>
                       <div className="bg-zinc-50 rounded-[20px] p-5 border border-zinc-200 flex justify-center shadow-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-lg">
                         <img 
@@ -1572,30 +1589,30 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-5 border-t border-zinc-200">
                     <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Improvement</h4>
-                      <p className="text-sm text-zinc-700 font-light leading-relaxed">I introduced a <span className="font-bold text-[#0a3161]">Meeting Confirmed</span> success toast that appears momentarily after booking — keeping the user on the professor profile without any page transition.</p>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Improvement</h4>
+                      <p className="text-sm text-zinc-700 font-light leading-relaxed">I introduced a <span className="font-bold text-[#7C3AED]">Meeting Confirmed</span> success toast that appears momentarily after booking — keeping the user on the professor profile without any page transition.</p>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#0a3161]">Impact</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#7C3AED]">Impact</h4>
                       <ul className="space-y-1.5 text-zinc-600 font-light text-sm">
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Prevented repeated taps from uncertain users</li>
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Reduced post-action uncertainty</li>
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Reinforced system responsiveness at a critical moment</li>
-                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#0a3161]/40"></span> Maintained flow without unnecessary page transitions</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Prevented repeated taps from uncertain users</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Reduced post-action uncertainty</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Reinforced system responsiveness at a critical moment</li>
+                        <li className="flex gap-2 items-center"><span className="w-1 h-1 rounded-full bg-[#7C3AED]/40"></span> Maintained flow without unnecessary page transitions</li>
                       </ul>
                     </div>
                   </div>
                 </div>
-                <div className="bg-zinc-50 p-5 rounded-[20px] border border-zinc-200 shadow-sm">
-                  <p className="text-zinc-700 font-medium text-xs">A small piece of feedback eliminated a significant source of confusion.</p>
+                <div className="bg-purple-50/80 p-5 rounded-r-xl border border-purple-200/80 border-l-4 border-l-[#7C3AED] shadow-sm">
+                  <p className="text-purple-900 font-medium text-xs">A small piece of feedback eliminated a significant source of confusion.</p>
                 </div>
               </motion.div>
             </section>
 
             {/* Section 6: The Outcome */}
-            <section className="space-y-8 py-5 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-8 py-5">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">06. The Outcome</span>
+                <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">06. The Outcome</span>
                 <h2 className="text-3xl font-bold tracking-tight">Impact & Result</h2>
               </div>
               <div className="space-y-12">
@@ -1607,11 +1624,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       </p>
                       <div className="grid grid-cols-2 gap-3">
                          <div className="space-y-1">
-                            <p className="text-xl font-bold text-[#0a3161]">88%</p>
+                            <p className="text-xl font-bold text-[#7C3AED]">88%</p>
                             <p className="text-[8px] text-zinc-500 uppercase tracking-widest font-bold">Usability Score</p>
                          </div>
                          <div className="space-y-1">
-                            <p className="text-xl font-bold text-[#0a3161]">65%</p>
+                            <p className="text-xl font-bold text-[#7C3AED]">65%</p>
                             <p className="text-[8px] text-zinc-500 uppercase tracking-widest font-bold">Search Efficiency</p>
                          </div>
                       </div>
@@ -1632,22 +1649,22 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
             </section>
 
             {/* Section 7: Reflection */}
-            <section className="space-y-6 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-6">
                <div className="space-y-2">
-                  <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">07. Reflection</span>
+                  <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">07. Reflection</span>
                   <h2 className="text-3xl font-bold tracking-tight">Growth & Takeaways</h2>
                </div>
-               <div className="p-8 border border-zinc-200 border-l-4 border-l-[#0a3161] bg-zinc-50 rounded-r-[28px] space-y-4 shadow-sm">
+               <div className="p-8 border border-zinc-200 border-l-4 border-l-[#7C3AED] bg-zinc-50 rounded-r-[28px] space-y-4 shadow-sm">
                   <p className="text-lg font-light italic leading-relaxed text-zinc-700">
-                    "This project taught me that UX isn't just about beautiful screens; it's about <span className="font-bold text-[#0a3161]">information hygiene.</span> When data is messy, design must be its architect."
+                    "This project taught me that UX isn't just about beautiful screens; it's about <span className="font-bold text-[#7C3AED]">information hygiene.</span> When data is messy, design must be its architect."
                   </p>
                </div>
             </section>
 
             {/* Section 8: Next Steps */}
-            <section className="space-y-8 mb-16 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-200 shadow-md">
+            <section className="space-y-8 mb-16">
               <div className="space-y-2">
-                <span className="text-[#0a3161] font-bold text-xs tracking-widest uppercase">08. Next Steps</span>
+                <span className="text-[#7C3AED] font-bold text-xs tracking-widest uppercase">08. Next Steps</span>
                 <h2 className="text-3xl font-bold tracking-tight">Future Roadmap</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1657,8 +1674,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                    { t: "Accessibility Audit", d: "Deep dive into WCAG 2.1 compliance for screen readers and high contrast modes." },
                    { t: "Social Discovery", d: "Allowing students to form groups within academic events directly." }
                  ].map((step, i) => (
-                   <div key={i} className="p-5 border border-zinc-200 bg-zinc-50 rounded-xl flex items-start gap-3 hover:border-[#0a3161] hover:shadow-sm transition-all duration-300">
-                      <span className="w-7 h-7 rounded-full bg-[#0a3161] flex items-center justify-center font-bold text-white shrink-0 text-xs">{i+1}</span>
+                   <div key={i} className="p-5 border border-zinc-200 bg-zinc-50 rounded-xl flex items-start gap-3 hover:border-[#7C3AED] hover:shadow-sm transition-all duration-300">
+                      <span className="w-7 h-7 rounded-full bg-[#7C3AED] flex items-center justify-center font-bold text-white shrink-0 text-xs">{i+1}</span>
                       <div className="space-y-1">
                          <h5 className="font-bold text-sm">{step.t}</h5>
                          <p className="text-[10px] text-zinc-500 leading-relaxed font-light">{step.d}</p>
@@ -3124,7 +3141,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 
                 <div className="space-y-4 relative z-10">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                       <Briefcase className="w-4 h-4 stroke-[2]" />
                     </div>
                     <span className="text-xs md:text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest block">
@@ -3137,7 +3154,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   </h2>
 
                   <p className="text-lg md:text-xl text-zinc-600 font-light leading-relaxed w-full">
-                    <strong className="font-extrabold text-zinc-900 bg-red-50/70 border-b-2 border-red-200 px-1 rounded-sm">PAR Engineering</strong> manufactures industrial pumps. This case study covers <strong className="font-bold text-zinc-800">PAR — Production Control</strong>, an <strong className="font-extrabold text-red-600 bg-red-50/50 px-1.5 py-0.5 rounded border border-red-100">internal tool I designed</strong> to connect <strong className="font-bold text-zinc-800 underline decoration-zinc-300 decoration-2 underline-offset-4">production scheduling, inventory, and purchasing</strong> — three functions that used to run separately, <strong className="font-medium text-zinc-700 bg-amber-50/60 border-b-2 border-amber-200/80 px-1 rounded-sm">on paper and in spreadsheets</strong>, with <strong className="font-medium text-rose-700 bg-rose-50/60 border-b-2 border-rose-200/80 px-1 rounded-sm">no shared view</strong> of what was actually happening on the <strong className="font-semibold text-zinc-900">shop floor</strong>.
+                    <span className="font-semibold text-zinc-900">PAR Engineering</span> manufactures industrial pumps. This case study covers <span className="font-semibold text-zinc-900">PAR — Production Control</span>, an <span className="inline-flex items-center font-semibold text-blue-950 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 text-sm md:text-base">internal tool I designed</span> to connect <span className="font-semibold text-zinc-900">production scheduling, inventory, and purchasing</span> — three functions that used to run separately, <span className="inline-flex items-center font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 text-sm md:text-base">on paper and in spreadsheets</span>, with <span className="inline-flex items-center font-semibold text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm md:text-base">no shared view</span> of what was actually happening on the <span className="font-semibold text-zinc-900">shop floor</span>.
                   </p>
                 </div>
               </motion.div>
@@ -3935,6 +3952,50 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       </p>
                     </div>
                   ))}
+                </div>
+
+                {/* WHAT WE DIDN'T DESIGN (SCOPE PRUNING) */}
+                <div className="space-y-6 pt-10 border-t border-zinc-150">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-red-500 font-extrabold uppercase tracking-widest block">
+                      DELIBERATE SCOPE PRUNING
+                    </span>
+                    <h3 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
+                      What We Didn't Design (And Why)
+                    </h3>
+                    <p className="text-sm text-zinc-500 font-light max-w-2xl leading-relaxed">
+                      Design by subtraction was key to keeping the shop floor focused. Here are five features we intentionally excluded to prevent ERP bloat and maintain high operational velocity:
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {cutFeatures.map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        whileHover={{ y: -3 }}
+                        onMouseEnter={() => setParCutHover(item.name)}
+                        onMouseLeave={() => setParCutHover(null)}
+                        className={`p-5 rounded-2xl border transition-all duration-300 space-y-2.5 relative ${
+                          parCutHover === item.name
+                            ? 'border-red-300 bg-red-50/20 shadow-md'
+                            : 'border-zinc-200/80 bg-white shadow-xs'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-mono font-bold text-red-500 uppercase tracking-widest bg-red-50 px-2.5 py-0.5 rounded border border-red-100">
+                            EXCLUDED
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-400">0{idx + 1}</span>
+                        </div>
+                        <h4 className="font-extrabold text-base text-zinc-950 tracking-tight">
+                          {item.name}
+                        </h4>
+                        <p className="text-xs text-zinc-600 leading-relaxed font-light">
+                          {item.why}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
 
 

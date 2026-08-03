@@ -24,6 +24,10 @@ const getHexColor = (colorClass: string | undefined): string => {
 
 const getMediaUrl = (url: string | undefined): string => {
   if (!url) return '';
+  const imgurMatch = url.match(/imgur\.com\/([a-zA-Z0-9]+)$/);
+  if (imgurMatch && imgurMatch[1]) {
+    return `https://i.imgur.com/${imgurMatch[1]}.png`;
+  }
   // Check if it's a Google Drive share link and convert it to a streamable link
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (driveMatch && driveMatch[1]) {
@@ -135,7 +139,9 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
       {/* 2. Folder Card Body Container (Rendered first so tab can sit on top of it in DOM order) */}
       <motion.div 
         layoutId={`card-container-${study.id}`}
-        className={`relative mt-0 p-6 md:p-10 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl flex flex-col min-h-[380px] md:min-h-[460px] overflow-hidden group shadow-md cursor-pointer ${study.color} ${isDark ? 'text-zinc-50' : 'text-zinc-950'}`}
+        whileHover={{ y: -3 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className={`relative mt-0 p-6 md:p-10 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl flex flex-col min-h-[380px] md:min-h-[460px] overflow-hidden group shadow-md cursor-pointer transform-gpu will-change-transform ${study.color} ${isDark ? 'text-zinc-50' : 'text-zinc-950'}`}
       >
         {/* Fine background grid within the card body for that design system detail */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -182,95 +188,78 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
           {/* Right Column - Bounding Box Image Frame */}
           <div className="md:col-span-6 flex items-center justify-center relative">
             {study.images && study.images[0] && (
-              <motion.div 
-                style={{ y: imageY }}
-                className={`relative p-1.5 bg-white border border-zinc-200/50 shadow-md ${
-                  isPhoneFrame ? "w-fit mx-auto rounded-[28px] md:rounded-[36px]" : "w-full"
-                }`}
-              >
-                {/* Transform Corner Handles (Figma style) */}
-                <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+              isPhoneFrame ? (
+                <div className="w-full h-[240px] md:h-[340px] bg-black/15 backdrop-blur-sm rounded-2xl border border-white/15 flex items-center justify-center p-3 md:p-4 relative overflow-hidden group-hover:border-white/30 transition-all shadow-inner">
+                  {/* Decorative background grid and ambient radial glow */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_75%)] pointer-events-none" />
+                  <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
 
-                {/* Pixel Grid File Info Badge */}
-                {!isPhoneFrame && (
-                  <div className={`absolute bg-zinc-950 text-white border border-zinc-800 px-2.5 py-1 rounded text-[9px] font-mono uppercase tracking-widest flex items-center gap-1.5 z-20 shadow-lg ${
-                    isPhoneFrame ? "-top-9 right-1.5" : "top-3.5 right-3.5"
-                  }`}>
-                    {study.images && study.images[0] && isVideoUrl(study.images[0]) ? (
-                      <>
-                        <svg className="w-3 h-3 text-red-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-                          <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                        <span className="font-bold">MP4 VIDEO.MP4</span>
-                      </>
-                    ) : study.images && study.images[0] && study.images[0].endsWith('.gif') ? (
-                      <>
-                        <svg className="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                        <span className="font-bold">GIF ANIMATION.GIF</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3 h-3 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                          <circle cx="8.5" cy="8.5" r="1.5" />
-                          <polyline points="21 15 16 10 5 21" />
-                        </svg>
-                        <span className="font-bold">JPG IMAGE.JPG</span>
-                      </>
-                    )}
-                  </div>
-                )}
+                  <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-2xl transition-transform duration-300 ease-out group-hover:scale-[1.03] w-fit mx-auto rounded-[28px] md:rounded-[36px]">
+                    {/* Transform Corner Handles (Figma style) */}
+                    <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
 
-                {/* Micro-annotation Figma Multiplayer Cursor */}
-                {index === 2 && (
-                  <div className="absolute bottom-6 right-8 flex items-center gap-1.5 z-20 pointer-events-none bg-zinc-950/90 text-white px-2 py-0.5 rounded-full shadow-lg border border-zinc-800 scale-95 md:scale-100">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="font-mono text-[8px] font-extrabold uppercase tracking-widest">YOU</span>
-                  </div>
-                )}
-
-                {/* Core Image Container with interactive Grayscale-to-Color hover filter */}
-                <div className={`overflow-hidden relative ${
-                  isPhoneFrame 
-                    ? "w-[120px] md:w-[170px] h-[240px] md:h-[340px] mx-auto rounded-[24px] md:rounded-[32px] border-[5px] md:border-[8px] border-zinc-950 shadow-inner bg-black" 
-                    : "w-full h-[240px] md:h-[340px] bg-zinc-100"
-                }`}>
-                  {isPhoneFrame && (
-                    <div className="absolute top-1.5 md:top-2 left-1/2 -translate-x-1/2 w-10 md:w-14 h-2 md:h-3 bg-zinc-950 rounded-full z-20 flex items-center justify-center">
-                      <div className="w-1 h-1 bg-zinc-900 rounded-full ml-auto mr-1 md:mr-1.5 opacity-60" />
+                    {/* Core Image Container */}
+                    <div className="w-[110px] md:w-[150px] h-[210px] md:h-[290px] mx-auto rounded-[20px] md:rounded-[26px] border-[2px] md:border-[3px] border-zinc-950 shadow-inner bg-black overflow-hidden relative">
+                      {study.images && study.images[0] && isVideoUrl(study.images[0]) && !videoHasError ? (
+                        <video 
+                          src={getMediaUrl(study.images[0])} 
+                          className="w-full h-full object-cover"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          onError={() => setVideoHasError(true)}
+                        />
+                      ) : (
+                        <img 
+                          src={videoHasError ? 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200' : getMediaUrl(study.images[0])} 
+                          alt={study.title} 
+                          className="w-full h-full object-cover filter-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
                     </div>
-                  )}
-
-                  {study.images && study.images[0] && isVideoUrl(study.images[0]) && !videoHasError ? (
-                    <video 
-                      src={getMediaUrl(study.images[0])} 
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      onError={() => setVideoHasError(true)}
-                    />
-                  ) : (
-                    <img 
-                      src={videoHasError ? 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200' : getMediaUrl(study.images[0])} 
-                      alt={study.title} 
-                      className="w-full h-full object-cover filter-none"
-                      referrerPolicy="no-referrer"
-                    />
-                  )}
-                  
-                  {/* Subtle vector-like overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
+                  </div>
                 </div>
-              </motion.div>
+              ) : (
+                <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-md transition-transform duration-300 ease-out group-hover:scale-[1.015] w-full">
+                  {/* Transform Corner Handles (Figma style) */}
+                  <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                  <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                  <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                  <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+
+                  {/* Core Image Container with interactive Grayscale-to-Color hover filter */}
+                  <div className="w-full h-[240px] md:h-[340px] bg-zinc-100 overflow-hidden relative">
+                    {study.images && study.images[0] && isVideoUrl(study.images[0]) && !videoHasError ? (
+                      <video 
+                        src={getMediaUrl(study.images[0])} 
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        onError={() => setVideoHasError(true)}
+                      />
+                    ) : (
+                      <img 
+                        src={videoHasError ? 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200' : getMediaUrl(study.images[0])} 
+                        alt={study.title} 
+                        className="w-full h-full object-cover filter-none"
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    
+                    {/* Subtle vector-like overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
+                  </div>
+                </div>
+              )
             )}
           </div>
 

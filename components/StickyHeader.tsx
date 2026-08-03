@@ -13,7 +13,31 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
   const { scrollYProgress } = useScroll();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [activeSection, setActiveSection] = useState<'works' | 'about' | 'contact'>('works');
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const worksEl = document.getElementById('works');
+      const aboutEl = document.getElementById('about');
+      const contactEl = document.getElementById('contact');
+
+      const scrollPos = window.scrollY + 200;
+
+      if (contactEl && scrollPos >= contactEl.offsetTop - 150) {
+        setActiveSection('contact');
+      } else if (aboutEl && scrollPos >= aboutEl.offsetTop - 150) {
+        setActiveSection('about');
+      } else {
+        setActiveSection('works');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,7 +62,7 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-      className="sticky top-0 z-50 w-full bg-[#FAF9F6]/80 backdrop-blur-md px-4 md:px-6 py-0"
+      className="sticky top-0 z-50 w-full bg-[#FAF9F6]/85 backdrop-blur-md px-4 sm:px-6 md:px-8"
     >
       {/* Scroll Progress Bar */}
       <motion.div 
@@ -46,10 +70,11 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
         style={{ scaleX: scrollYProgress }}
       />
 
-      <div className="w-full flex justify-between items-center h-16">
+      <div className="max-w-6xl mx-auto flex justify-between items-center h-16">
         <div 
-          className="text-xl font-black tracking-tighter cursor-pointer"
+          className="text-xl font-black tracking-tighter cursor-pointer select-none"
           onClick={() => {
+            setActiveSection('works');
             setActiveView?.('portfolio');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
@@ -57,20 +82,23 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
           <TextFill text="Tamizh" delay={0.5} duration={1} fillColor="text-red-500" />
         </div>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="flex items-center gap-5 sm:gap-8">
           <motion.button 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
             onClick={() => {
+              setActiveSection('works');
               setActiveView?.('portfolio');
               setTimeout(() => {
                 const el = document.getElementById('works');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }, 100);
             }}
-            className={`font-medium text-sm hover:text-red-500 transition-colors cursor-pointer ${
-              activeView === 'portfolio' ? 'text-zinc-900 font-semibold border-b-2 border-red-500 pb-0.5' : 'text-zinc-500'
+            className={`font-medium text-xs sm:text-sm transition-colors cursor-pointer py-1 border-b-2 ${
+              activeSection === 'works'
+                ? 'text-zinc-900 font-semibold border-red-500' 
+                : 'text-zinc-500 hover:text-red-500 border-transparent'
             }`}
           >
             Works
@@ -81,13 +109,18 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
             onClick={() => {
+              setActiveSection('about');
               setActiveView?.('portfolio');
               setTimeout(() => {
                 const el = document.getElementById('about');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }, 100);
             }}
-            className="font-medium text-sm hover:text-red-500 transition-colors cursor-pointer text-zinc-500"
+            className={`font-medium text-xs sm:text-sm transition-colors cursor-pointer py-1 border-b-2 ${
+              activeSection === 'about'
+                ? 'text-zinc-900 font-semibold border-red-500' 
+                : 'text-zinc-500 hover:text-red-500 border-transparent'
+            }`}
           >
             About
           </motion.button>
@@ -95,11 +128,18 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
           {/* Contact Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <motion.button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={() => {
+                setActiveSection('contact');
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0 }}
-              className="font-medium text-sm hover:text-red-500 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none animate-none font-sans"
+              className={`font-medium text-xs sm:text-sm transition-colors flex items-center gap-1 cursor-pointer py-1 border-b-2 ${
+                activeSection === 'contact' || isDropdownOpen
+                  ? 'text-zinc-900 font-semibold border-red-500' 
+                  : 'text-zinc-500 hover:text-red-500 border-transparent'
+              }`}
             >
               <span>Contact</span>
             </motion.button>
@@ -107,11 +147,11 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({ activeView = 'portfo
             <AnimatePresence>
               {isDropdownOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute right-0 mt-3 w-64 bg-white border border-zinc-150/80 rounded-2xl shadow-xl overflow-hidden py-1 z-50 origin-top-right"
+                  className="absolute right-0 mt-2 w-64 bg-white border border-zinc-200 rounded-2xl shadow-xl overflow-hidden py-1 z-50 origin-top-right"
                 >
                   <a
                     href="mailto:tamizhselvan018@gmail.com"
