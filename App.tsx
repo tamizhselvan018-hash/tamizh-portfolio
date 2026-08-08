@@ -11,6 +11,18 @@ import { motion, AnimatePresence } from 'motion/react';
 
 import { TextFill } from './components/TextFill';
 
+const GmailIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+  </svg>
+);
+
+const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24z"/>
+  </svg>
+);
+
 const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProjectClick }) => {
   return (
     <section id="works" className="relative w-full py-24 border-y border-zinc-200/60 bg-transparent overflow-visible">
@@ -228,16 +240,18 @@ const App: React.FC = () => {
                 >
                   <a 
                     href="mailto:tamizhselvan018@gmail.com" 
-                    className="bg-white text-[#0a3161] font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-zinc-100 transition-all shadow-xl active:scale-95"
+                    className="bg-white text-[#0a3161] font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2.5 hover:bg-zinc-100 transition-all shadow-xl active:scale-95 group/btn"
                   >
+                    <GmailIcon className="w-5 h-5 text-[#0a3161] group-hover/btn:scale-110 transition-transform" />
                     <span>Get in touch via Email</span>
                   </a>
                   <a 
                     href="https://www.linkedin.com/in/tamizhselvan-u" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
+                    className="bg-transparent text-white border border-white/30 font-semibold h-14 px-8 rounded-full flex items-center justify-center gap-2.5 hover:bg-white/10 transition-all active:scale-95 group/btn"
                   >
+                    <LinkedinIcon className="w-5 h-5 text-white group-hover/btn:scale-110 transition-transform" />
                     <span>Connect on LinkedIn</span>
                   </a>
                 </motion.div>
@@ -253,8 +267,14 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex gap-8 text-sm font-medium">
-          <a href="https://www.linkedin.com/in/tamizhselvan-u" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors">LinkedIn</a>
-          <a href="mailto:tamizhselvan018@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors">Email</a>
+          <a href="https://www.linkedin.com/in/tamizhselvan-u" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-red-500 transition-colors flex items-center gap-2">
+            <LinkedinIcon className="w-4 h-4" />
+            <span>LinkedIn</span>
+          </a>
+          <a href="mailto:tamizhselvan018@gmail.com" className="text-zinc-500 hover:text-red-500 transition-colors flex items-center gap-2">
+            <GmailIcon className="w-4 h-4" />
+            <span>Email</span>
+          </a>
         </div>
 
         <div className="text-zinc-400 text-sm">© 2025 Tamizh. All rights reserved.</div>

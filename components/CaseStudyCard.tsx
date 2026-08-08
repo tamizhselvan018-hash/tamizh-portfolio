@@ -141,7 +141,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
         layoutId={`card-container-${study.id}`}
         whileHover={{ y: -3 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className={`relative mt-0 p-6 md:p-10 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl flex flex-col min-h-[380px] md:min-h-[460px] overflow-hidden group shadow-md cursor-pointer transform-gpu will-change-transform ${study.color} ${isDark ? 'text-zinc-50' : 'text-zinc-950'}`}
+        className={`relative mt-0 p-6 md:p-10 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl flex flex-col min-h-[420px] md:h-[480px] overflow-hidden group shadow-md cursor-pointer transform-gpu will-change-transform ${study.color} ${isDark ? 'text-zinc-50' : 'text-zinc-950'}`}
       >
         {/* Fine background grid within the card body for that design system detail */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -188,13 +188,13 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
           {/* Right Column - Bounding Box Image Frame */}
           <div className="md:col-span-6 flex items-center justify-center relative">
             {study.images && study.images[0] && (
-              isPhoneFrame ? (
-                <div className="w-full h-[240px] md:h-[340px] bg-black/15 backdrop-blur-sm rounded-2xl border border-white/15 flex items-center justify-center p-3 md:p-4 relative overflow-hidden group-hover:border-white/30 transition-all shadow-inner">
-                  {/* Decorative background grid and ambient radial glow */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_75%)] pointer-events-none" />
-                  <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
+              <div className="w-full h-[240px] md:h-[320px] bg-black/15 backdrop-blur-sm rounded-2xl border border-white/15 flex items-center justify-center p-3 md:p-4 relative overflow-hidden group-hover:border-white/30 transition-all shadow-inner">
+                {/* Decorative background grid and ambient radial glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,transparent_75%)] pointer-events-none" />
+                <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
 
-                  <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-2xl transition-transform duration-300 ease-out group-hover:scale-[1.03] w-fit mx-auto rounded-[28px] md:rounded-[36px]">
+                {isPhoneFrame ? (
+                  <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-2xl transition-transform duration-300 ease-out group-hover:scale-[1.03] w-fit mx-auto rounded-[14px] md:rounded-[18px]">
                     {/* Transform Corner Handles (Figma style) */}
                     <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
                     <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
@@ -202,8 +202,8 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
                     <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
 
                     {/* Core Image Container */}
-                    <div className="w-[110px] md:w-[150px] h-[210px] md:h-[290px] mx-auto rounded-[20px] md:rounded-[26px] border-[2px] md:border-[3px] border-zinc-950 shadow-inner bg-black overflow-hidden relative">
-                      {study.images && study.images[0] && isVideoUrl(study.images[0]) && !videoHasError ? (
+                    <div className="w-[100px] md:w-[135px] h-[190px] md:h-[260px] mx-auto rounded-[8px] md:rounded-[10px] border-[2px] md:border-[3px] border-zinc-950 shadow-inner bg-black overflow-hidden relative">
+                      {isVideoUrl(study.images[0]) && !videoHasError ? (
                         <video 
                           src={getMediaUrl(study.images[0])} 
                           className="w-full h-full object-cover"
@@ -225,41 +225,41 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-md transition-transform duration-300 ease-out group-hover:scale-[1.015] w-full">
-                  {/* Transform Corner Handles (Figma style) */}
-                  <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                  <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                  <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
-                  <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                ) : (
+                  <div className="relative p-1.5 bg-white border border-zinc-200/50 shadow-md transition-transform duration-300 ease-out group-hover:scale-[1.015] w-full h-full">
+                    {/* Transform Corner Handles (Figma style) */}
+                    <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
+                    <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 border border-zinc-300 bg-white z-30" />
 
-                  {/* Core Image Container with interactive Grayscale-to-Color hover filter */}
-                  <div className="w-full h-[240px] md:h-[340px] bg-zinc-100 overflow-hidden relative">
-                    {study.images && study.images[0] && isVideoUrl(study.images[0]) && !videoHasError ? (
-                      <video 
-                        src={getMediaUrl(study.images[0])} 
-                        className="w-full h-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        onError={() => setVideoHasError(true)}
-                      />
-                    ) : (
-                      <img 
-                        src={videoHasError ? 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200' : getMediaUrl(study.images[0])} 
-                        alt={study.title} 
-                        className="w-full h-full object-cover filter-none"
-                        referrerPolicy="no-referrer"
-                      />
-                    )}
-                    
-                    {/* Subtle vector-like overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
+                    {/* Core Image Container */}
+                    <div className="w-full h-full bg-zinc-100 rounded-md overflow-hidden relative">
+                      {isVideoUrl(study.images[0]) && !videoHasError ? (
+                        <video 
+                          src={getMediaUrl(study.images[0])} 
+                          className="w-full h-full object-cover"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          onError={() => setVideoHasError(true)}
+                        />
+                      ) : (
+                        <img 
+                          src={videoHasError ? 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=1200' : getMediaUrl(study.images[0])} 
+                          alt={study.title} 
+                          className="w-full h-full object-cover filter-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
+                      
+                      {/* Subtle vector-like overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent mix-blend-overlay pointer-events-none" />
+                    </div>
                   </div>
-                </div>
-              )
+                )}
+              </div>
             )}
           </div>
 

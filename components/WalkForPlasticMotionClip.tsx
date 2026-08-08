@@ -292,7 +292,7 @@ export const WalkForPlasticMotionClip: React.FC = () => {
   const currentChartData = chartTab === 'week' ? weekData : chartTab === 'month' ? monthData : yearData;
 
   return (
-    <div className="relative w-[280px] h-[520px] rounded-[32px] bg-slate-100 border-[3px] border-slate-800 shadow-2xl overflow-hidden font-sans select-none text-slate-800 flex flex-col">
+    <div className="relative w-[280px] h-[520px] rounded-[16px] bg-slate-100 border-[3px] border-slate-800 shadow-2xl overflow-hidden font-sans select-none text-slate-800 flex flex-col">
       {/* Touch Interaction Gesture Pointer */}
       <motion.div
         animate={{
