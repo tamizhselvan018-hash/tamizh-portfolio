@@ -7,6 +7,7 @@ import { Button } from './Button';
 import { InteractiveBrowserMockup } from './MockScreens';
 import { AnnotatedScreenshot } from './AnnotatedScreenshot';
 import { FolderTag } from './FolderTag';
+import { ReadinessLoopDiagram } from './ReadinessLoopDiagram';
 
 interface CaseStudyDetailProps {
   project: CaseStudy;
@@ -363,11 +364,11 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
     },
     {
       name: "Advanced scheduling",
-      why: "Observation showed that managers preferred a simple whiteboard scheduling session over a complex automated drag-and-drop calendar. Forcing software-guided scheduling created system resistance; a flexible queue model was far more effective."
+      why: "Covered in Key Decision 02 above — the whiteboard was already faster than any calendar I could have designed, so the tool holds a flexible queue instead."
     },
     {
       name: "Reporting dashboards",
-      why: "Recruiters and managers alike often think tools need endless charts. But users in the plant didn't want charts — they wanted to know what to build next. An actionable list unblocked them, while passive telemetry only cluttered their screens."
+      why: "Users in the plant didn't want charts — they wanted to know what to build next. An actionable list unblocked them, while passive telemetry only cluttered their screens."
     },
     {
       name: "BOM admin",
@@ -375,7 +376,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
     },
     {
       name: "Warehouse management",
-      why: "A comprehensive warehouse locator requires barcode scanning and physical layout mappings. We focused strictly on active production parts to deliver immediate value within a 2-month timeline, leaving generic storage for later."
+      why: "A comprehensive warehouse locator requires barcode scanning and physical layout mappings — a project of its own. We focused strictly on the parts moving through active production, where the daily decisions actually happened, and left generic storage for later."
     }
   ];
 
@@ -3184,38 +3185,13 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
 
                   <h2 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-snug">
-                    How I designed a connected B2B hub that reduced production checking loops from <span className="text-red-500 underline decoration-red-200 decoration-wavy underline-offset-4 decoration-2 inline-block"><span className="tabular-nums inline-flex"><AnimatedCounter value={15} /></span> minutes to <span className="tabular-nums inline-flex"><AnimatedCounter value={1} /></span> click</span> <span className="inline-flex items-center gap-1 bg-red-600 text-white font-mono font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg shadow-red-500/20 border border-red-500/30 select-none animate-bounce ml-2 align-middle"><Zap className="w-3 h-3 fill-white" />85% SAVED</span>.
+                    How I designed a connected B2B hub that turned <span className="text-red-500 underline decoration-red-200 decoration-wavy underline-offset-4 decoration-2 inline-block"><span className="tabular-nums inline-flex"><AnimatedCounter value={15} /></span> minutes of walking the floor and checking spreadsheets into one screen</span>
                   </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-zinc-100">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                        <span className="text-red-500">🎯</span>
-                        <span>The Objective</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
-                        Unify fragmented shop-floor logs, purchasing emails, and warehouse counts into one cohesive, live web application.
-                      </p>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                        <span className="text-red-500">🛠️</span>
-                        <span>My Approach</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
-                        Design by subtraction. Clear out administrative waste, speak the plant's literal language, and connect status directly to next actions.
-                      </p>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                        <span className="text-red-500">📈</span>
-                        <span>The Outcome</span>
-                      </div>
-                      <p className="text-xs md:text-sm text-zinc-500 font-light leading-relaxed">
-                        A live internal tool used daily to verify assemblies, trigger order recommendations, and track partial material receipts instantly.
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-base text-zinc-500 font-light leading-relaxed max-w-3xl pt-6 border-t border-zinc-100">
+                    Design by subtraction: clear out the administrative waste, speak the plant's literal language,
+                    and connect every status directly to the action it implies.
+                  </p>
                 </div>
               </motion.div>
 
@@ -3336,6 +3312,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   </motion.div>
                 </div>
 
+
                 {/* Bordered Pull Quote */}
                 <div className="p-6 md:p-8 border border-zinc-200 border-l-4 border-l-red-500 bg-white rounded-r-2xl space-y-2 shadow-xs">
                   <span className="text-[9px] font-mono text-red-500 font-bold uppercase tracking-widest block">
@@ -3392,34 +3369,6 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 <p className="text-base text-zinc-650 font-light max-w-3xl leading-relaxed">
                   This decision also helped define what the product would not become. Rather than building a large ERP system with supplier management, advanced scheduling, reporting, and administrative tools, I focused on the workflows that directly affected daily production decisions.
                 </p>
-
-                {/* THE TARGET OUTCOME Card */}
-                <div className="p-6 md:p-8 border border-zinc-200 bg-white rounded-2xl shadow-2xs space-y-4 max-w-3xl mx-auto">
-                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">
-                    THE TARGET OUTCOME
-                  </span>
-                  <h4 className="text-base md:text-lg font-bold text-zinc-800 leading-snug">
-                    The challenge was not to build more functionality. The challenge was to help employees understand:
-                  </h4>
-                  <ul className="space-y-3 mt-4 pl-1">
-                    <li className="flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
-                      <span className="text-sm md:text-base text-zinc-600 font-light">What can move forward?</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-                      <span className="text-sm md:text-base text-zinc-600 font-light">What is blocked?</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
-                      <span className="text-sm md:text-base text-zinc-600 font-light">Why is it blocked?</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                      <span className="text-sm md:text-base text-zinc-600 font-light">What action needs to happen next?</span>
-                    </li>
-                  </ul>
-                </div>
 
                 <div className="pt-6 space-y-4">
                   <p className="text-sm text-zinc-500 font-light max-w-2xl leading-relaxed">
@@ -3515,7 +3464,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         </div>
 
                         <div className="p-4 md:p-5 bg-zinc-50 rounded-xl border border-zinc-200/60 shadow-2xs space-y-2 mt-2">
-                          <span className="text-[9px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">CONNECTIVITY MATRIX</span>
+                          <span className="text-[9px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">What Connects</span>
                           <div className="text-sm md:text-base font-bold text-zinc-800 tracking-tight">
                             {parActiveStep === 1 && "Assembly → Inventory"}
                             {parActiveStep === 2 && "Order → Inventory"}
@@ -3642,35 +3591,35 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       label: "Initiate Production",
                       desc: "An order is initiated for assembly on the shop floor with a specified Bill of Materials (BOM). In PO-1092, we define the customer, pump model, quantity, and target delivery dates instantly.",
                       img: "https://i.imgur.com/14p7lou.png",
-                      caption: "Step 1: Creating PO-1092 for a new pump order — a focused, production-ready form."
+                      caption: "The form asks only for what changes between orders. The parts list comes from the pump model, so two orders for the same pump can never quietly disagree."
                     },
                     {
                       num: "2",
                       label: "Verify Inventory",
                       desc: "The moment an order exists, the system automatically matches order requirements against physical stock levels. If parts are missing (like Seal Kit SK-08 for order PO-1048), it instantly marks it as Blocked.",
                       img: "https://i.imgur.com/MSI21zc.png",
-                      caption: "Step 2: Automated inventory matching immediately flags missing seal kits as blocking issues."
+                      caption: "Blocked isn't a status anyone sets — it's what the order computes to when a part is short. The seal kit is named, because \"blocked\" without a reason sends someone walking."
                     },
                     {
                       num: "3",
                       label: "Resolve Shortages",
                       desc: "Missing components trigger auto-generated purchase recommendations. With context-driven 1-click requisitioning, a purchaser turns raw shortages into actionable vendor purchase requests without extra searches.",
                       img: "https://i.imgur.com/qCSorxc.png",
-                      caption: "Step 3: Purchasing gets automatic buy recommendations mapped directly to the blocked production orders."
+                      caption: "Shortages arrive pre-filled — part, quantity, supplier. Re-typing what the system already knew was where the errors used to enter."
                     },
                     {
                       num: "4",
                       label: "Receive Materials",
                       desc: "Suppliers' partial or full deliveries are logged dynamically. Outstanding amounts are tracked under active watch, ensuring true operational visibility matches real-world receiving processes.",
                       img: "https://i.imgur.com/yKtOh5N.png",
-                      caption: "Step 4: Real-time request tracking handles partial shipments without losing line-item history."
+                      caption: "Partial deliveries are the normal case here, not the exception, so the request stays open and keeps showing what is still outstanding."
                     },
                     {
                       num: "5",
                       label: "Produce Pump",
                       desc: "The instant final parts are received on the dock, PO-1048 drops its Blocked status automatically and is unblocked in the queue. The dashboard updates immediately to clear the team for assembly.",
                       img: "https://i.imgur.com/060G4ps.png",
-                      caption: "Step 5: Automated material resolution unblocks the order for direct floor assembly."
+                      caption: "Nobody marks this order ready. Stock went up, the match re-ran, and the order cleared itself."
                     }
                   ].map((step, idx) => {
                     const isEven = idx % 2 === 0;
@@ -3744,6 +3693,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     );
                   })}
                 </div>
+
+                <ReadinessLoopDiagram />
               </motion.div>
             </div>
 
@@ -3771,7 +3722,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         }}
                         className="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-[#fee2e2] shadow-[0_0_8px_rgba(239,68,68,0.6)]"
                       />
-                      Key Decision
+                      Key Decision 01
                     </span>
                     <h3 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight">
                       Getting It Wrong First
@@ -3811,7 +3762,63 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 </div>
               </motion.div>
 
+              {/* SECTION 4B — SECOND KEY DECISION: NOT BUILDING THE SCHEDULER */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="space-y-8 pt-8 border-t border-zinc-150 grid grid-cols-1 md:grid-cols-12 gap-8 items-start"
+              >
+                <div className="md:col-span-7 space-y-6">
+                  <div className="space-y-2">
+                    <span className="text-xs font-mono text-red-500 font-extrabold uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+                      <motion.span
+                        animate={{
+                          scale: [1, 1.25, 1],
+                          opacity: [0.8, 1, 0.8]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        className="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-[#fee2e2] shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                      />
+                      Key Decision 02
+                    </span>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight">
+                      Not Building the Obvious Feature
+                    </h3>
+                  </div>
 
+                  <p className="text-base text-zinc-650 leading-relaxed">
+                    Scheduling was the feature everyone expected — a drag-and-drop calendar with orders laid across
+                    the week. Before designing it, I watched how scheduling actually happened: managers at a
+                    whiteboard, rearranging work in a five-minute conversation, adjusting for who was in that day and
+                    which machine was free.
+                  </p>
+
+                  <p className="text-base text-zinc-650 leading-relaxed">
+                    Software would have made that slower. Every change becomes a form; the schedule turns into
+                    something you maintain rather than something you decide. So the tool doesn't schedule. It holds a
+                    flexible queue — what's ready, what's blocked, what's next — and leaves the sequencing with the
+                    people who were already good at it.
+                  </p>
+                </div>
+
+                <div className="md:col-span-5 p-6 md:p-8 rounded-2xl border border-zinc-200 bg-zinc-50 space-y-3 shadow-xs">
+                  <span className="text-[10px] font-mono text-zinc-500 font-extrabold uppercase tracking-widest block">
+                    The Cost
+                  </span>
+                  <p className="text-sm md:text-base text-zinc-600 font-light leading-relaxed">
+                    There is no forward view. The tool can tell you what's buildable today; it can't show you what
+                    next Thursday looks like, and it won't warn you that two orders are heading for the same machine
+                    next week. That's the trade I made for not imposing a workflow nobody had asked for — and the
+                    first thing I'd revisit if the plant grew.
+                  </p>
+                </div>
+              </motion.div>
 
               {/* SECTION 7 — IMPACT METRICS DASHBOARD */}
               <motion.div 
@@ -3836,8 +3843,8 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                       label: "CHECKING PRODUCTION READINESS",
                       before: "~10–15 min",
                       after: "~1–2 min",
-                      desc: "Reduced check loops from multiple spreadsheets and emails to a single visual status click.",
-                      percent: "90% Faster"
+                      desc: "Checking used to mean walking to the warehouse and opening two spreadsheets. Now the answer sits on the order itself.",
+                      percent: "One Screen"
                     },
                     {
                       label: "IDENTIFYING STOCK SHORTAGES",
@@ -3954,6 +3961,24 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   ))}
                 </div>
 
+                {/* A KNOWN LIMIT — HONEST TRADE-OFF IN THE READINESS MODEL */}
+                <div className="p-6 md:p-8 border border-zinc-200 border-l-4 border-l-[#1E3A8A] bg-white rounded-r-2xl space-y-3 shadow-xs">
+                  <span className="text-[10px] font-mono text-[#1E3A8A] font-extrabold uppercase tracking-widest block">
+                    A Known Limit
+                  </span>
+                  <h3 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
+                    Two orders can want the same parts
+                  </h3>
+                  <p className="text-sm md:text-base text-zinc-600 font-light leading-relaxed max-w-3xl">
+                    The tool doesn't reserve stock. Two orders can both read as ready to build while jointly needing
+                    more parts than exist. Whichever one reaches the floor first consumes the components, and the
+                    other flips to blocked immediately. For a plant releasing a handful of orders a day, that
+                    self-corrects faster than a reservation system would have cost to build — but it means “ready to
+                    build” is a statement about right now, not a promise held for later. If order volume climbed,
+                    reservation is the first thing I'd add.
+                  </p>
+                </div>
+
                 {/* WHAT WE DIDN'T DESIGN (SCOPE PRUNING) */}
                 <div className="space-y-6 pt-10 border-t border-zinc-150">
                   <div className="space-y-1">
@@ -4020,7 +4045,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     Try the PAR Prototype
                   </h2>
                   <p className="text-base text-zinc-500 font-light max-w-2xl leading-relaxed">
-                    Interact with the high-fidelity tactical interface below to experience how production monitoring and stock control flows are integrated.
+                    An interactive rebuild of the core workflow — not the production system itself, but the same logic, running. Create an order, watch it block on a missing seal kit, receive the parts, and see it clear itself.
                   </p>
                 </div>
                 <a 
