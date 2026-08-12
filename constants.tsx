@@ -30,11 +30,11 @@ export const CASE_STUDIES: CaseStudy[] = [
     color: 'bg-[#1E3A8A]',
     textColor: 'text-white',
     date: 'DEC 2024',
-    role: 'Lead UX Architect',
+    role: 'UX Designer — sole designer on the project',
     platform: 'B2B Desktop Web App',
-    duration: '6 Weeks',
+    duration: 'Part of a 2-year role',
     tools: 'Figma, Component Library',
-    liveUrl: 'https://tamizhselvan018.github.io/Walkforplastic-React/'
+    liveUrl: 'https://tamizhselvan018-hash.github.io/par-prototype/par-prototype.html'
   },
   {
     id: 'my-campus',
