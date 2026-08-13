@@ -124,7 +124,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
               {/* Title */}
               <motion.h3 
                 layoutId={`card-title-${study.id}`}
-                className="text-3xl md:text-5xl font-extrabold tracking-tight text-left block font-sans"
+                className="text-3xl md:text-5xl font-extrabold tracking-tight text-left block font-sans line-clamp-2 min-h-[2.4em] md:line-clamp-none md:min-h-0"
               >
                 {study.title}
               </motion.h3>
@@ -132,7 +132,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
               {/* Description */}
               <motion.p 
                 layoutId={`card-desc-${study.id}`}
-                className={`text-lg md:text-xl font-medium leading-relaxed text-left block max-w-xl ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`} 
+                className={`text-lg md:text-xl font-medium leading-relaxed text-left block max-w-xl line-clamp-5 min-h-[8.125em] md:line-clamp-none md:min-h-0 ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`} 
               >
                 {study.description}
               </motion.p>
