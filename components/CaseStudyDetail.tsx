@@ -3157,6 +3157,20 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <p className="text-lg md:text-xl text-zinc-600 font-light leading-relaxed w-full">
                     <span className="font-semibold text-zinc-900">PAR Engineering</span> manufactures industrial pumps. This case study covers <span className="font-semibold text-zinc-900">PAR — Production Control</span>, an <span className="inline-flex items-center font-semibold text-blue-950 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 text-sm md:text-base">internal tool I designed</span> to connect <span className="font-semibold text-zinc-900">production scheduling, inventory, and purchasing</span> — three functions that used to run separately, <span className="inline-flex items-center font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 text-sm md:text-base">on paper and in spreadsheets</span>, with <span className="inline-flex items-center font-semibold text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm md:text-base">no shared view</span> of what was actually happening on the <span className="font-semibold text-zinc-900">shop floor</span>.
                   </p>
+
+                  <div className="pt-5 mt-1 border-t border-zinc-150 space-y-2">
+                    <span className="text-[10px] font-mono text-zinc-400 font-extrabold uppercase tracking-widest block">
+                      How I learned the workflow
+                    </span>
+                    <p className="text-sm md:text-base text-zinc-500 font-light leading-relaxed max-w-3xl">
+                      Five people over about three weeks: two production planners, the stores keeper, a purchaser,
+                      and the production manager. Most of it happened on the floor rather than in a meeting room —
+                      catching someone between jobs, standing beside them while they checked a spreadsheet or made a
+                      call, watching what they actually did instead of asking what they wanted. Two proper sit-downs
+                      with the production manager, deliberately, because he pushed back hardest and gave the
+                      clearest reactions.
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -3327,6 +3341,12 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 </div>
 
                 {/* Three-Question Row */}
+                <p className="text-sm md:text-base text-zinc-500 font-light leading-relaxed max-w-3xl">
+                  Nobody said these three questions to me. They're what the same shape kept turning into across every
+                  conversation — a planner checking three separate places before answering something simple, the
+                  manager describing his day as “half of it is just finding out where things stand.” I wrote them
+                  afterwards, as the cleanest description of what I'd watched people struggle to answer.
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
                     { q: "What can we build today?", d: "Know which assemblies have 100% of their components in stock." },
@@ -3730,7 +3750,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   </div>
 
                   <p className="text-base text-zinc-650 leading-relaxed">
-                    My first dashboard put blocked orders front and center — the logic seemed obvious: urgent things should lead. A production manager looked at it and said one thing that changed the whole design.
+                    My first dashboard put blocked orders front and center — the logic seemed obvious: urgent things should lead. I showed it to the production manager on my laptop in our second sit-down. He said one thing, almost as a correction, mildly annoyed, the way you'd point out something obviously wrong.
                   </p>
 
                   <blockquote className="border-l-4 border-red-500 pl-4 py-1.5 text-lg md:text-xl font-bold text-zinc-900 italic">
