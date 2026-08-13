@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { CaseStudy } from '../types';
-import { motion, useTransform, MotionValue, useScroll, useMotionValue, useSpring } from 'motion/react';
+import { motion, MotionValue, useReducedMotion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
 import { FolderTag } from './FolderTag';
 
@@ -67,6 +67,8 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
   const [videoHasError, setVideoHasError] = useState(false);
   const isPhoneFrame = study.id === 'my-campus' || study.id === 'walk-for-plastic';
 
+  const prefersReducedMotion = useReducedMotion();
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -80,47 +82,6 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
 
   const isDark = study.textColor ? study.textColor !== 'text-zinc-950' : (study.color !== 'bg-white' && study.color !== 'bg-[#FAF9F6]');
   
-  // Holographic effect values
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseX = useSpring(x, { stiffness: 300, damping: 30 });
-  const mouseY = useSpring(y, { stiffness: 300, damping: 30 });
-
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [4, -4]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-4, 4]);
-
-  const shineX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
-  const shineY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseXRelative = e.clientX - rect.left;
-    const mouseYRelative = e.clientY - rect.top;
-
-    x.set((mouseXRelative / width) - 0.5);
-    y.set((mouseYRelative / height) - 0.5);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  // Use external scroll if provided, otherwise create a local one for this card
-  const { scrollYProgress: localScrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const scrollY = externalScrollYProgress || localScrollYProgress;
-  
-  // Subtle parallax for the background image
-  const imageY = useTransform(scrollY, [0, 1], [0, -20]);
-
   // Handle smooth scroll on tab click
   const handleTabClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -139,7 +100,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
       {/* 2. Folder Card Body Container (Rendered first so tab can sit on top of it in DOM order) */}
       <motion.div 
         layoutId={`card-container-${study.id}`}
-        whileHover={{ y: -3 }}
+        whileHover={prefersReducedMotion ? undefined : { y: -3 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className={`relative mt-0 p-6 md:p-10 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl flex flex-col min-h-[420px] md:h-[480px] overflow-hidden group shadow-md cursor-pointer transform-gpu will-change-transform ${study.color} ${isDark ? 'text-zinc-50' : 'text-zinc-950'}`}
       >
@@ -315,9 +276,9 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({ study, index = 0, 
           </svg>
           
           {/* Tab Content */}
-          <div className={`relative z-10 flex items-center pl-4 pr-6 ${isDark ? 'text-zinc-50' : 'text-zinc-950'} font-mono text-[9px] md:text-xs uppercase tracking-wider select-none font-bold`}>
+          <div className={`relative z-10 flex items-center pl-2.5 pr-3 md:pl-4 md:pr-6 ${isDark ? 'text-zinc-50' : 'text-zinc-950'} font-mono text-[7px] sm:text-[8px] md:text-xs uppercase tracking-tight md:tracking-wider select-none font-bold`}>
             {/* Custom rising staircase block icon */}
-            <svg className="w-3 h-3 md:w-3.5 md:h-3.5 mr-1.5 md:mr-2 shrink-0 opacity-90" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3.5 md:h-3.5 mr-1 sm:mr-1.5 md:mr-2 shrink-0 opacity-90" viewBox="0 0 24 24" fill="currentColor">
               <rect x="3" y="15" width="4" height="5" rx="0.5" />
               <rect x="10" y="9" width="4" height="11" rx="0.5" />
               <rect x="17" y="3" width="4" height="17" rx="0.5" />

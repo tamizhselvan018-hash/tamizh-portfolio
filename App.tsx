@@ -7,7 +7,7 @@ import { Testimonials } from './components/Testimonials';
 import { CaseStudyDetail } from './components/CaseStudyDetail';
 import { CASE_STUDIES } from './constants';
 import { Button } from './components/Button';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion, useMotionValue, useTransform } from 'motion/react';
 
 import { TextFill } from './components/TextFill';
 
@@ -23,7 +23,87 @@ const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" 
   </svg>
 );
 
+const DECK_PIN_TOP = 110; // Matches the sticky offset below StickyHeader.
+
+// One card in the sticky folder deck. Pinning stays pure CSS sticky; the only
+// scroll-driven value is a scale, measured from where the NEXT card actually is
+// rather than from deck progress (cards differ in height, so an index-based split
+// desynchronises). Transform only - filters would force a repaint every frame.
+const StackedProjectCard: React.FC<{
+  study: typeof CASE_STUDIES[number];
+  index: number;
+  total: number;
+  siblings: React.MutableRefObject<Array<HTMLDivElement | null>>;
+  onProjectClick: (id: string) => void;
+}> = ({ study, index, total, siblings, onProjectClick }) => {
+  const prefersReducedMotion = useReducedMotion();
+
+  // 0 = fully exposed, 1 = fully covered by the next card.
+  const coverage = useMotionValue(0);
+  const scale = useTransform(coverage, [0, 1], [1, 0.94]);
+  const isLast = index === total - 1;
+
+  useEffect(() => {
+    if (prefersReducedMotion || isLast) return;
+
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const next = siblings.current[index + 1];
+      if (!next) return;
+
+      const travel = window.innerHeight - DECK_PIN_TOP;
+      if (travel <= 0) return;
+
+      // The next card travels from the bottom of the viewport up to the pin line.
+      const progress = (window.innerHeight - next.getBoundingClientRect().top) / travel;
+      coverage.set(Math.min(1, Math.max(0, progress)));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [index, isLast, prefersReducedMotion, siblings, coverage]);
+
+  return (
+    <motion.div
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 32 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{
+        duration: 0.55,
+        ease: [0.16, 1, 0.3, 1],
+        delay: index * 0.08
+      }}
+      ref={(el) => { siblings.current[index] = el; }}
+      onClick={() => !study.isComingSoon && onProjectClick(study.id)}
+      style={{
+        position: 'sticky',
+        top: `${DECK_PIN_TOP}px`, // Perfect offset below StickyHeader
+        zIndex: index + 10,
+        ...(prefersReducedMotion || isLast ? {} : { scale, transformOrigin: 'center top' })
+      }}
+      className={`transform-gpu ${study.isComingSoon ? "cursor-default" : "cursor-pointer"}`}
+    >
+      <CaseStudyCard study={study} index={index} />
+    </motion.div>
+  );
+};
+
 const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProjectClick }) => {
+  const cardEls = useRef<Array<HTMLDivElement | null>>([]);
+
   return (
     <section id="works" className="relative w-full py-24 border-y border-zinc-200/60 bg-transparent overflow-visible">
       <div className="max-w-5xl mx-auto px-6 relative z-10">
@@ -62,26 +142,14 @@ const WorksList: React.FC<{ onProjectClick: (id: string) => void }> = ({ onProje
         {/* Project List with Sticky Folder-Tab Stacking Deck */}
         <div className="flex flex-col gap-0 relative">
           {CASE_STUDIES.map((study, index) => (
-            <motion.div
+            <StackedProjectCard
               key={study.id}
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{ 
-                duration: 0.55,
-                ease: [0.16, 1, 0.3, 1],
-                delay: index * 0.08 
-              }}
-              onClick={() => !study.isComingSoon && onProjectClick(study.id)}
-              style={{ 
-                position: 'sticky', 
-                top: '110px', // Perfect offset below StickyHeader
-                zIndex: index + 10
-              }}
-              className={`transform-gpu will-change-transform ${study.isComingSoon ? "cursor-default" : "cursor-pointer"}`}
-            >
-              <CaseStudyCard study={study} index={index} />
-            </motion.div>
+              study={study}
+              index={index}
+              total={CASE_STUDIES.length}
+              siblings={cardEls}
+              onProjectClick={onProjectClick}
+            />
           ))}
         </div>
       </div>
