@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock, Monitor, Image, ArrowUpRight, Plus, Coins, Building } from 'lucide-react';
+import { Home, Calendar, GraduationCap, Presentation, Briefcase, ArrowRight, Lightbulb, Target, TrendingUp, Globe, BarChart3, Zap, User, AlertTriangle, Gamepad2, Trophy, HelpCircle, Layers, Check, Sparkles, Smartphone, FileText, CheckCircle, RefreshCw, Users, Award, BookOpen, Clock, Lock, Monitor, Image, ArrowUpRight, Plus, Coins, Building, Maximize2, X } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'motion/react';
 import { CaseStudy } from '../types';
 import { Button } from './Button';
@@ -188,6 +188,19 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
   // PAR Production Control Interactive States
   const [parActiveStep, setParActiveStep] = React.useState<number>(1);
   const [parCutHover, setParCutHover] = React.useState<string | null>(null);
+  const [parLightbox, setParLightbox] = React.useState<{ src: string; caption: string } | null>(null);
+
+  // Close the expanded walkthrough image on Escape, and stop the page behind it scrolling.
+  React.useEffect(() => {
+    if (!parLightbox) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setParLightbox(null);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [parLightbox]);
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const howItWorksRef = React.useRef<HTMLDivElement>(null);
@@ -3135,7 +3148,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="p-8 md:p-10 rounded-3xl bg-gradient-to-br from-white to-zinc-50/40 border border-zinc-200 shadow-xl relative overflow-hidden group"
+                className="p-8 md:p-10 rounded-3xl bg-white border border-zinc-200 shadow-xl relative overflow-hidden group"
               >
                 {/* Decorative background element */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-zinc-100 rounded-full blur-3xl pointer-events-none group-hover:bg-zinc-200/50 transition-all duration-500" />
@@ -3158,17 +3171,22 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                     <span className="font-semibold text-zinc-900">PAR Engineering</span> manufactures industrial pumps. This case study covers <span className="font-semibold text-zinc-900">PAR — Production Control</span>, an <span className="inline-flex items-center font-semibold text-blue-950 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 text-sm md:text-base">internal tool I designed</span> to connect <span className="font-semibold text-zinc-900">production scheduling, inventory, and purchasing</span> — three functions that used to run separately, <span className="inline-flex items-center font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 text-sm md:text-base">on paper and in spreadsheets</span>, with <span className="inline-flex items-center font-semibold text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm md:text-base">no shared view</span> of what was actually happening on the <span className="font-semibold text-zinc-900">shop floor</span>.
                   </p>
 
-                  <div className="pt-5 mt-1 border-t border-zinc-150 space-y-2">
-                    <span className="text-[10px] font-mono text-zinc-400 font-extrabold uppercase tracking-widest block">
+                  <div className="pt-8 mt-4 border-t border-zinc-150 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+                        <Users className="w-4 h-4 stroke-[2]" />
+                      </div>
+                      <span className="text-xs md:text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest block">
+                        Research
+                      </span>
+                    </div>
+
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight">
                       How I learned the workflow
-                    </span>
-                    <p className="text-sm md:text-base text-zinc-500 font-light leading-relaxed max-w-3xl">
-                      Five people over about three weeks: two production planners, the stores keeper, a purchaser,
-                      and the production manager. Most of it happened on the floor rather than in a meeting room —
-                      catching someone between jobs, standing beside them while they checked a spreadsheet or made a
-                      call, watching what they actually did instead of asking what they wanted. Two proper sit-downs
-                      with the production manager, deliberately, because he pushed back hardest and gave the
-                      clearest reactions.
+                    </h2>
+
+                    <p className="text-lg md:text-xl text-zinc-600 font-light leading-relaxed w-full">
+                      <span className="inline-flex items-center font-semibold text-emerald-950 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 text-sm md:text-base">Five people over about three weeks</span> — two <span className="font-semibold text-zinc-900">production planners</span>, the <span className="font-semibold text-zinc-900">stores keeper</span>, a <span className="font-semibold text-zinc-900">purchaser</span>, and the <span className="font-semibold text-zinc-900">production manager</span>. Most of it happened <span className="inline-flex items-center font-semibold text-blue-950 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 text-sm md:text-base">on the floor, not in a meeting room</span> — catching someone between jobs, standing beside them while they checked a spreadsheet or made a call, <span className="font-semibold text-zinc-900">watching what they actually did instead of asking what they wanted</span>. Two proper sit-downs with the production manager, deliberately, because he pushed back hardest and gave the clearest reactions.
                     </p>
                   </div>
                 </div>
@@ -3251,7 +3269,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <motion.div 
                     whileHover={{ y: -6, scale: 1.01, boxShadow: "0 25px 50px -20px rgba(239,68,68,0.12)" }}
                     transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                    className="p-6 md:p-8 rounded-3xl border border-red-200 bg-gradient-to-b from-white to-red-50/10 space-y-6 relative overflow-hidden group shadow-lg"
+                    className="p-6 md:p-8 rounded-3xl border border-red-200 bg-white space-y-6 relative overflow-hidden group shadow-lg"
                   >
                     <div className="absolute -top-4 -right-4 p-6 text-red-500/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 pointer-events-none">
                       <AlertTriangle className="w-22 h-22 stroke-[1.2]" />
@@ -3289,7 +3307,7 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                   <motion.div 
                     whileHover={{ y: -6, scale: 1.01, boxShadow: "0 25px 50px -20px rgba(16,185,129,0.12)" }}
                     transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                    className="p-6 md:p-8 rounded-3xl border border-emerald-200 bg-gradient-to-b from-white to-emerald-50/10 space-y-6 relative overflow-hidden shadow-lg group"
+                    className="p-6 md:p-8 rounded-3xl border border-emerald-200 bg-white space-y-6 relative overflow-hidden shadow-lg group"
                   >
                     <div className="absolute -top-4 -right-4 p-6 text-emerald-500/10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 pointer-events-none">
                       <CheckCircle className="w-22 h-22 stroke-[1.2]" />
@@ -3328,37 +3346,53 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
 
 
                 {/* Bordered Pull Quote */}
-                <div className="p-6 md:p-8 border border-zinc-200 border-l-4 border-l-red-500 bg-white rounded-r-2xl space-y-2 shadow-xs">
-                  <span className="text-[9px] font-mono text-red-500 font-bold uppercase tracking-widest block">
-                    THE CONSTANT DAILY BOTTLENECK
-                  </span>
-                  <p className="text-xl text-zinc-900 font-medium font-serif leading-relaxed italic">
-                    “Can this production order move forward today?”
-                  </p>
-                  <p className="text-xs text-zinc-500 font-light leading-relaxed">
-                    This was a question nobody—not production, not purchasing, not inventory—could answer without wasting half an hour checking across disjointed tools.
-                  </p>
+                <div className="p-8 md:p-10 rounded-3xl bg-white border border-zinc-200 shadow-xl relative overflow-hidden">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600 shrink-0">
+                        <HelpCircle className="w-4 h-4 stroke-[2]" />
+                      </div>
+                      <span className="text-xs md:text-sm font-mono font-bold text-zinc-400 uppercase tracking-widest block">
+                        The Constant Daily Bottleneck
+                      </span>
+                    </div>
+
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight leading-snug">
+                      “Can this production order move forward today?”
+                    </h2>
+
+                    <p className="text-lg md:text-xl text-zinc-600 font-light leading-relaxed w-full">
+                      A question nobody — not <span className="font-semibold text-zinc-900">production</span>, not{' '}
+                      <span className="font-semibold text-zinc-900">purchasing</span>, not{' '}
+                      <span className="font-semibold text-zinc-900">inventory</span> — could answer without{' '}
+                      <span className="inline-flex items-center font-semibold text-rose-900 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200/60 text-sm md:text-base">spending fifteen minutes</span>{' '}
+                      checking across disconnected tools.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Three-Question Row */}
-                <p className="text-sm md:text-base text-zinc-500 font-light leading-relaxed max-w-3xl">
-                  Nobody said these three questions to me. They're what the same shape kept turning into across every
-                  conversation — a planner checking three separate places before answering something simple, the
-                  manager describing his day as “half of it is just finding out where things stand.” I wrote them
-                  afterwards, as the cleanest description of what I'd watched people struggle to answer.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {[
-                    { q: "What can we build today?", d: "Know which assemblies have 100% of their components in stock." },
-                    { q: "What is currently blocked?", d: "Identify which exact shortages are halting specific client orders." },
-                    { q: "What should happen next?", d: "See instantly whether to wait, request components, or start assembly." }
-                  ].map((item, idx) => (
-                    <div key={idx} className="p-5 border border-zinc-200/80 rounded-xl bg-white shadow-xs space-y-2 hover:border-zinc-300 transition-all duration-200">
-                      <span className="text-[10px] font-mono text-red-400 font-bold">0{idx + 1}</span>
-                      <h4 className="font-bold text-sm text-zinc-800 leading-tight">{item.q}</h4>
-                      <p className="text-xs text-zinc-500 font-light leading-relaxed">{item.d}</p>
-                    </div>
-                  ))}
+                <div className="p-8 md:p-10 rounded-3xl bg-white border border-zinc-200 shadow-sm space-y-6">
+                  <p className="text-base md:text-lg text-zinc-600 font-light leading-relaxed w-full">
+                    Nobody said these three questions to me. They're what the same shape kept turning into across every
+                    conversation — a planner checking three separate places before answering something simple, the
+                    manager describing his day as “half of it is just finding out where things stand.” I wrote them
+                    afterwards, as the cleanest description of what I'd watched people struggle to answer.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                      { q: "What can we build today?", d: "Know which assemblies have 100% of their components in stock." },
+                      { q: "What is currently blocked?", d: "Identify which exact shortages are halting specific client orders." },
+                      { q: "What should happen next?", d: "See instantly whether to wait, request components, or start assembly." }
+                    ].map((item, idx) => (
+                      <div key={idx} className="p-5 border border-zinc-200/80 rounded-xl bg-zinc-50/60 space-y-2 hover:border-zinc-300 hover:bg-zinc-50 transition-all duration-200">
+                        <span className="text-[10px] font-mono text-red-400 font-bold">0{idx + 1}</span>
+                        <h4 className="font-bold text-base text-zinc-900 leading-tight">{item.q}</h4>
+                        <p className="text-sm text-zinc-500 font-light leading-relaxed">{item.d}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
 
@@ -3692,19 +3726,26 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
                         <div className={`md:col-span-8 ${
                           isEven ? 'md:order-12' : 'md:order-1'
                         }`}>
-                          <motion.div 
+                          <motion.button
+                            type="button"
+                            onClick={() => setParLightbox({ src: step.img, caption: step.caption })}
+                            aria-label={`Expand image: ${step.label}`}
                             whileHover={{ y: -6, scale: 1.015 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="rounded-2xl border border-zinc-200 overflow-hidden shadow-lg bg-white p-2 group"
+                            className="w-full text-left rounded-2xl border border-zinc-200 overflow-hidden shadow-lg bg-white p-2 group cursor-zoom-in relative block"
                           >
-                            <img 
-                              src={step.img} 
+                            <img
+                              src={step.img}
                               alt={step.label}
                               className="w-full h-auto rounded-xl border border-zinc-100 transition-all duration-300 group-hover:scale-[1.005]"
                               referrerPolicy="no-referrer"
                               onError={(e) => handleImageError(e, step.label)}
                             />
-                          </motion.div>
+                            <span className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/90 backdrop-blur-sm border border-zinc-200 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm">
+                              <Maximize2 className="w-3 h-3" />
+                              Expand
+                            </span>
+                          </motion.button>
                           <p className="text-[11px] text-zinc-400 text-center font-mono mt-3 leading-normal">
                             {step.caption}
                           </p>
@@ -5114,6 +5155,51 @@ export const CaseStudyDetail: React.FC<CaseStudyDetailProps> = ({ project, onBac
         <div className="text-zinc-400 text-sm">© 2025 Tamizh. All rights reserved.</div>
       </footer>
       </div>
+
+      {/* Expanded walkthrough image */}
+      <AnimatePresence>
+        {parLightbox && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setParLightbox(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Expanded image"
+            className="fixed inset-0 z-[60] bg-zinc-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-4 md:p-10 cursor-zoom-out"
+          >
+            <button
+              type="button"
+              onClick={() => setParLightbox(null)}
+              aria-label="Close expanded image"
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <motion.img
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              src={parLightbox.src}
+              alt={parLightbox.caption}
+              onClick={(e) => e.stopPropagation()}
+              referrerPolicy="no-referrer"
+              className="max-w-full max-h-[82vh] w-auto h-auto object-contain rounded-xl shadow-2xl cursor-default bg-white"
+            />
+
+            <p className="text-xs md:text-sm text-zinc-300 font-light text-center max-w-3xl mt-5 leading-relaxed">
+              {parLightbox.caption}
+            </p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mt-2">
+              Click anywhere or press Esc to close
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
